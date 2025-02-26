@@ -6,6 +6,9 @@ import cors from "cors";
 import helmet from "helmet";
 import cookieParser from "cookie-parser";
 import getLogger from "./utils/logger";
+import growthMetricsRoute from "./routes/GrowthMetricsRoute";
+import childRoutes from "./routes/ChildRoute";
+import RouteMiddleware from "./middlewares/RouteMiddleware";
 
 const app: Application = express();
 
@@ -37,6 +40,12 @@ app.use(
 );
 
 app.use(cookieParser());
+
+// Routes
+app.use(RouteMiddleware); // Handle whether requested route is protected
+
+app.use("/api/growth-metrics", growthMetricsRoute);
+app.use("/api/children", childRoutes);
 
 // Log API requests
 app.use((req: Request, res: Response, next: NextFunction) => {
