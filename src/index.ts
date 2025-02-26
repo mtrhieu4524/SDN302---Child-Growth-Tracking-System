@@ -6,10 +6,16 @@ import cors from "cors";
 import helmet from "helmet";
 import cookieParser from "cookie-parser";
 import getLogger from "./utils/logger";
+import RouteMiddleware from "./middlewares/RouteMiddleware";
+
 import growthMetricsRoute from "./routes/GrowthMetricsRoute";
 import childRoutes from "./routes/ChildRoute";
 import RouteMiddleware from "./middlewares/RouteMiddleware";
 import ErrorMiddleware from "./middlewares/ErrorMiddleware";
+import membershipPackageRoute from "./routes/MembershipPackageRoute";
+import tierRoutes from "./routes/TierRoute";
+import paymentRoutes from "./routes/PaymentRoute";
+import receiptRoutes from "./routes/ReceiptRoute";
 
 const app: Application = express();
 
@@ -50,6 +56,10 @@ app.use("/api/children", childRoutes);
 
 // Use Error Middleware for all controllers response
 app.use(ErrorMiddleware);
+app.use("/api/receipts", receiptRoutes);
+app.use("/api/tiers", tierRoutes);
+app.use("/api/membership-packages", membershipPackageRoute);
+app.use("/api/payments", paymentRoutes);
 
 // Log API requests
 app.use((req: Request, res: Response, next: NextFunction) => {
