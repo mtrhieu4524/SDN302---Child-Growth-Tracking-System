@@ -10,6 +10,8 @@ import RouteMiddleware from "./middlewares/RouteMiddleware";
 
 import growthMetricsRoute from "./routes/GrowthMetricsRoute";
 import childRoutes from "./routes/ChildRoute";
+import RouteMiddleware from "./middlewares/RouteMiddleware";
+import ErrorMiddleware from "./middlewares/ErrorMiddleware";
 import membershipPackageRoute from "./routes/MembershipPackageRoute";
 import tierRoutes from "./routes/TierRoute";
 import paymentRoutes from "./routes/PaymentRoute";
@@ -51,6 +53,9 @@ app.use(RouteMiddleware); // Handle whether requested route is protected
 
 app.use("/api/growth-metrics", growthMetricsRoute);
 app.use("/api/children", childRoutes);
+
+// Use Error Middleware for all controllers response
+app.use(ErrorMiddleware);
 app.use("/api/receipts", receiptRoutes);
 app.use("/api/tiers", tierRoutes);
 app.use("/api/membership-packages", membershipPackageRoute);
