@@ -1,0 +1,76 @@
+import dotenv from "dotenv";
+dotenv.config();
+import express, { Request, Response, NextFunction, Application } from "express";
+import http from "http";
+import cors from "cors";
+import helmet from "helmet";
+import cookieParser from "cookie-parser";
+import getLogger from "./utils/logger";
+
+const app: Application = express();
+
+// Express
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// Middleware
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
+  })
+);
+
+// Files
+app.use("/", express.static(__dirname));
+
+// Enable trust proxy
+app.set("trust proxy", 1);
+
+// Helmet
+app.use(
+  helmet({
+    crossOriginResourcePolicy: false,
+  })
+);
+
+app.use(cookieParser());
+
+// Log API requests
+app.use((req: Request, res: Response, next: NextFunction) => {
+  const logger = getLogger("API");
+
+  const startTime = new Date();
+
+  res.on("finish", () => {
+    const duration = new Date().getTime() - startTime.getTime();
+    const logMessage = `${req.ip} ${req.method} ${
+      req.originalUrl
+    } ${req.protocol.toUpperCase()}/${req.httpVersion} ${res.statusCode} ${
+      res.get("Content-Length") || 0
+    } ${req.get("User-Agent")} ${duration}ms`;
+    logger.info(logMessage);
+  });
+
+  next();
+});
+
+// Serve assets
+app.use("/assets", express.static("assets"));
+
+// Start server
+const port: number = Number(process.env.DEVELOPMENT_PORT) || 4000;
+
+const server: http.Server = http.createServer(app);
+
+server.listen(port, async (err?: Error) => {
+  const logger = getLogger("APP");
+  if (err) {
+    logger.error("Failed to start server:", err);
+    process.exit(1);
+  } else {
+    logger.info(`Server is running at port ${port}`);
+  }
+});
