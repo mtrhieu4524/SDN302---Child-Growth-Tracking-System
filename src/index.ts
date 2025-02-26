@@ -6,9 +6,14 @@ import cors from "cors";
 import helmet from "helmet";
 import cookieParser from "cookie-parser";
 import getLogger from "./utils/logger";
+import RouteMiddleware from "./middlewares/RouteMiddleware";
+
 import growthMetricsRoute from "./routes/GrowthMetricsRoute";
 import childRoutes from "./routes/ChildRoute";
-import RouteMiddleware from "./middlewares/RouteMiddleware";
+import membershipPackageRoute from "./routes/MembershipPackageRoute";
+import tierRoutes from "./routes/TierRoute";
+import paymentRoutes from "./routes/PaymentRoute";
+import receiptRoutes from "./routes/ReceiptRoute";
 
 const app: Application = express();
 
@@ -46,6 +51,10 @@ app.use(RouteMiddleware); // Handle whether requested route is protected
 
 app.use("/api/growth-metrics", growthMetricsRoute);
 app.use("/api/children", childRoutes);
+app.use("/api/receipts", receiptRoutes);
+app.use("/api/tiers", tierRoutes);
+app.use("/api/membership-packages", membershipPackageRoute);
+app.use("/api/payments", paymentRoutes);
 
 // Log API requests
 app.use((req: Request, res: Response, next: NextFunction) => {
