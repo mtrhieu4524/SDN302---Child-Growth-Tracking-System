@@ -9,6 +9,7 @@ import getLogger from "./utils/logger";
 import growthMetricsRoute from "./routes/GrowthMetricsRoute";
 import childRoutes from "./routes/ChildRoute";
 import RouteMiddleware from "./middlewares/RouteMiddleware";
+import ErrorMiddleware from "./middlewares/ErrorMiddleware";
 
 const app: Application = express();
 
@@ -46,6 +47,9 @@ app.use(RouteMiddleware); // Handle whether requested route is protected
 
 app.use("/api/growth-metrics", growthMetricsRoute);
 app.use("/api/children", childRoutes);
+
+// Use Error Middleware for all controllers response
+app.use(ErrorMiddleware);
 
 // Log API requests
 app.use((req: Request, res: Response, next: NextFunction) => {
