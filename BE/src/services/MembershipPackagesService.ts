@@ -1,29 +1,36 @@
 import { ObjectId } from "mongoose";
 import StatusCodeEnum from "../enums/StatusCodeEnum";
 import CustomException from "../exceptions/CustomException";
-import MembershipPackageRepository from "../repositories/MembershipPackageRepository";
-import UserRepository from "../repositories/UserRepository";
+// import MembershipPackageRepository from "../repositories/MembershipPackageRepository";
+import { ReturnDataMembershipPackages } from "../repositories/MembershipPackageRepository";
+// import UserRepository from "../repositories/UserRepository";
 import Database from "../utils/database";
 import UserEnum from "../enums/UserEnum";
 import { IQuery } from "../interfaces/IQuery";
 import { IMembershipPackage } from "../interfaces/IMembershipPackage";
+import { IMembershipPackageService } from "../interfaces/services/IMembershipPackagesService";
+import { IUserRepository } from "../interfaces/repositories/IUserRepository";
+import { IMembershipPackageRepository } from "../interfaces/repositories/IMembershipPackageRepository";
 
-type PriceType = {
+export type PriceType = {
   value: number;
   unit: "USD" | "VND";
 };
-type DurationType = {
+export type DurationType = {
   value: number;
   unit: "DAY";
 };
-class MembershipPackageService {
-  private membershipPackageRepository: MembershipPackageRepository;
-  private userRepository: UserRepository;
+class MembershipPackageService implements IMembershipPackageService {
+  private membershipPackageRepository: IMembershipPackageRepository;
+  private userRepository: IUserRepository;
   private database: Database;
 
-  constructor() {
-    this.membershipPackageRepository = new MembershipPackageRepository();
-    this.userRepository = new UserRepository();
+  constructor(
+    membershipPackageRepository: IMembershipPackageRepository,
+    userRepository: IUserRepository
+  ) {
+    this.membershipPackageRepository = membershipPackageRepository;
+    this.userRepository = userRepository;
     this.database = Database.getInstance();
   }
 
@@ -33,13 +40,13 @@ class MembershipPackageService {
     price: PriceType,
     duration: DurationType,
     tier: number
-  ) => {
+  ): Promise<IMembershipPackage> => {
     const session = await this.database.startTransaction();
     try {
-      const checkmembership =
+      const checkMembership =
         await this.membershipPackageRepository.getMembershipByName(name);
 
-      if (checkmembership) {
+      if (checkMembership) {
         throw new CustomException(
           StatusCodeEnum.BadRequest_400,
           "Membership package name already exists"
@@ -93,9 +100,7 @@ class MembershipPackageService {
         );
       }
 
-      if (
-        [UserEnum.ADMIN, UserEnum.SUPER_ADMIN].includes(checkRequester?.role)
-      ) {
+      if ([UserEnum.ADMIN].includes(checkRequester?.role)) {
         ignoreDeleted = true;
       }
 
@@ -104,6 +109,13 @@ class MembershipPackageService {
           id,
           ignoreDeleted
         );
+      if (!membershipPackage) {
+        throw new CustomException(
+          StatusCodeEnum.NotFound_404,
+          "Membership package not found"
+        );
+      }
+
       return membershipPackage;
     } catch (error) {
       if (error as Error | CustomException) {
@@ -116,7 +128,10 @@ class MembershipPackageService {
     }
   };
 
-  getMembershipPackages = async (query: IQuery, requesterId: string) => {
+  getMembershipPackages = async (
+    query: IQuery,
+    requesterId: string
+  ): Promise<ReturnDataMembershipPackages> => {
     try {
       let ignoreDeleted = false;
 
@@ -132,9 +147,7 @@ class MembershipPackageService {
         );
       }
 
-      if (
-        [UserEnum.ADMIN, UserEnum.SUPER_ADMIN].includes(checkRequester?.role)
-      ) {
+      if ([UserEnum.ADMIN].includes(checkRequester?.role)) {
         ignoreDeleted = true;
       }
 
@@ -162,16 +175,23 @@ class MembershipPackageService {
     price: PriceType,
     duration: DurationType,
     tier: number
-  ) => {
+  ): Promise<IMembershipPackage> => {
     const session = await this.database.startTransaction();
     try {
       const oldPackage =
         await this.membershipPackageRepository.getMembershipPackage(id, false);
 
-      const checkmembership =
+      if (!oldPackage) {
+        throw new CustomException(
+          StatusCodeEnum.NotFound_404,
+          "Previous package not found"
+        );
+      }
+
+      const checkMembership =
         await this.membershipPackageRepository.getMembershipByName(name);
 
-      if (checkmembership) {
+      if (checkMembership) {
         throw new CustomException(
           StatusCodeEnum.BadRequest_400,
           "Membership package name already exists"
@@ -236,7 +256,7 @@ class MembershipPackageService {
     }
   };
 
-  deleteMembershipPackage = async (id: string | ObjectId) => {
+  deleteMembershipPackage = async (id: string | ObjectId): Promise<boolean> => {
     const session = await this.database.startTransaction();
     try {
       const result =

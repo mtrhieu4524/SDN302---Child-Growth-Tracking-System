@@ -3,12 +3,12 @@ import StatusCodeEnum from "../enums/StatusCodeEnum";
 import CustomException from "../exceptions/CustomException";
 import { ITier } from "../interfaces/ITier";
 import { IUser } from "../interfaces/IUser";
-// import PostRepository from "../repositories/PostRepository";
+import PostRepository from "../repositories/PostRepository";
 import MembershipPackageRepository from "../repositories/MembershipPackageRepository";
 import GrowthDataRepository from "../repositories/GrowthDataRepository";
 import UserRepository from "../repositories/UserRepository";
 
-// const postRepo = new PostRepository();
+const postRepo = new PostRepository();
 const MempackRepo = new MembershipPackageRepository();
 const GrowthDataRepo = new GrowthDataRepository();
 const userRepo = new UserRepository();
@@ -140,21 +140,21 @@ const validateUserMembership = async (
   return { startDate, interval };
 };
 
-// const checkPostLimit = async (
-//   userId: string,
-//   start: Date,
-//   end: Date,
-//   tierData: ITier
-// ) => {
-//   const PostsCount = await postRepo.countPosts(userId, start, end);
+const checkPostLimit = async (
+  userId: string,
+  start: Date,
+  end: Date,
+  tierData: ITier
+) => {
+  const PostsCount = await postRepo.countPosts(userId, start, end);
 
-//   if (PostsCount >= tierData.postsLimit.value) {
-//     throw new CustomException(
-//       StatusCodeEnum.Forbidden_403,
-//       "You have exceeded your current tier post limit"
-//     );
-//   }
-// };
+  if (PostsCount >= tierData.postsLimit.value) {
+    throw new CustomException(
+      StatusCodeEnum.Forbidden_403,
+      "You have exceeded your current tier post limit"
+    );
+  }
+};
 
 const checkUpdateChildrenGrowthLimit = async (
   userId: string,
@@ -215,7 +215,7 @@ const checkViewGrowthDataLimit = async (
 export {
   getCheckIntervalBounds,
   validateUserMembership,
-  // checkPostLimit,
+  checkPostLimit,
   checkUpdateChildrenGrowthLimit,
   checkViewGrowthDataLimit,
 };

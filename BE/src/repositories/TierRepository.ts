@@ -4,8 +4,19 @@ import CustomException from "../exceptions/CustomException";
 import { ITier } from "../interfaces/ITier";
 import TierModel from "../models/TierModel";
 import { IQuery } from "../interfaces/IQuery";
-class TierRepository {
-  async createTier(data: Partial<ITier>, session?: mongoose.ClientSession) {
+import { ITierRepository } from "../interfaces/repositories/ITierRepository";
+
+export type ReturnDataTiers = {
+  tiers: ITier[];
+  page: number;
+  totalPage: number;
+  total: number;
+};
+class TierRepository implements ITierRepository {
+  async createTier(
+    data: Partial<ITier>,
+    session?: mongoose.ClientSession
+  ): Promise<ITier> {
     try {
       const checkTier = await TierModel.findOne({
         isDeleted: false,
@@ -20,6 +31,7 @@ class TierRepository {
       }
 
       const tier = await TierModel.create([data], { session });
+
       return tier[0];
     } catch (error) {
       if (error as Error | CustomException) {
@@ -40,7 +52,7 @@ class TierRepository {
     id: string | ObjectId,
     data: object,
     session?: mongoose.ClientSession
-  ) {
+  ): Promise<ITier> {
     try {
       const tier = await TierModel.findByIdAndUpdate(
         { _id: new mongoose.Types.ObjectId(id as string) },
@@ -73,7 +85,10 @@ class TierRepository {
     }
   }
 
-  async getTier(id: string | ObjectId, ignoreDeleted: boolean) {
+  async getTier(
+    id: string | ObjectId,
+    ignoreDeleted: boolean
+  ): Promise<ITier | null> {
     try {
       type searchQuery = {
         _id: mongoose.Types.ObjectId;
@@ -112,7 +127,10 @@ class TierRepository {
     }
   }
 
-  async getTiers(query: IQuery, ignoreDeleted: boolean) {
+  async getTiers(
+    query: IQuery,
+    ignoreDeleted: boolean
+  ): Promise<ReturnDataTiers> {
     try {
       const { page, size, search, order, sortBy } = query;
       type searchQuery = {
@@ -147,7 +165,12 @@ class TierRepository {
       }
 
       const tierCount = await TierModel.countDocuments(searchQuery);
-      return { tiers, page, totalPage: Math.ceil(tierCount / size), tierCount };
+      return {
+        tiers,
+        page,
+        totalPage: Math.ceil(tierCount / size),
+        total: tierCount,
+      };
     } catch (error) {
       if (error as Error | CustomException) {
         throw new CustomException(
@@ -162,7 +185,7 @@ class TierRepository {
     }
   }
 
-  async getCurrentTierData(tier: number) {
+  async getCurrentTierData(tier: number): Promise<ITier> {
     try {
       const tierData = await TierModel.findOne({
         tier: tier,

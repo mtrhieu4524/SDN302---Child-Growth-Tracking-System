@@ -1,22 +1,29 @@
 import { ObjectId } from "mongoose";
 import CustomException from "../exceptions/CustomException";
 import { ILimitObject, ITier } from "../interfaces/ITier";
-import TierRepository from "../repositories/TierRepository";
+import { ReturnDataTiers } from "../repositories/TierRepository";
+// import TierRepository from "../repositories/TierRepository";
 import Database from "../utils/database";
-import UserRepository from "../repositories/UserRepository";
+// import UserRepository from "../repositories/UserRepository";
 import StatusCodeEnum from "../enums/StatusCodeEnum";
 import UserEnum from "../enums/UserEnum";
 import { IQuery } from "../interfaces/IQuery";
+import { ITierService } from "../interfaces/services/ITierService";
+import { ITierRepository } from "../interfaces/repositories/ITierRepository";
+import { IUserRepository } from "../interfaces/repositories/IUserRepository";
 
-class TierService {
-  private tierRepository: TierRepository;
+class TierService implements ITierService {
+  private tierRepository: ITierRepository;
+  private userRepository: IUserRepository;
   private database: Database;
-  private userRepository: UserRepository;
 
-  constructor() {
-    this.tierRepository = new TierRepository();
+  constructor(
+    tierRepository: ITierRepository,
+    userRepository: IUserRepository
+  ) {
+    this.tierRepository = tierRepository;
+    this.userRepository = userRepository;
     this.database = Database.getInstance();
-    this.userRepository = new UserRepository();
   }
 
   createTier = async (
@@ -27,7 +34,7 @@ class TierService {
     updateRecordsLimitTime: number,
     viewRecordsLimitValue: number,
     viewRecordsLimitTime: number
-  ) => {
+  ): Promise<ITier> => {
     const session = await this.database.startTransaction();
 
     try {
@@ -62,6 +69,10 @@ class TierService {
       if (error as Error | CustomException) {
         throw error;
       }
+      throw new CustomException(
+        StatusCodeEnum.InternalServerError_500,
+        "Internal Server Error"
+      );
     } finally {
       session.endSession();
     }
@@ -75,37 +86,43 @@ class TierService {
     updateRecordsLimitTime: number,
     viewRecordsLimitValue: number,
     viewRecordsLimitTime: number
-  ) => {
+  ): Promise<ITier | null> => {
     const session = await this.database.startTransaction();
     try {
       const oldTier = await this.tierRepository.getTier(id, false);
+      if (!oldTier) {
+        throw new CustomException(
+          StatusCodeEnum.NotFound_404,
+          "Previous tier not found"
+        );
+      }
 
-      const formatedPostLimit: ILimitObject = oldTier.postsLimit;
-      const formatedUpdateRecordsLimit: ILimitObject =
+      const formattedPostLimit: ILimitObject = oldTier.postsLimit;
+      const formattedUpdateRecordsLimit: ILimitObject =
         oldTier.updateRecordsLimit;
-      const formatedViewRecordLimit: ILimitObject = oldTier.viewRecordsLimit;
+      const formattedViewRecordLimit: ILimitObject = oldTier.viewRecordsLimit;
 
       let isModify = false;
 
       if (postLimitTime && postLimitTime !== oldTier.postsLimit.time) {
-        formatedPostLimit.time = postLimitTime;
+        formattedPostLimit.time = postLimitTime;
         isModify = true;
       }
 
       if (postsLimitValue && postsLimitValue !== oldTier.postsLimit.value) {
-        formatedPostLimit.value = postsLimitValue;
+        formattedPostLimit.value = postsLimitValue;
         isModify = true;
       }
 
       if (isModify) {
-        formatedPostLimit.description = `this tier's user can post ${formatedPostLimit.value} in an interval of ${formatedPostLimit.time} day(s)`;
+        formattedPostLimit.description = `this tier's user can post ${formattedPostLimit.value} in an interval of ${formattedPostLimit.time} day(s)`;
       }
 
       if (
         updateRecordsLimitTime &&
         updateRecordsLimitTime !== oldTier.updateRecordsLimit.time
       ) {
-        formatedUpdateRecordsLimit.time = updateRecordsLimitTime;
+        formattedUpdateRecordsLimit.time = updateRecordsLimitTime;
         isModify = true;
       }
 
@@ -113,19 +130,19 @@ class TierService {
         updateRecordsLimitValue &&
         updateRecordsLimitValue !== oldTier.updateRecordsLimit.value
       ) {
-        formatedUpdateRecordsLimit.value = updateRecordsLimitValue;
+        formattedUpdateRecordsLimit.value = updateRecordsLimitValue;
         isModify = true;
       }
 
       if (isModify) {
-        formatedUpdateRecordsLimit.description = `this tier's user can update records ${formatedUpdateRecordsLimit.value} in an interval of ${formatedUpdateRecordsLimit.time} day(s)`;
+        formattedUpdateRecordsLimit.description = `this tier's user can update records ${formattedUpdateRecordsLimit.value} in an interval of ${formattedUpdateRecordsLimit.time} day(s)`;
       }
 
       if (
         viewRecordsLimitTime &&
         viewRecordsLimitTime !== oldTier.viewRecordsLimit.time
       ) {
-        formatedViewRecordLimit.time = viewRecordsLimitTime;
+        formattedViewRecordLimit.time = viewRecordsLimitTime;
         isModify = true;
       }
 
@@ -133,18 +150,18 @@ class TierService {
         viewRecordsLimitValue &&
         viewRecordsLimitValue !== oldTier.viewRecordsLimit.value
       ) {
-        formatedViewRecordLimit.value = viewRecordsLimitValue;
+        formattedViewRecordLimit.value = viewRecordsLimitValue;
         isModify = true;
       }
 
       if (isModify) {
-        formatedViewRecordLimit.description = `this tier's user can view records ${formatedViewRecordLimit.value} in an interval of ${formatedViewRecordLimit.time} day(s)`;
+        formattedViewRecordLimit.description = `this tier's user can view records ${formattedViewRecordLimit.value} in an interval of ${formattedViewRecordLimit.time} day(s)`;
       }
 
       const data: Partial<ITier> = {
-        postsLimit: formatedPostLimit,
-        updateRecordsLimit: formatedUpdateRecordsLimit,
-        viewRecordsLimit: formatedViewRecordLimit,
+        postsLimit: formattedPostLimit,
+        updateRecordsLimit: formattedUpdateRecordsLimit,
+        viewRecordsLimit: formattedViewRecordLimit,
       };
 
       const updatedTier = await this.tierRepository.updateTier(
@@ -161,12 +178,19 @@ class TierService {
       if (error as Error | CustomException) {
         throw error;
       }
+      throw new CustomException(
+        StatusCodeEnum.InternalServerError_500,
+        "Internal Server Error"
+      );
     } finally {
       session.endSession();
     }
   };
 
-  getTier = async (id: string | ObjectId, requesterId: string) => {
+  getTier = async (
+    id: string | ObjectId,
+    requesterId: string
+  ): Promise<ITier | null> => {
     try {
       const checkRequester = await this.userRepository.getUserById(
         requesterId,
@@ -180,10 +204,9 @@ class TierService {
         );
       }
 
-      const shouldIgnoreDeleted = [
-        UserEnum.ADMIN,
-        UserEnum.SUPER_ADMIN,
-      ].includes(checkRequester?.role);
+      const shouldIgnoreDeleted = [UserEnum.ADMIN].includes(
+        checkRequester?.role
+      );
 
       const tierInfo = await this.tierRepository.getTier(
         id,
@@ -195,6 +218,10 @@ class TierService {
       if (error as Error | CustomException) {
         throw error;
       }
+      throw new CustomException(
+        StatusCodeEnum.InternalServerError_500,
+        "Internal Server Error"
+      );
     }
   };
 
@@ -202,7 +229,7 @@ class TierService {
     query: IQuery,
     requesterId: string,
     ignoreDeleted: boolean
-  ) => {
+  ): Promise<ReturnDataTiers> => {
     try {
       const checkRequester = await this.userRepository.getUserById(
         requesterId,
@@ -217,7 +244,7 @@ class TierService {
       }
 
       const shouldIgnoreDeleted =
-        [UserEnum.ADMIN, UserEnum.SUPER_ADMIN].includes(checkRequester?.role) &&
+        [UserEnum.ADMIN].includes(checkRequester?.role) &&
         Boolean(ignoreDeleted);
 
       const TiersInfo = await this.tierRepository.getTiers(
@@ -230,6 +257,10 @@ class TierService {
       if (error as Error | CustomException) {
         throw error;
       }
+      throw new CustomException(
+        StatusCodeEnum.InternalServerError_500,
+        "Internal Server Error"
+      );
     }
   };
 }
