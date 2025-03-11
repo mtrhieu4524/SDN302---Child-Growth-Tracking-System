@@ -3,14 +3,21 @@ import ReceiptModel from "../models/ReceiptModel";
 import { IReceipt } from "../interfaces/IReceipt";
 import CustomException from "../exceptions/CustomException";
 import StatusCodeEnum from "../enums/StatusCodeEnum";
-
 import { IQuery } from "../interfaces/IQuery";
-class ReceiptRepository {
+import { IReceiptRepository } from "../interfaces/repositories/IReceiptRepository";
+
+export type ReturnDataReceipts = {
+  receipts: IReceipt[];
+  page: number;
+  totalReceipts: number;
+  totalPages: number;
+};
+
+class ReceiptRepository implements IReceiptRepository {
   async createReceipt(
     data: object,
     session?: mongoose.ClientSession
   ): Promise<IReceipt> {
-    // console.log(data);
     try {
       const receipt = await ReceiptModel.create([data], { session });
       return receipt[0];
@@ -24,11 +31,12 @@ class ReceiptRepository {
       );
     }
   }
+
   //admin/super-admin only
   getAllReceipt = async (
     query: IQuery,
     ignoreDeleted: boolean
-  ): Promise<object> => {
+  ): Promise<ReturnDataReceipts> => {
     try {
       const { page, size, order, sortBy } = query;
       type searchQuery = {
@@ -56,7 +64,7 @@ class ReceiptRepository {
       const countReceipts = await ReceiptModel.countDocuments(searchQuery);
 
       return {
-        Receipts: receipts,
+        receipts: receipts,
         page,
         totalReceipts: countReceipts,
         totalPages: Math.ceil(countReceipts / size),
@@ -78,7 +86,7 @@ class ReceiptRepository {
     query: IQuery,
     userId: mongoose.Types.ObjectId | string,
     ignoreDeleted: boolean
-  ): Promise<object> {
+  ): Promise<ReturnDataReceipts> {
     try {
       const { page, size, order, sortBy } = query;
       type searchQuery = {
@@ -112,7 +120,7 @@ class ReceiptRepository {
       const countReceipts = await ReceiptModel.countDocuments(searchQuery);
 
       return {
-        Receipts: receipts,
+        receipts: receipts,
         page,
         totalReceipts: countReceipts,
         totalPages: Math.ceil(countReceipts / size),
@@ -158,7 +166,7 @@ class ReceiptRepository {
     }
   }
 
-  async deleteRecepitById(
+  async deleteReceiptById(
     id: mongoose.Types.ObjectId | string,
     requesterId: mongoose.Types.ObjectId | string,
     session?: mongoose.ClientSession
@@ -175,7 +183,7 @@ class ReceiptRepository {
       if (requesterId !== checkReceipt?.userId.toString()) {
         throw new CustomException(
           StatusCodeEnum.Forbidden_403,
-          "You can delete other people's receipt"
+          "Cannot delete receipt"
         );
       }
       const receipt = await ReceiptModel.findOneAndUpdate(
@@ -184,6 +192,26 @@ class ReceiptRepository {
         { new: true }
       );
       return receipt;
+    } catch (error) {
+      if ((error as Error) || (error as CustomException)) {
+        throw error;
+      }
+      throw new CustomException(
+        StatusCodeEnum.InternalServerError_500,
+        "Internal Server Error"
+      );
+    }
+  }
+
+  async getAllReceiptsTimeInterval(
+    startDate: Date,
+    endDate: Date
+  ): Promise<IReceipt[]> {
+    try {
+      const receipts = await ReceiptModel.find({
+        createdAt: { $gte: startDate, $lte: endDate },
+      }).lean();
+      return receipts || [];
     } catch (error) {
       if ((error as Error) || (error as CustomException)) {
         throw error;

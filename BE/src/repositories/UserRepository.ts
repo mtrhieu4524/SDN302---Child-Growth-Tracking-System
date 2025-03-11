@@ -8,13 +8,20 @@ import getLogger from "../utils/logger";
 import MembershipModel from "../models/MembershipPackageModel";
 import ChildModel from "../models/ChildModel";
 import TierModel from "../models/TierModel";
+import { IUserRepository } from "../interfaces/repositories/IUserRepository";
+import ConsultationModel from "../models/ConsultationModel";
+
+export interface IDoctor extends IUser {
+  rating?: number;
+}
+
 export type returnData = {
-  users: IUser[];
+  users: IDoctor[];
   page: number;
   total: number;
   totalPages: number;
 };
-class UserRepository {
+class UserRepository implements IUserRepository {
   /**
    * Creates a new user document in the database.
    * @param data - Object containing user data.
@@ -22,7 +29,6 @@ class UserRepository {
    * @returns The created user document.
    * @throws Error when the creation fails.
    */
-
   async createUser(
     data: object,
     session?: mongoose.ClientSession
