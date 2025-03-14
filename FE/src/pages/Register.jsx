@@ -12,7 +12,7 @@ const Register = () => {
   const [form] = Form.useForm();
 
   useEffect(() => {
-    document.title = "Child Growth Tracking - Đăng ký";
+    document.title = "Child Growth Tracking - Sign Up";
   }, []);
 
   const onFinish = (values) => {
@@ -44,12 +44,12 @@ const Register = () => {
         >
           <div style={{ textAlign: "center", marginBottom: "30px" }}>
             <Title level={2} style={{ color: "#0056A1", marginBottom: "8px" }}>
-              Đăng ký tài khoản
+              Sign up
             </Title>
             <Text type="secondary">
-              Hoặc{" "}
+              Already have an account?{" "}
               <Link to="/login" style={{ color: "#0082C8" }}>
-                đăng nhập nếu đã có tài khoản
+                Sign in
               </Link>
             </Text>
           </div>
@@ -66,13 +66,13 @@ const Register = () => {
               rules={[
                 {
                   required: true,
-                  message: "Vui lòng nhập họ và tên!",
+                  message: "Please enter your name!",
                 },
               ]}
             >
               <Input
                 prefix={<UserOutlined style={{ color: "rgba(0,0,0,.25)" }} />}
-                placeholder="Họ và tên"
+                placeholder="Name"
               />
             </Form.Item>
 
@@ -81,11 +81,11 @@ const Register = () => {
               rules={[
                 {
                   required: true,
-                  message: "Vui lòng nhập email!",
+                  message: "Please enter an email!",
                 },
                 {
                   type: "email",
-                  message: "Email không hợp lệ!",
+                  message: "Email is invalid!",
                 },
               ]}
             >
@@ -100,17 +100,17 @@ const Register = () => {
               rules={[
                 {
                   required: true,
-                  message: "Vui lòng nhập mật khẩu!",
+                  message: "Please enter a password!",
                 },
                 {
                   min: 6,
-                  message: "Mật khẩu phải có ít nhất 6 ký tự!",
+                  message: "Password have at least 6 characters!",
                 },
               ]}
             >
               <Input.Password
                 prefix={<LockOutlined style={{ color: "rgba(0,0,0,.25)" }} />}
-                placeholder="Mật khẩu"
+                placeholder="Password"
               />
             </Form.Item>
 
@@ -120,7 +120,7 @@ const Register = () => {
               rules={[
                 {
                   required: true,
-                  message: "Vui lòng xác nhận mật khẩu!",
+                  message: "Please confirm the password!",
                 },
                 ({ getFieldValue }) => ({
                   validator(_, value) {
@@ -128,7 +128,7 @@ const Register = () => {
                       return Promise.resolve();
                     }
                     return Promise.reject(
-                      new Error("Mật khẩu xác nhận không khớp!")
+                      new Error("Confirm password is not match!")
                     );
                   },
                 }),
@@ -136,7 +136,7 @@ const Register = () => {
             >
               <Input.Password
                 prefix={<LockOutlined style={{ color: "rgba(0,0,0,.25)" }} />}
-                placeholder="Xác nhận mật khẩu"
+                placeholder="Confirm password"
               />
             </Form.Item>
 
@@ -151,7 +151,7 @@ const Register = () => {
                   border: "none",
                 }}
               >
-                Đăng ký
+                Sign up
               </Button>
             </Form.Item>
           </Form>

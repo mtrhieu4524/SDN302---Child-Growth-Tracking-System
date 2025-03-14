@@ -12,7 +12,7 @@ const Login = () => {
   const [form] = Form.useForm();
 
   useEffect(() => {
-    document.title = "Child Growth Tracking - Đăng nhập";
+    document.title = "Child Growth Tracking - Sign In";
   }, []);
 
   const onFinish = (values) => {
@@ -44,12 +44,12 @@ const Login = () => {
         >
           <div style={{ textAlign: "center", marginBottom: "30px" }}>
             <Title level={2} style={{ color: "#0056A1", marginBottom: "8px" }}>
-              Đăng nhập
+              Sign in
             </Title>
             <Text type="secondary">
-              Hoặc{" "}
+              Do not have an acount?{" "}
               <Link to="/register" style={{ color: "#0082C8" }}>
-                đăng ký tài khoản mới
+                Sign up
               </Link>
             </Text>
           </div>
@@ -66,11 +66,11 @@ const Login = () => {
               rules={[
                 {
                   required: true,
-                  message: "Vui lòng nhập email!",
+                  message: "Please enter an email!",
                 },
                 {
                   type: "email",
-                  message: "Email không hợp lệ!",
+                  message: "Email is invalid!",
                 },
               ]}
             >
@@ -85,13 +85,13 @@ const Login = () => {
               rules={[
                 {
                   required: true,
-                  message: "Vui lòng nhập mật khẩu!",
+                  message: "Please enter a password!",
                 },
               ]}
             >
               <Input.Password
                 prefix={<LockOutlined style={{ color: "rgba(0,0,0,.25)" }} />}
-                placeholder="Mật khẩu"
+                placeholder="Password"
               />
             </Form.Item>
 
@@ -104,9 +104,9 @@ const Login = () => {
                 }}
               >
                 <Form.Item name="remember" valuePropName="checked" noStyle>
-                  <Checkbox>Ghi nhớ đăng nhập</Checkbox>
+                  <Checkbox>Remember me</Checkbox>
                 </Form.Item>
-                <Link style={{ color: "#0082C8" }}>Quên mật khẩu?</Link>
+                {/* <Link style={{ color: "#0082C8" }}>Forgot password?</Link> */}
               </div>
             </Form.Item>
 
@@ -121,7 +121,7 @@ const Login = () => {
                   border: "none",
                 }}
               >
-                Đăng nhập
+                Sign in
               </Button>
             </Form.Item>
           </Form>
