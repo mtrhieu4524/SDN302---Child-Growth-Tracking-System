@@ -4,4 +4,5 @@ export const routes = {
   register: "/register",
   aboutUs: "/about-us",
   faqs: "/faqs",
+  blogs: "/blogs",
 };

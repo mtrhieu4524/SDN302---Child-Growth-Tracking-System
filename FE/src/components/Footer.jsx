@@ -21,8 +21,8 @@ const FooterComponent = () => {
                     <Title level={5} style={{ color: "white" }}>Links</Title>
                     <Paragraph>
                         <Link href="/" className="footer-link">Home</Link><br />
-                        <Link href="/login" className="footer-link">Sign in</Link><br />
                         <Link href="/register" className="footer-link">Sign up</Link><br />
+                        <Link href="/blogs" className="footer-link">Blogs</Link><br />
                         <Link href="/faqs" className="footer-link">FAQs</Link><br />
                         <Link href="/about-us" className="footer-link">About Us</Link>
                     </Paragraph>

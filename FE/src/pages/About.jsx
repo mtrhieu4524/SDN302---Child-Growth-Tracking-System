@@ -16,7 +16,7 @@ const About = () => {
         <div>
             <Header />
             <Content style={{ maxWidth: "100%", marginLeft: "-8px", marginRight: "-8px", background: "white", padding: "40px", borderRadius: "8px", boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)" }}>
-                <Title level={2} style={{ textAlign: "center", color: "#0056A1" }}>
+                <Title level={2} style={{ textAlign: "center", color: "#00274E", fontWeight: "bold" }}>
                     About Child Growth Tracking
                 </Title>
                 <Paragraph style={{ textAlign: "center", fontSize: "16px", color: "#666" }}>

@@ -78,9 +78,14 @@ const HeaderComponent = () => {
                             </Menu.Item>
                         </Menu.SubMenu>
 
-                        <Menu.Item key="faq">
-                            <a href="/faqs">FAQs</a>
-                        </Menu.Item>
+                        <Menu.SubMenu key="blogs&faqs" title="Blog & FAQ">
+                            <Menu.Item key="blogs">
+                                <a href="/blogs">Blogs</a>
+                            </Menu.Item>
+                            <Menu.Item key="faqs">
+                                <a href="/faqs">FAQs</a>
+                            </Menu.Item>
+                        </Menu.SubMenu>
 
                         <Menu.Item key="about-us">
                             <a href="/about-us">About Us</a>

@@ -6,6 +6,7 @@ import Login from "../pages/Login";
 import Register from "../pages/Register";
 import About from "../pages/About";
 import FAQs from "../pages/FAQs";
+import Blogs from "../pages/Blogs";
 
 export default function AppRoute() {
   return (
@@ -16,6 +17,7 @@ export default function AppRoute() {
         <Route path={routes.register} element={<Register />} />
         <Route path={routes.aboutUs} element={<About />} />
         <Route path={routes.faqs} element={<FAQs />} />
+        <Route path={routes.blogs} element={<Blogs />} />
       </Routes>
     </>
   );
