@@ -138,36 +138,53 @@ class UserHandler {
   getUsers = async (req: Request, res: Response, next: NextFunction) => {
     const validationErrors: { field: string; error: string }[] = [];
     const { page, size, order, sortBy } = req.query;
-    if (Number.isNaN(page)) {
+    // Validate page (minimum 1)
+    const parsedPage = parseInt(page as string, 10);
+    if (page && (!Number.isInteger(parsedPage) || parsedPage < 1)) {
       validationErrors.push({
-        field: "Page",
-        error: "Invalid page number in query",
+        field: "page",
+        error: "Page must be an integer greater than or equal to 1",
       });
     }
-    if (Number.isNaN(size)) {
+
+    // Validate size (minimum 1)
+    const parsedSize = parseInt(size as string, 10);
+    if (size && (!Number.isInteger(parsedSize) || parsedSize < 1)) {
       validationErrors.push({
-        field: "Size",
-        error: "Invalid size number in query",
+        field: "size",
+        error: "Size must be an integer greater than or equal to 1",
       });
     }
-    if (!["ascending", "descending"].includes(order as string)) {
+
+    // Validate sortBy (enum: 'date', 'name')
+    const validSortBy = ["date", "name"];
+    if (sortBy && !validSortBy.includes(sortBy as string)) {
       validationErrors.push({
-        field: "Order",
-        error: "Invalid order in query",
+        field: "sortBy",
+        error: `Sort by must be one of: ${validSortBy.join(", ")}`,
       });
     }
-    if (!["date"].includes(sortBy as string)) {
+
+    // Validate order (enum: 'ascending', 'descending')
+    const validOrder = ["ascending", "descending"];
+    if (order && !validOrder.includes(order as string)) {
       validationErrors.push({
-        field: "Date",
-        error: "Invalid sortBy in query",
+        field: "order",
+        error: `Order must be one of: ${validOrder.join(", ")}`,
       });
     }
+
     if (validationErrors.length > 0) {
       res.status(StatusCodeEnum.BadRequest_400).json({
         message: "Validation failed",
         validationErrors,
       });
     } else {
+      req.query.sortBy = sortBy || "date";
+      req.query.order = order || "descending";
+      req.query.page = page ? parsedPage.toString() : "1";
+      req.query.size = size ? parsedSize.toString() : "10";
+
       next();
     }
   };
@@ -175,23 +192,52 @@ class UserHandler {
   updateUser = async (req: Request, res: Response, next: NextFunction) => {
     const validationErrors: { field: string; error: string }[] = [];
     const { id } = req.params;
-    const { name } = req.body;
+    const { name, role, phoneNumber } = req.body;
+    // Validate user ID
     try {
       await validateMongooseObjectId(id);
     } catch (error) {
       validationErrors.push({
-        field: "Invalid params field",
+        field: "id",
         error: (error as Error | CustomException).message,
       });
     }
-    try {
-      await validateName(name);
-    } catch (error) {
-      validationErrors.push({
-        field: "Invalid body field",
-        error: (error as Error | CustomException).message,
-      });
+
+    // Validate role
+    if (role !== undefined) {
+      const validRoles = [UserEnum.MEMBER, UserEnum.ADMIN, UserEnum.DOCTOR];
+      if (!validRoles.includes(Number(role))) {
+        validationErrors.push({
+          field: "role",
+          error: `Invalid role. Allowed values: ${UserEnum.MEMBER} (member), ${UserEnum.ADMIN} (admin), ${UserEnum.DOCTOR} (doctor)`,
+        });
+      }
     }
+
+    // Validate name
+    if (name) {
+      try {
+        await validateName(name);
+      } catch (error) {
+        validationErrors.push({
+          field: "name",
+          error: (error as Error | CustomException).message,
+        });
+      }
+    }
+
+    // Validate phone number
+    if (phoneNumber) {
+      try {
+        await validatePhoneNumber(phoneNumber);
+      } catch (error) {
+        validationErrors.push({
+          field: "phoneNumber",
+          error: (error as Error | CustomException).message,
+        });
+      }
+    }
+
     if (validationErrors.length > 0) {
       res.status(StatusCodeEnum.BadRequest_400).json({
         message: "Validation failed",
