@@ -17,7 +17,8 @@ const HeaderComponent = () => {
                 zIndex: 51,
                 marginLeft: "-8px",
                 marginRight: "-8px",
-                margin: "-7px -8px 7px -8px"
+                paddingTop: "10px",
+                marginBottom: "5px"
             }}>
                 Welcome to Child Growth Tracking
             </div>
@@ -40,24 +41,49 @@ const HeaderComponent = () => {
             }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
                     <a href="/" title="Logo">
-                        <h3 style={{ marginLeft: "10px", marginRight: "25px" }}>CHILD GROWTH TRACKING</h3>
+                        <h3 style={{ marginTop: "25px", marginLeft: "10px", marginRight: "25px" }}>CHILD GROWTH TRACKING</h3>
                     </a>
-                    <Input.Search placeholder="Search..." style={{ width: 250 }} />
+                    {/* <Input.Search placeholder="Search..." style={{ width: 250 }} /> */}
                 </div>
 
-                <div style={{ flex: 1 }}>
-                    <Menu mode="horizontal" style={{ marginTop: "6px", justifyContent: "center", display: "flex", borderBottom: "none" }}>
-                        <Menu.Item key="growth-tracker">
-                            <a href="#">Growth Tracker</a>
+                <div style={{ flex: 1, marginTop: "5px" }}>
+                    <Menu mode="horizontal" style={{ justifyContent: "center", display: "flex", borderBottom: "none" }}>
+                        <Menu.SubMenu key="tracking" title="Growth Tracking">
+                            <Menu.Item key="growth-tracker">
+                                <a href="/growth-tracker">Tracker</a>
+                            </Menu.Item>
+                            <Menu.Item key="growth-charts">
+                                <a href="/growth-charts">Growth Charts</a>
+                            </Menu.Item>
+                        </Menu.SubMenu>
+
+                        <Menu.SubMenu key="health" title="Health & Nutrition">
+                            <Menu.Item key="nutrition">
+                                <a href="/nutrition">Nutrition Guide</a>
+                            </Menu.Item>
+                            <Menu.Item key="milestones">
+                                <a href="/milestones">Development Milestones</a>
+                            </Menu.Item>
+                            <Menu.Item key="alerts">
+                                <a href="/alerts">Health Alerts</a>
+                            </Menu.Item>
+                        </Menu.SubMenu>
+
+                        <Menu.SubMenu key="services" title="Services">
+                            <Menu.Item key="consultation">
+                                <a href="/consultation">Doctor Consultation</a>
+                            </Menu.Item>
+                            <Menu.Item key="plans">
+                                <a href="/plans">Membership Plans</a>
+                            </Menu.Item>
+                        </Menu.SubMenu>
+
+                        <Menu.Item key="faq">
+                            <a href="/faqs">FAQs</a>
                         </Menu.Item>
-                        <Menu.Item key="nutrition">
-                            <a href="#">Nutrition Guide</a>
-                        </Menu.Item>
-                        <Menu.Item key="milestones">
-                            <a href="#">Development Milestones</a>
-                        </Menu.Item>
-                        <Menu.Item key="about-us" onClick={() => navigate("/about-us")}>
-                            About Us
+
+                        <Menu.Item key="about-us">
+                            <a href="/about-us">About Us</a>
                         </Menu.Item>
                     </Menu>
                 </div>
