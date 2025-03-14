@@ -5,4 +5,12 @@ export const routes = {
   aboutUs: "/about-us",
   faqs: "/faqs",
   blogs: "/blogs",
+
+  // Admin pages 
+  dashboard: "/dashboard",
+  userManagement: "/user-management",
+  requestManagement: "/request-management",
+  premiumList: "/premium-list",
+  addPremium: "/add-premium",
+  updatePremium: "/update-premium",
 };
