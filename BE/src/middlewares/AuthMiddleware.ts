@@ -15,8 +15,9 @@ const AuthMiddleware = async (
 ): Promise<void> => {
   const isProtectedRoute = req.isProtectedRoute;
   // const token = req.cookies?.accessToken || "";
+
   const { authorization } = req.headers;
-  const token = authorization?.split(" ")[1] || "";
+  const token = authorization?.split(" ")[1] || req.cookies?.accessToken || ""; //for swagger test and cookie
 
   if (!isProtectedRoute) {
     try {
@@ -54,7 +55,7 @@ const AuthMiddleware = async (
   // Handle protected route
   if (!token) {
     res
-      .status(StatusCodeEnum.Unauthorized_401)
+      .status(StatusCodeEnum.Forbidden_403)
       .json({ message: "Authorization token required" });
     return;
   }
@@ -84,9 +85,9 @@ const AuthMiddleware = async (
           .json({ message: "Access token expired. Please log in again." });
         return;
       } else if (error.name === "JsonWebTokenError") {
-        res
-          .status(StatusCodeEnum.Unauthorized_401)
-          .json({ message: "Invalid access token. Request is not authorized." });
+        res.status(StatusCodeEnum.Unauthorized_401).json({
+          message: "Invalid access token. Request is not authorized.",
+        });
         return;
       }
     }

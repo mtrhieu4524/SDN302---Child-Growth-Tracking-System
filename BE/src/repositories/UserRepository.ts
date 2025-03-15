@@ -7,14 +7,19 @@ import CustomException from "../exceptions/CustomException";
 import getLogger from "../utils/logger";
 import MembershipModel from "../models/MembershipPackageModel";
 import ChildModel from "../models/ChildModel";
-import TierModel from "../models/TierModel";
+import { IUserRepository } from "../interfaces/repositories/IUserRepository";
+
+export interface IDoctor extends IUser {
+  rating?: number;
+}
+
 export type returnData = {
-  users: IUser[];
+  users: IDoctor[];
   page: number;
   total: number;
   totalPages: number;
 };
-class UserRepository {
+class UserRepository implements IUserRepository {
   /**
    * Creates a new user document in the database.
    * @param data - Object containing user data.
@@ -22,7 +27,6 @@ class UserRepository {
    * @returns The created user document.
    * @throws Error when the creation fails.
    */
-
   async createUser(
     data: object,
     session?: mongoose.ClientSession
@@ -294,24 +298,56 @@ class UserRepository {
       const skip = (page - 1) * size;
       const users = await UserModel.aggregate([
         { $match: searchQuery },
+        { $skip: skip },
+        { $limit: size },
         {
-          $skip: skip,
+          $sort: { [sortField]: sortOrder },
         },
         {
-          $limit: size,
+          $lookup: {
+            from: "membershippackages", // The name of the collection in MongoDB
+            localField: "subscription.currentPlan",
+            foreignField: "_id",
+            as: "subscription.currentPlan",
+          },
+        },
+        {
+          $lookup: {
+            from: "membershippackages",
+            localField: "subscription.futurePlan",
+            foreignField: "_id",
+            as: "subscription.futurePlan",
+          },
+        },
+        {
+          $unwind: {
+            path: "$subscription.currentPlan",
+            preserveNullAndEmptyArrays: true, // Allow null values if no match
+          },
+        },
+        {
+          $unwind: {
+            path: "$subscription.futurePlan",
+            preserveNullAndEmptyArrays: true,
+          },
         },
         {
           $project: {
+            name: 1,
             email: 1,
-            fullName: 1,
             avatar: 1,
+            googleId: 1,
             phoneNumber: 1,
             createdAt: 1,
             updatedAt: 1,
             role: 1,
+            "subscription.startDate": 1,
+            "subscription.endDate": 1,
+            "subscription.viewChart": 1,
+            "subscription.currentPlan": 1,
+            "subscription.futurePlan": 1,
           },
         },
-        { $sort: { [sortField]: sortOrder } },
       ]);
 
       const totalUsers = await UserModel.countDocuments(searchQuery);
@@ -432,18 +468,6 @@ class UserRepository {
         const nextMembershipId = user.subscription.futurePlan;
 
         if (!nextMembershipId) {
-          const tier = await TierModel.findOne({
-            tier: 0,
-            isDeleted: false,
-          });
-
-          if (!tier) {
-            throw new CustomException(
-              StatusCodeEnum.NotFound_404,
-              "Tier info not found"
-            );
-          }
-
           // No future memberships, clear subscription
           await UserModel.updateOne(
             { _id: userId },
@@ -452,7 +476,6 @@ class UserRepository {
                 "subscription.endDate": null,
                 "subscription.startDate": null,
                 "subscription.currentPlan": null,
-                "subscription.tier": 0,
               },
             }
           );
@@ -479,7 +502,6 @@ class UserRepository {
         // Update user's subscription and remove the used membership from futurePlan
         await UserModel.findByIdAndUpdate(userId, {
           $set: {
-            "subscription.tier": membershipPackage.tier,
             "subscription.currentPlan": nextMembershipId,
             "subscription.startDate": new Date(),
             "subscription.endDate": newEndDate,

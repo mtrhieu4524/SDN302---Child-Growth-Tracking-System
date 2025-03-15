@@ -3,19 +3,33 @@ dotenv.config();
 import express, { Request, Response, NextFunction, Application } from "express";
 import http from "http";
 import cors from "cors";
-import helmet from "helmet";
 import cookieParser from "cookie-parser";
 import getLogger from "./utils/logger";
-import RouteMiddleware from "./middlewares/RouteMiddleware";
-
-import growthMetricsRoute from "./routes/GrowthMetricsRoute";
-import childRoutes from "./routes/ChildRoute";
-import RouteMiddleware from "./middlewares/RouteMiddleware";
-import ErrorMiddleware from "./middlewares/ErrorMiddleware";
-import membershipPackageRoute from "./routes/MembershipPackageRoute";
-import tierRoutes from "./routes/TierRoute";
+import authRoutes from "./routes/AuthRoute";
 import paymentRoutes from "./routes/PaymentRoute";
 import receiptRoutes from "./routes/ReceiptRoute";
+import ErrorLogMiddleware from "./middlewares/ErrorLogMiddleware";
+import SessionMiddleware from "./middlewares/SessionMiddleware";
+import securityHeaders from "./middlewares/SecurityHeaders";
+import helmet from "helmet";
+import RouteMiddleware from "./middlewares/RouteMiddleware";
+import passport from "./config/passportConfig";
+import session from "express-session";
+import userRoutes from "./routes/UserRoute";
+import childRoutes from "./routes/ChildRoute";
+import postRoute from "./routes/PostRoute";
+import commentRoute from "./routes/CommentRoute";
+import membershipPackageRoute from "./routes/MembershipPackageRoute";
+import requestRouter from "./routes/RequestRoute";
+import cronJob from "./utils/cron";
+import growthMetricsRoute from "./routes/GrowthMetricsRoute";
+import consultationRouter from "./routes/ConsultationRoute";
+import consultationMessageRouter from "./routes/ConsultationMessageRoute";
+import statisticRouter from "./routes/StatisticRoute";
+import { swaggerDoc } from "./config/swaggerConfig";
+import limiter from "./middlewares/rateLimiter";
+
+process.env.TZ = "Asia/Ho_Chi_Minh";
 
 const app: Application = express();
 
@@ -26,7 +40,7 @@ app.use(express.urlencoded({ extended: true }));
 // Middleware
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: ["http://localhost:5173", "http://localhost:5174"],
     methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
@@ -36,8 +50,25 @@ app.use(
 // Files
 app.use("/", express.static(__dirname));
 
+// Session and passport
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET!,
+    resave: true,
+    saveUninitialized: true,
+  })
+);
+app.use(passport.initialize());
+app.use(passport.session());
+
 // Enable trust proxy
 app.set("trust proxy", 1);
+
+// Rate limiter middleware
+app.use(limiter(15, 100000));
+
+// Apply security headers middleware globally
+app.use(securityHeaders);
 
 // Helmet
 app.use(
@@ -47,19 +78,6 @@ app.use(
 );
 
 app.use(cookieParser());
-
-// Routes
-app.use(RouteMiddleware); // Handle whether requested route is protected
-
-app.use("/api/growth-metrics", growthMetricsRoute);
-app.use("/api/children", childRoutes);
-
-// Use Error Middleware for all controllers response
-app.use(ErrorMiddleware);
-app.use("/api/receipts", receiptRoutes);
-app.use("/api/tiers", tierRoutes);
-app.use("/api/membership-packages", membershipPackageRoute);
-app.use("/api/payments", paymentRoutes);
 
 // Log API requests
 app.use((req: Request, res: Response, next: NextFunction) => {
@@ -80,9 +98,34 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   next();
 });
 
-// Serve assets
+// Serve assets correctly
 app.use("/assets", express.static("assets"));
 
+// Routers
+app.use(RouteMiddleware);
+app.use(SessionMiddleware);
+app.use("/api/auth", authRoutes);
+app.use("/api/payments", paymentRoutes);
+app.use("/api/users", userRoutes);
+app.use("/api/children", childRoutes);
+app.use("/api/posts", postRoute);
+app.use("/api/comments", commentRoute);
+app.use("/api/growth-metrics", growthMetricsRoute);
+app.use("/api/receipts", receiptRoutes);
+app.use("/api/membership-packages", membershipPackageRoute);
+app.use("/api/requests", requestRouter);
+app.use("/api/consultations", consultationRouter);
+app.use("/api/consultation-messages", consultationMessageRouter);
+app.use("/api/statistics", statisticRouter);
+// Google Login
+app.get("/", (req, res) => {
+  res.send("<a href='/api/auth/google'>Login with Google</a><br>");
+});
+
+// Middleware for error logging
+app.use(ErrorLogMiddleware);
+
+cronJob.start();
 // Start server
 const port: number = Number(process.env.DEVELOPMENT_PORT) || 4000;
 
@@ -95,5 +138,6 @@ server.listen(port, async (err?: Error) => {
     process.exit(1);
   } else {
     logger.info(`Server is running at port ${port}`);
+    swaggerDoc(app);
   }
 });
