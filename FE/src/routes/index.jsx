@@ -5,6 +5,7 @@ export const routes = {
   aboutUs: "/about-us",
   faqs: "/faqs",
   blogs: "/blogs",
+  membership: "/membership",
 
   // Admin pages 
   dashboard: "/dashboard",

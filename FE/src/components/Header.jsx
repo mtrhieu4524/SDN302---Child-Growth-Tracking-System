@@ -14,7 +14,7 @@ const HeaderComponent = () => {
         // Kiểm tra user trong localStorage
         const user = localStorage.getItem("user");
         const adminToken = localStorage.getItem("adminToken");
-        
+
         if (adminToken) {
             setIsLoggedIn(true);
             setUserName("Admin User");
@@ -97,9 +97,6 @@ const HeaderComponent = () => {
                         </Menu.SubMenu>
 
                         <Menu.SubMenu key="health" title="Health & Nutrition">
-                            <Menu.Item key="nutrition">
-                                <a href="/nutrition">Nutrition Guide</a>
-                            </Menu.Item>
                             <Menu.Item key="milestones">
                                 <a href="/milestones">Development Milestones</a>
                             </Menu.Item>
@@ -112,8 +109,8 @@ const HeaderComponent = () => {
                             <Menu.Item key="consultation">
                                 <a href="/consultation">Doctor Consultation</a>
                             </Menu.Item>
-                            <Menu.Item key="plans">
-                                <a href="/plans">Membership Plans</a>
+                            <Menu.Item key="membership">
+                                <a href="/membership">Membership Plan</a>
                             </Menu.Item>
                         </Menu.SubMenu>
 

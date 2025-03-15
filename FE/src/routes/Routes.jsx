@@ -7,6 +7,7 @@ import Register from "../pages/Register";
 import About from "../pages/About";
 import FAQs from "../pages/FAQs";
 import Blogs from "../pages/Blogs";
+import Membership from "../pages/Membership";
 
 import Dashboard from "../pages/AdminPages/Dashboard";
 import RequestManagement from "../pages/AdminPages/RequestManagement";
@@ -26,6 +27,7 @@ export default function AppRoute() {
         <Route path={routes.aboutUs} element={<About />} />
         <Route path={routes.faqs} element={<FAQs />} />
         <Route path={routes.blogs} element={<Blogs />} />
+        <Route path={routes.membership} element={<Membership />} />
 
 
         {/* Admin pages */}

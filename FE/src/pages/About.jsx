@@ -101,7 +101,7 @@ const About = () => {
                     <Col xs={24} md={18}>
                         <Title level={4}>Dr. Alex Smith, Chief Pediatrician</Title>
                         <Paragraph>
-                            Dr. Moyer provides executive leadership and strategic direction for the center’s statistical programs and policies. Dr. Moyer serves as the statistical official for the U.S. Department of Health and Human Services (HHS), and senior advisor to the CDC director and HHS secretary.                        </Paragraph>
+                            - Alex Smith is Professor of Medicine, UCSF Division of Geriatrics. He is co-host of the GeriPal podcast, a geriatrics and palliative care podcast for every healthcare professional. <br></br>- Dr. Smith is co-creator of ePrognosis, an online compendium of prognostic indices for use in clinical practice. Dr. Smith is heavily engaged in mentoring the next generations of aging and palliative care research scholars. <br></br>- Dr. Moyer provides executive leadership and strategic direction for the center’s statistical programs and policies. Dr. Moyer serves as the statistical official for the U.S. Department of Health and Human Services (HHS), and senior advisor to the CDC director and HHS secretary.                        </Paragraph>
                     </Col>
                 </Row>
 
