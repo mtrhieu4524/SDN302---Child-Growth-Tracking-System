@@ -2,47 +2,51 @@ import Database from "../utils/database";
 import StatusCodeEnum from "../enums/StatusCodeEnum";
 import CustomException from "../exceptions/CustomException";
 import { IQuery } from "../interfaces/IQuery";
-import UserRepository from "../repositories/UserRepository";
+// import UserRepository from "../repositories/UserRepository";
 import { Request } from "express";
 import UserEnum from "../enums/UserEnum";
-import ChildRepository from "../repositories/ChildRepository";
+// import ChildRepository from "../repositories/ChildRepository";
 import { IChild } from "../interfaces/IChild";
 import mongoose from "mongoose";
-import GrowthDataRepository, {
-  GrowthData,
-} from "../repositories/GrowthDataRepository";
+import { GrowthData } from "../repositories/GrowthDataRepository";
+// import GrowthDataRepository from "../repositories/GrowthDataRepository";
 import { IGrowthData } from "../interfaces/IGrowthData";
-import ConfigRepository from "../repositories/ConfigRepository";
-import GrowthMetricsRepository from "../repositories/GrowthMetricsRepository";
+// import ConfigRepository from "../repositories/ConfigRepository";
+// import GrowthMetricsRepository from "../repositories/GrowthMetricsRepository";
 import { IGrowthMetricForAge } from "../interfaces/IGrowthMetricForAge";
 import { IGrowthResult } from "../interfaces/IGrowthResult";
 import { BmiLevelEnum, LevelEnum } from "../enums/LevelEnum";
 import { IGrowthVelocity } from "../interfaces/IGrowthVelocity";
 import { IGrowthVelocityResult } from "../interfaces/IGrowthVelocityResult";
-import {
-  checkUpdateChildrenGrowthLimit,
-  getCheckIntervalBounds,
-  validateUserMembership,
-  checkViewGrowthDataLimit,
-} from "../utils/tierUtils";
-import TierRepository from "../repositories/TierRepository";
-class GrowthDataService {
-  private growthDataRepository: GrowthDataRepository;
-  private userRepository: UserRepository;
-  private childRepository: ChildRepository;
-  private configRepository: ConfigRepository;
-  private growthMetricsRepository: GrowthMetricsRepository;
-  private database: Database;
-  private tierRepository: TierRepository;
 
-  constructor() {
-    this.growthDataRepository = new GrowthDataRepository();
-    this.userRepository = new UserRepository();
-    this.childRepository = new ChildRepository();
-    this.growthMetricsRepository = new GrowthMetricsRepository();
-    this.configRepository = new ConfigRepository();
+import { IGrowthDataService } from "../interfaces/services/IGrowthDataService";
+import { IGrowthDataRepository } from "../interfaces/repositories/IGrowthDataRepository";
+import { IUserRepository } from "../interfaces/repositories/IUserRepository";
+import { IChildRepository } from "../interfaces/repositories/IChildRepository";
+import { IConfigRepository } from "../interfaces/repositories/IConfigRepository";
+import { IGrowthMetricsRepository } from "../interfaces/repositories/IGrowthMetricsForAgeRepository";
+
+class GrowthDataService implements IGrowthDataService {
+  private growthDataRepository: IGrowthDataRepository;
+  private userRepository: IUserRepository;
+  private childRepository: IChildRepository;
+  private configRepository: IConfigRepository;
+  private growthMetricsRepository: IGrowthMetricsRepository;
+  private database: Database;
+
+  constructor(
+    growthDataRepository: IGrowthDataRepository,
+    userRepository: IUserRepository,
+    childRepository: IChildRepository,
+    configRepository: IConfigRepository,
+    growthMetricsRepository: IGrowthMetricsRepository
+  ) {
+    this.growthDataRepository = growthDataRepository;
+    this.userRepository = userRepository;
+    this.childRepository = childRepository;
+    this.configRepository = configRepository;
+    this.growthMetricsRepository = growthMetricsRepository;
     this.database = Database.getInstance();
-    this.tierRepository = new TierRepository();
   }
 
   private getPercentile(
@@ -87,8 +91,6 @@ class GrowthDataService {
     const session = await this.database.startTransaction();
 
     try {
-      await this.checkTierUpdateGrowthDataLimit(requesterInfo.userId);
-
       const requesterId = requesterInfo.userId;
       const requesterRole = requesterInfo.role;
 
@@ -103,7 +105,6 @@ class GrowthDataService {
       let child: IChild | null = null;
       switch (requesterRole) {
         case UserEnum.ADMIN:
-        case UserEnum.SUPER_ADMIN:
           child = await this.childRepository.getChildById(childId, true);
           break;
 
@@ -172,6 +173,30 @@ class GrowthDataService {
       return createdGrowthData;
     } catch (error) {
       await this.database.abortTransaction(session);
+      if ((error as Error) || (error as CustomException)) {
+        throw error;
+      }
+      throw new CustomException(
+        StatusCodeEnum.InternalServerError_500,
+        "Internal Server Error"
+      );
+    }
+  };
+
+  publicGenerateGrowthData = async (
+    growthData: Partial<IGrowthData>,
+    birthDate: Date,
+    gender: number
+  ): Promise<Partial<IGrowthResult>> => {
+    try {
+      const growthDataResult = await this.generateGrowthResult2(
+        growthData,
+        birthDate,
+        gender as 0 | 1
+      );
+
+      return growthDataResult;
+    } catch (error) {
       if ((error as Error) || (error as CustomException)) {
         throw error;
       }
@@ -404,11 +429,256 @@ class GrowthDataService {
     wflhData.forEach((data) => {
       const percentile = this.getPercentile(height!, data.percentiles.values);
       growthResult!.weightForLength!.percentile = percentile;
-      growthResult!.weightForLength!.description = `Your child is in the ${percentile} percentile for arm circumference. That means ${percentile} percent of ${
+      growthResult!.weightForLength!.description = `Your child is in the ${percentile} percentile for weight for height. That means ${percentile} percent of ${
         child.gender === 0 ? "boys" : "girls"
-      } at that age have a smaller arm circumference, while ${formatPercentile(
+      } at that age have a lower weight for height, while ${formatPercentile(
         100 - percentile
-      )} percent have a larger arm circumference.`;
+      )} percent have a higher weight for height.`;
+
+      if (percentile < 5) {
+        growthResult!.weightForLength!.level = LevelEnum[0];
+      } else if (percentile >= 5 && percentile < 15) {
+        growthResult!.weightForLength!.level = LevelEnum[1];
+      } else if (percentile >= 15 && percentile < 85) {
+        growthResult!.weightForLength!.level = LevelEnum[2];
+      } else if (percentile >= 85 && percentile < 95) {
+        growthResult!.weightForLength!.level = LevelEnum[3];
+      } else if (percentile >= 95) {
+        growthResult!.weightForLength!.level = LevelEnum[4];
+      }
+    });
+
+    return growthResult;
+  };
+
+  private generateGrowthResult2 = async (
+    growthData: Partial<IGrowthData>,
+    birthDate: Date,
+    gender: 0 | 1
+  ): Promise<Partial<IGrowthResult>> => {
+    // Get conversion rate
+    const conversionRate = await this.configRepository.getConfig(
+      "WHO_MONTH_TO_DAY_CONVERSION_RATE"
+    );
+    if (!conversionRate) {
+      throw new CustomException(
+        StatusCodeEnum.InternalServerError_500,
+        "Internal Server Error"
+      );
+    }
+    const cvValue = parseFloat(conversionRate.value);
+
+    // Generate growth data result
+    const today = new Date(growthData.inputDate as Date).getTime();
+    const birth = new Date(birthDate).getTime();
+
+    const diffInTime = today - birth;
+    const diffInDays = diffInTime / (1000 * 3600 * 24);
+    const diffInWeeks = diffInDays / 7;
+    const diffInMonths = diffInDays / cvValue;
+
+    const ageInDays = Math.round(diffInDays);
+    const ageInWeeks = Math.round(diffInWeeks);
+    const ageInMonths = Math.round(diffInMonths);
+
+    let growthMetricsForAgeData: IGrowthMetricForAge[];
+    if (ageInDays <= 1856) {
+      growthMetricsForAgeData =
+        await this.growthMetricsRepository.getGrowthMetricsForAgeData(
+          gender,
+          ageInDays,
+          "day"
+        );
+    } else {
+      growthMetricsForAgeData =
+        await this.growthMetricsRepository.getGrowthMetricsForAgeData(
+          gender,
+          ageInMonths,
+          "month"
+        );
+    }
+
+    const { height, weight, headCircumference, armCircumference } = growthData;
+
+    const bmi = (weight! / height! / height!) * 10000;
+
+    let growthResult: Partial<IGrowthResult> = {
+      height: {
+        percentile: -1,
+        description: "N/A",
+        level: "N/A",
+      },
+      weight: {
+        percentile: -1,
+        description: "N/A",
+        level: "N/A",
+      },
+      bmi: {
+        percentile: -1,
+        description: "N/A",
+        level: "N/A",
+      },
+      headCircumference: {
+        percentile: -1,
+        description: "N/A",
+        level: "N/A",
+      },
+      armCircumference: {
+        percentile: -1,
+        description: "N/A",
+        level: "N/A",
+      },
+      weightForLength: {
+        percentile: -1,
+        description: "N/A",
+        level: "N/A",
+      },
+    };
+
+    const formatPercentile = (percentile: number) =>
+      percentile % 1 === 0 ? `${percentile}` : percentile.toFixed(2);
+
+    growthMetricsForAgeData.forEach((data) => {
+      switch (data.type) {
+        case "BFA": {
+          const percentile = this.getPercentile(bmi, data.percentiles.values);
+          growthResult!.bmi!.percentile = percentile;
+          growthResult!.bmi!.description = `Your child is in the ${percentile} percentile for BMI. That means ${percentile} percent of ${
+            gender === 0 ? "boys" : "girls"
+          } at that age have a lower BMI, while ${formatPercentile(
+            100 - percentile
+          )} percent have a higher BMI.`;
+
+          if (percentile < 5) {
+            growthResult!.bmi!.level = BmiLevelEnum[0];
+          } else if (percentile >= 5 && percentile < 15) {
+            growthResult!.bmi!.level = BmiLevelEnum[1];
+          } else if (percentile >= 15 && percentile < 95) {
+            growthResult!.bmi!.level = BmiLevelEnum[2];
+          } else if (percentile >= 95) {
+            growthResult!.bmi!.level = BmiLevelEnum[3];
+          }
+          break;
+        }
+
+        case "LHFA": {
+          const percentile = this.getPercentile(
+            height!,
+            data.percentiles.values
+          );
+          growthResult!.height!.percentile = percentile;
+          growthResult!.height!.description = `Your child is in the ${percentile} percentile for height. That means ${percentile} percent of ${
+            gender === 0 ? "boys" : "girls"
+          } at that age are shorter, while ${formatPercentile(
+            100 - percentile
+          )} percent are taller.`;
+
+          if (percentile < 5) {
+            growthResult!.height!.level = LevelEnum[0];
+          } else if (percentile >= 5 && percentile < 15) {
+            growthResult!.height!.level = LevelEnum[1];
+          } else if (percentile >= 15 && percentile < 85) {
+            growthResult!.height!.level = LevelEnum[2];
+          } else if (percentile >= 85 && percentile < 95) {
+            growthResult!.height!.level = LevelEnum[3];
+          } else if (percentile >= 95) {
+            growthResult!.height!.level = LevelEnum[4];
+          }
+          break;
+        }
+
+        case "WFA": {
+          const percentile = this.getPercentile(
+            weight!,
+            data.percentiles.values
+          );
+          growthResult!.weight!.percentile = percentile;
+          growthResult!.weight!.description = `Your child is in the ${percentile} percentile for weight. That means ${percentile} percent of ${
+            gender === 0 ? "boys" : "girls"
+          } at that age weigh less, while ${formatPercentile(
+            100 - percentile
+          )} percent weigh more.`;
+
+          if (percentile < 5) {
+            growthResult!.weight!.level = LevelEnum[0];
+          } else if (percentile >= 5 && percentile < 15) {
+            growthResult!.weight!.level = LevelEnum[1];
+          } else if (percentile >= 15 && percentile < 85) {
+            growthResult!.weight!.level = LevelEnum[2];
+          } else if (percentile >= 85 && percentile < 95) {
+            growthResult!.weight!.level = LevelEnum[3];
+          } else if (percentile >= 95) {
+            growthResult!.weight!.level = LevelEnum[4];
+          }
+          break;
+        }
+
+        case "HCFA": {
+          const percentile = this.getPercentile(
+            headCircumference!,
+            data.percentiles.values
+          );
+          growthResult!.headCircumference!.percentile = percentile;
+          growthResult!.headCircumference!.description = `Your child is in the ${percentile} percentile for head circumference. That means ${percentile} percent of ${
+            gender === 0 ? "boys" : "girls"
+          } at that age have a smaller head circumference, while ${formatPercentile(
+            100 - percentile
+          )} percent have a larger head circumference.`;
+
+          if (percentile < 5) {
+            growthResult!.headCircumference!.level = LevelEnum[0];
+          } else if (percentile >= 5 && percentile < 15) {
+            growthResult!.headCircumference!.level = LevelEnum[1];
+          } else if (percentile >= 15 && percentile < 85) {
+            growthResult!.headCircumference!.level = LevelEnum[2];
+          } else if (percentile >= 85 && percentile < 95) {
+            growthResult!.headCircumference!.level = LevelEnum[3];
+          } else if (percentile >= 95) {
+            growthResult!.headCircumference!.level = LevelEnum[4];
+          }
+          break;
+        }
+
+        case "ACFA": {
+          const percentile = this.getPercentile(
+            armCircumference!,
+            data.percentiles.values
+          );
+          growthResult!.armCircumference!.percentile = percentile;
+          growthResult!.armCircumference!.description = `Your child is in the ${percentile} percentile for arm circumference. That means ${percentile} percent of ${
+            gender === 0 ? "boys" : "girls"
+          } at that age have a smaller arm circumference, while ${formatPercentile(
+            100 - percentile
+          )} percent have a larger arm circumference.`;
+
+          if (percentile < 5) {
+            growthResult!.armCircumference!.level = LevelEnum[0];
+          } else if (percentile >= 5 && percentile < 15) {
+            growthResult!.armCircumference!.level = LevelEnum[1];
+          } else if (percentile >= 15 && percentile < 85) {
+            growthResult!.armCircumference!.level = LevelEnum[2];
+          } else if (percentile >= 85 && percentile < 95) {
+            growthResult!.armCircumference!.level = LevelEnum[3];
+          } else if (percentile >= 95) {
+            growthResult!.armCircumference!.level = LevelEnum[4];
+          }
+          break;
+        }
+      }
+    });
+
+    const wflhData = await this.growthMetricsRepository.getWflhData(
+      gender,
+      height!
+    );
+    wflhData.forEach((data) => {
+      const percentile = this.getPercentile(height!, data.percentiles.values);
+      growthResult!.weightForLength!.percentile = percentile;
+      growthResult!.weightForLength!.description = `Your child is in the ${percentile} percentile for weight for height. That means ${percentile} percent of ${
+        gender === 0 ? "boys" : "girls"
+      } at that age have a lower weight for height, while ${formatPercentile(
+        100 - percentile
+      )} percent have a higher weight for height.`;
 
       if (percentile < 5) {
         growthResult!.weightForLength!.level = LevelEnum[0];
@@ -450,7 +720,6 @@ class GrowthDataService {
       let growthData: IGrowthData | null = null;
       switch (requesterRole) {
         case UserEnum.ADMIN:
-        case UserEnum.SUPER_ADMIN:
           growthData = await this.growthDataRepository.getGrowthDataById(
             growthDataId,
             true
@@ -869,7 +1138,6 @@ class GrowthDataService {
       let growthData: GrowthData;
       switch (requesterRole) {
         case UserEnum.ADMIN:
-        case UserEnum.SUPER_ADMIN:
           growthData = await this.growthDataRepository.getGrowthDataByChildId(
             childId,
             query,
@@ -952,7 +1220,6 @@ class GrowthDataService {
       let growthData: IGrowthData | null = null;
       switch (requesterRole) {
         case UserEnum.ADMIN:
-        case UserEnum.SUPER_ADMIN:
           growthData = await this.growthDataRepository.getGrowthDataById(
             growthDataId,
             true
@@ -1052,7 +1319,6 @@ class GrowthDataService {
       let growthData: IGrowthData | null = null;
       switch (requesterRole) {
         case UserEnum.ADMIN:
-        case UserEnum.SUPER_ADMIN:
           growthData = await this.growthDataRepository.getGrowthDataById(
             growthDataId,
             true
@@ -1150,94 +1416,6 @@ class GrowthDataService {
     } catch (error) {
       await this.database.abortTransaction(session);
       if ((error as Error) || (error as CustomException)) {
-        throw error;
-      }
-      throw new CustomException(
-        StatusCodeEnum.InternalServerError_500,
-        "Internal Server Error"
-      );
-    }
-  };
-
-  checkTierUpdateGrowthDataLimit = async (userId: string) => {
-    try {
-      const user = await this.userRepository.getUserById(
-        userId as string,
-        false
-      );
-
-      if (!user) {
-        throw new CustomException(
-          StatusCodeEnum.NotFound_404,
-          "User not found"
-        );
-      } //check user
-
-      if ([UserEnum.MEMBER].includes(user.role)) {
-        const tierData = await this.tierRepository.getCurrentTierData(
-          user.subscription.tier as number
-        ); //get tier
-
-        const { startDate, interval } = await validateUserMembership(
-          user,
-          tierData,
-          "UPDATE"
-        ); //get interval
-
-        const { start, end } = getCheckIntervalBounds(
-          new Date(),
-          startDate as Date,
-          interval
-        ); //start and end time for current interval
-
-        await checkUpdateChildrenGrowthLimit(userId, start, end, tierData);
-      }
-    } catch (error) {
-      if (error as Error | CustomException) {
-        throw error;
-      }
-      throw new CustomException(
-        StatusCodeEnum.InternalServerError_500,
-        "Internal Server Error"
-      );
-    }
-  };
-
-  checkTierViewGrowthDataLimit = async (userId: string) => {
-    try {
-      const user = await this.userRepository.getUserById(
-        userId as string,
-        false
-      );
-
-      if (!user) {
-        throw new CustomException(
-          StatusCodeEnum.NotFound_404,
-          "User not found"
-        );
-      } //check user
-
-      if ([UserEnum.MEMBER].includes(user.role)) {
-        const tierData = await this.tierRepository.getCurrentTierData(
-          user.subscription.tier as number
-        ); //get tier
-
-        const { startDate, interval } = await validateUserMembership(
-          user,
-          tierData,
-          "VIEW"
-        );
-
-        const { start, end } = getCheckIntervalBounds(
-          new Date(),
-          startDate as Date,
-          interval
-        );
-
-        await checkViewGrowthDataLimit(userId as string, start, end, tierData);
-      }
-    } catch (error) {
-      if (error as Error | CustomException) {
         throw error;
       }
       throw new CustomException(

@@ -1,29 +1,35 @@
 import Database from "../utils/database";
-import ChildRepository, { ChildrenData } from "../repositories/ChildRepository";
+import { ChildrenData } from "../repositories/ChildRepository";
+// import ChildRepository from "../repositories/ChildRepository";
 import StatusCodeEnum from "../enums/StatusCodeEnum";
 import CustomException from "../exceptions/CustomException";
 import { IChild } from "../interfaces/IChild";
 import { IQuery } from "../interfaces/IQuery";
-import UserRepository from "../repositories/UserRepository";
+// import UserRepository from "../repositories/UserRepository";
 import { Request } from "express";
 import UserEnum from "../enums/UserEnum";
-import TierRepository from "../repositories/TierRepository";
-import mongoose, { isValidObjectId, ObjectId } from "mongoose";
-import MembershipPackageRepository from "../repositories/MembershipPackageRepository";
+import mongoose from "mongoose";
+// import MembershipPackageRepository from "../repositories/MembershipPackageRepository";
+import { IChildService } from "../interfaces/services/IChildService";
+import { IUserRepository } from "../interfaces/repositories/IUserRepository";
+import { IChildRepository } from "../interfaces/repositories/IChildRepository";
+import { IMembershipPackageRepository } from "../interfaces/repositories/IMembershipPackageRepository";
 
-class ChildService {
-  private childRepository: ChildRepository;
-  private userRepository: UserRepository;
+class ChildService implements IChildService {
+  private childRepository: IChildRepository;
+  private userRepository: IUserRepository;
+  private membershipPackageRepository: IMembershipPackageRepository;
   private database: Database;
-  private tierRepository: TierRepository;
-  private membershipPackageRepository: MembershipPackageRepository;
 
-  constructor() {
-    this.childRepository = new ChildRepository();
-    this.userRepository = new UserRepository();
+  constructor(
+    childRepository: IChildRepository,
+    userRepository: IUserRepository,
+    membershipPackageRepository: IMembershipPackageRepository
+  ) {
+    this.childRepository = childRepository;
+    this.userRepository = userRepository;
     this.database = Database.getInstance();
-    this.tierRepository = new TierRepository();
-    this.membershipPackageRepository = new MembershipPackageRepository();
+    this.membershipPackageRepository = membershipPackageRepository;
   }
 
   /**
@@ -48,7 +54,6 @@ class ChildService {
 
       switch (requesterRole) {
         case UserEnum.ADMIN:
-        case UserEnum.SUPER_ADMIN:
         case UserEnum.MEMBER:
           break;
 
@@ -111,7 +116,6 @@ class ChildService {
       let child: IChild | null = null;
       switch (requesterRole) {
         case UserEnum.ADMIN:
-        case UserEnum.SUPER_ADMIN:
           child = await this.childRepository.getChildById(childId, true);
           break;
 
@@ -179,7 +183,6 @@ class ChildService {
       let data: ChildrenData;
       switch (requesterRole) {
         case UserEnum.ADMIN:
-        case UserEnum.SUPER_ADMIN:
           data = await this.childRepository.getChildrenByUserId(
             userId,
             query,
@@ -238,7 +241,6 @@ class ChildService {
       let child: IChild | null = null;
       switch (requesterRole) {
         case UserEnum.ADMIN:
-        case UserEnum.SUPER_ADMIN:
           child = await this.childRepository.getChildById(childId, true);
           break;
 
@@ -322,7 +324,6 @@ class ChildService {
       let child: IChild | null = null;
       switch (requesterRole) {
         case UserEnum.ADMIN:
-        case UserEnum.SUPER_ADMIN:
           child = await this.childRepository.getChildById(childId, true);
           break;
 

@@ -1,8 +1,8 @@
 import StatusCodeEnum from "../enums/StatusCodeEnum";
 import { Request, Response, NextFunction } from "express";
-import UserEnum from "../enums/UserEnum";
-import { IUser } from "../interfaces/IUser";
 import UserRepository from "../repositories/UserRepository";
+import { IUser } from "../interfaces/IUser";
+import UserEnum from "../enums/UserEnum";
 
 /**
  *
@@ -25,15 +25,15 @@ const RoleMiddleware = (roles: Array<number>) => {
       );
       if (!user) {
         res
-          .status(StatusCodeEnum.NotFound_404)
-          .json({ message: "User not found" });
+          .status(StatusCodeEnum.Forbidden_403)
+          .json({ message: "Invalid user from access token" });
         return;
       }
 
-      if (user.role === UserEnum.ADMIN || user.role === UserEnum.SUPER_ADMIN) {
+      if (user.role === UserEnum.ADMIN) {
         return next();
       }
-      
+
       if (!roles.includes(user?.role)) {
         res
           .status(StatusCodeEnum.Forbidden_403)

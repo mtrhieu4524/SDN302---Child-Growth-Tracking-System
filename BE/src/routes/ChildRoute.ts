@@ -1,19 +1,61 @@
 import express from "express";
-import GrowthDataController from "../controllers/GrowthDataController";
-import UserEnum from "../enums/UserEnum";
-import AuthMiddleware from "../middlewares/AuthMiddleware";
-import GrowthDataHandler from "../handlers/GrowthDataHandler";
-import ChildController from "../controllers/ChildController";
-import ChildHandler from "../handlers/ChildHandler";
-import RoleMiddleware from "../middlewares/RoleMiddleware";
 
-const childRoutes = express.Router();
+import AuthMiddleware from "../middlewares/AuthMiddleware";
+import RoleMiddleware from "../middlewares/RoleMiddleware";
+import UserEnum from "../enums/UserEnum";
+
+import ChildHandler from "../handlers/ChildHandler";
+import GrowthDataHandler from "../handlers/GrowthDataHandler";
+
+import ChildController from "../controllers/ChildController";
+import GrowthDataController from "../controllers/GrowthDataController";
+
+import ChildService from "../services/ChildService";
+import GrowthDataService from "../services/GrowthDataService";
+
+import ChildRepository from "../repositories/ChildRepository";
+import UserRepository from "../repositories/UserRepository";
+import MembershipPackageRepository from "../repositories/MembershipPackageRepository";
+import GrowthDataRepository from "../repositories/GrowthDataRepository";
+import ConfigRepository from "../repositories/ConfigRepository";
+import GrowthMetricsRepository from "../repositories/GrowthMetricsRepository";
+import validateMembership from "../middlewares/MembershipMiddleware";
+
+const growthMetricsRepository = new GrowthMetricsRepository();
+const configRepository = new ConfigRepository();
+const growthDataRepository = new GrowthDataRepository();
+const childRepository = new ChildRepository();
+const userRepository = new UserRepository();
+const membershipPackageRepository = new MembershipPackageRepository();
+
+const childService = new ChildService(
+  childRepository,
+  userRepository,
+  membershipPackageRepository
+);
+const growthDataService = new GrowthDataService(
+  growthDataRepository,
+  userRepository,
+  childRepository,
+  configRepository,
+  growthMetricsRepository
+);
+
+const childController = new ChildController(childService);
+const growthDataController = new GrowthDataController(growthDataService);
+
 const childHandler = new ChildHandler();
 const growthDataHandler = new GrowthDataHandler();
-const childController = new ChildController();
-const growthDataController = new GrowthDataController();
+
+const childRoutes = express.Router();
 
 childRoutes.use(AuthMiddleware);
+
+childRoutes.post(
+  "/growth-data/public",
+  growthDataHandler.publicGenerateGrowthData,
+  growthDataController.publicGenerateGrowthData
+);
 
 childRoutes.post(
   "/",
@@ -66,6 +108,7 @@ childRoutes.get(
 
 childRoutes.post(
   "/:childId/growth-data",
+  validateMembership("updateChildDataLimit"),
   growthDataHandler.createGrowthData,
   RoleMiddleware([UserEnum.MEMBER]),
   growthDataController.createGrowthData
