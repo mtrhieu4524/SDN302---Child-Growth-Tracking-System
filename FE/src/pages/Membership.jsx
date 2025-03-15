@@ -64,7 +64,7 @@ const Membership = () => {
                 </Paragraph>
             </div>
 
-            {/* Membership Plans */}
+            <br></br>  <br></br>
             <div style={{ maxWidth: "1200px", margin: "50px auto", padding: "0 20px" }}>
                 <Row gutter={[24, 24]} justify="center">
                     {membershipPackages.map((pkg) => (
@@ -115,7 +115,7 @@ const Membership = () => {
                     ))}
                 </Row>
             </div>
-
+            <br></br>  <br></br>  <br></br>
             <Footer />
             <ScrollToTop />
         </div>

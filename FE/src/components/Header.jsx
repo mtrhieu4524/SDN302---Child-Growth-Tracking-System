@@ -91,8 +91,8 @@ const HeaderComponent = () => {
                             <Menu.Item key="growth-tracker">
                                 <a href="/growth-tracker">Tracker</a>
                             </Menu.Item>
-                            <Menu.Item key="growth-charts">
-                                <a href="/growth-charts">Growth Charts</a>
+                            <Menu.Item key="growth-chart">
+                                <a href="/growth-chart">Growth Chart</a>
                             </Menu.Item>
                         </Menu.SubMenu>
 

@@ -8,6 +8,7 @@ import About from "../pages/About";
 import FAQs from "../pages/FAQs";
 import Blogs from "../pages/Blogs";
 import Membership from "../pages/Membership";
+import GrowthChart from "../pages/GrowthChart";
 
 import Dashboard from "../pages/AdminPages/Dashboard";
 import RequestManagement from "../pages/AdminPages/RequestManagement";
@@ -28,6 +29,7 @@ export default function AppRoute() {
         <Route path={routes.faqs} element={<FAQs />} />
         <Route path={routes.blogs} element={<Blogs />} />
         <Route path={routes.membership} element={<Membership />} />
+        <Route path={routes.growthChart} element={<GrowthChart />} />
 
 
         {/* Admin pages */}
