@@ -1,10 +1,49 @@
-import { Layout, Menu, Button, Input } from "antd";
+import { Layout, Menu, Button, Input, Dropdown } from "antd";
 import { useNavigate } from "react-router-dom";
+import { UserOutlined, LogoutOutlined } from "@ant-design/icons";
+import { useState, useEffect } from "react";
 
 const { Header } = Layout;
 
 const HeaderComponent = () => {
     const navigate = useNavigate();
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [userName, setUserName] = useState("");
+
+    useEffect(() => {
+        // Kiểm tra user trong localStorage
+        const user = localStorage.getItem("user");
+        const adminToken = localStorage.getItem("adminToken");
+        
+        if (adminToken) {
+            setIsLoggedIn(true);
+            setUserName("Admin User");
+        } else if (user) {
+            const userData = JSON.parse(user);
+            setIsLoggedIn(true);
+            setUserName(userData.username || "User");
+        }
+    }, []);
+
+    const handleLogout = () => {
+        localStorage.removeItem("user");
+        localStorage.removeItem("adminToken");
+        setIsLoggedIn(false);
+        setUserName("");
+        navigate("/login");
+    };
+
+    const userMenu = (
+        <Menu>
+            <Menu.Item key="profile" icon={<UserOutlined />}>
+                <a href="/profile">Hồ sơ</a>
+            </Menu.Item>
+            <Menu.Item key="logout" icon={<LogoutOutlined />} onClick={handleLogout}>
+                Đăng xuất
+            </Menu.Item>
+        </Menu>
+    );
+
     return (
         <div>
             <div style={{
@@ -94,14 +133,25 @@ const HeaderComponent = () => {
                 </div>
 
                 <div style={{ display: "flex", alignItems: "center", gap: "15px", marginRight: "10px" }}>
-                    <a href="/login" style={{ color: "#1890ff", fontWeight: "500" }}>Sign in</a>
-                    <Button
-                        type="primary"
-                        href="/register"
-                        style={{ background: "#0082C8", borderColor: "#0082C8" }}
-                    >
-                        Create account
-                    </Button>
+                    {isLoggedIn ? (
+                        <Dropdown overlay={userMenu} placement="bottomRight">
+                            <a style={{ color: "#1890ff", fontWeight: "500", display: "flex", alignItems: "center" }}>
+                                <UserOutlined style={{ marginRight: 8 }} />
+                                {userName}
+                            </a>
+                        </Dropdown>
+                    ) : (
+                        <>
+                            <a href="/login" style={{ color: "#1890ff", fontWeight: "500" }}>Sign in</a>
+                            <Button
+                                type="primary"
+                                href="/register"
+                                style={{ background: "#0082C8", borderColor: "#0082C8" }}
+                            >
+                                Create account
+                            </Button>
+                        </>
+                    )}
                 </div>
 
             </Header>

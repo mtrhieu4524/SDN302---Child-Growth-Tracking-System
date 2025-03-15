@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import { Form, Input, Button, Checkbox, Card, Typography } from "antd";
+import { Link, useNavigate } from "react-router-dom";
+import { Form, Input, Button, Checkbox, Card, Typography, message } from "antd";
 import { UserOutlined, LockOutlined } from "@ant-design/icons";
 import Header from "./../components/Header";
 import Footer from "./../components/Footer";
@@ -10,19 +10,34 @@ const { Title, Text } = Typography;
 
 const Login = () => {
   const [form] = Form.useForm();
+  const navigate = useNavigate();
 
   useEffect(() => {
     document.title = "Child Growth Tracking - Sign In";
   }, []);
 
+  // Hardcoded admin credentials
+  const ADMIN_CREDENTIALS = {
+    username: 'admin',
+    password: 'admin123'
+  };
+
   const onFinish = (values) => {
-    console.log("Success:", values);
+    // Check if credentials match admin account
+    if (values.username === ADMIN_CREDENTIALS.username && 
+        values.password === ADMIN_CREDENTIALS.password) {
+      // Store admin token
+      localStorage.setItem('adminToken', 'dummy-admin-token');
+      message.success('Đăng nhập thành công!');
+      navigate('/dashboard');
+    } else {
+      // Handle normal user login here
+      message.error('Tài khoản hoặc mật khẩu không đúng!');
+    }
   };
 
   return (
-    <div
-      style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}
-    >
+    <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
       <Header />
       <div
         style={{
@@ -47,7 +62,7 @@ const Login = () => {
               Sign in
             </Title>
             <Text type="secondary">
-              Do not have an acount?{" "}
+              Do not have an account?{" "}
               <Link to="/register" style={{ color: "#0082C8" }}>
                 Sign up
               </Link>
@@ -62,21 +77,17 @@ const Login = () => {
             size="large"
           >
             <Form.Item
-              name="email"
+              name="username"
               rules={[
                 {
                   required: true,
-                  message: "Please enter an email!",
-                },
-                {
-                  type: "email",
-                  message: "Email is invalid!",
+                  message: "Please enter username!",
                 },
               ]}
             >
               <Input
                 prefix={<UserOutlined style={{ color: "rgba(0,0,0,.25)" }} />}
-                placeholder="Email"
+                placeholder="Username"
               />
             </Form.Item>
 
@@ -85,7 +96,7 @@ const Login = () => {
               rules={[
                 {
                   required: true,
-                  message: "Please enter a password!",
+                  message: "Please enter password!",
                 },
               ]}
             >
@@ -106,7 +117,6 @@ const Login = () => {
                 <Form.Item name="remember" valuePropName="checked" noStyle>
                   <Checkbox>Remember me</Checkbox>
                 </Form.Item>
-                {/* <Link style={{ color: "#0082C8" }}>Forgot password?</Link> */}
               </div>
             </Form.Item>
 
