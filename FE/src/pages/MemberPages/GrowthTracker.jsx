@@ -76,7 +76,8 @@ const GrowthTracker = () => {
                 </Title>
                 <Text type="secondary">Record your child's growth measurements</Text>
               </div>
-              <Button type="primary" onClick={() => navigate("/profile/growth-chart")}>
+              <Button type="primary" style={{ backgroundColor: "#0082c8", borderColor: "#0082c8" }}
+                onClick={() => navigate("/profile/growth-chart")}>
                 Child Growth Chart
               </Button>
             </div>

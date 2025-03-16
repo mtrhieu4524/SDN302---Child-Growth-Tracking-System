@@ -1,38 +1,27 @@
 import { Layout, Menu, Button, Dropdown } from "antd";
-import { useNavigate } from "react-router-dom";
 import { UserOutlined, LogoutOutlined, SolutionOutlined, HeartOutlined } from "@ant-design/icons";
 import { useState, useEffect, useContext } from "react";
 import { AuthContext } from "../contexts/AuthContext";
 
-
 const { Header } = Layout;
 
 const HeaderComponent = () => {
-  const { user, logout } = useContext(AuthContext);
+  const { logout } = useContext(AuthContext);
+  const [user, setUser] = useState(null);
 
-  const userMenuItems = [
-    {
-      key: "profile",
-      label: <a href="/profile">Profile</a>,
-      icon: <UserOutlined />,
-    },
-    {
-      key: "child-tracker",
-      label: <a href="profile/growth-chart">Child Tracker</a>,
-      icon: <SolutionOutlined />,
-    },
-    {
-      key: "doctor-consultation",
-      label: <a href="/doctor-consultation">Doctor Consultation</a>,
-      icon: <HeartOutlined />,
-    },
-    {
-      key: "logout",
-      label: "Sign Out",
-      icon: <LogoutOutlined />,
-      onClick: logout,
-    },
-  ];
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+  }, []);
+
+  const handleLogout = async () => {
+    await logout();
+    localStorage.removeItem("user"); // Clear user from local storage
+    setUser(null); // Update state
+  };
+
 
   //Doctor dropdown menu
   // const userMenuItems = [
@@ -54,17 +43,38 @@ const HeaderComponent = () => {
   //   },
   // ];
 
+
+  const userMenuItems = [
+    {
+      key: "profile",
+      label: <a href="/profile">Profile</a>,
+      icon: <UserOutlined />,
+    },
+    {
+      key: "child-tracker",
+      label: <a href="/profile/growth-chart">Child Tracker</a>,
+      icon: <SolutionOutlined />,
+    },
+    {
+      key: "doctor-consultation",
+      label: <a href="/doctor-consultation">Doctor Consultation</a>,
+      icon: <HeartOutlined />,
+    },
+    {
+      key: "logout",
+      label: "Sign Out",
+      icon: <LogoutOutlined />,
+      onClick: handleLogout,
+    },
+  ];
+
   const menuItems = [
     {
       key: "health",
       label: "Health & Nutrition",
       children: [
         { key: "growth-chart", label: <a href="/growth-chart">Growth Chart</a> },
-        {
-          key: "milestones",
-          label: <a href="/development-milestones">Development Milestones</a>,
-        },
-        // { key: "alerts", label: <a href="#">Health Alerts</a> },
+        { key: "milestones", label: <a href="/development-milestones">Development Milestones</a> },
       ],
     },
     { key: "membership", label: <a href="/membership">Membership</a> },
@@ -130,6 +140,7 @@ const HeaderComponent = () => {
               justifyContent: "center",
               display: "flex",
               borderBottom: "none",
+              marginRight: "125px",
             }}
           />
         </div>
@@ -151,9 +162,11 @@ const HeaderComponent = () => {
                   alignItems: "center",
                 }}>
                 <UserOutlined style={{ marginRight: "5px", marginTop: "4px", fontSize: 24 }} />
-                <p style={{ marginRight: "20px", marginTop: "22px" }}>( Member )</p>
-              </a >
-            </Dropdown >
+                <p style={{ marginRight: "20px", marginTop: "22px" }}>
+                  ( {user.role || "Member"} )
+                </p>
+              </a>
+            </Dropdown>
           ) : (
             <>
               <a href="/login" style={{ color: "#1890ff", fontWeight: "500" }}>
@@ -165,23 +178,13 @@ const HeaderComponent = () => {
                 style={{ background: "#0082C8", borderColor: "#0082C8" }}>
                 Create account
               </Button>
-              {/* <Dropdown menu={{ items: userMenuItems }} placement="bottomRight">
-                <a
-                  style={{
-                    color: "#1890ff",
-                    fontWeight: "500",
-                    display: "flex",
-                    alignItems: "center",
-                  }}>
-                  <UserOutlined style={{ fontSize: 24 }} />
-                </a>
-              </Dropdown> */}
             </>
           )}
-        </div >
-      </Header >
-    </div >
+        </div>
+      </Header>
+    </div>
   );
 };
 
 export default HeaderComponent;
+

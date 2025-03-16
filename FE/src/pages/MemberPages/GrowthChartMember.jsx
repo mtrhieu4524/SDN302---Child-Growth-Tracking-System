@@ -144,7 +144,11 @@ const GrowthChartMember = () => {
                 </Title>
                 <Text type="secondary">Track your child's development over time</Text>
               </div>
-              <Button type="primary" onClick={() => navigate("/profile/growth-tracker")}>
+              <Button
+                type="primary"
+                onClick={() => navigate("/profile/growth-tracker")}
+                style={{ backgroundColor: "#0082c8", borderColor: "#0082c8" }}
+              >
                 Import Data
               </Button>
             </div>
