@@ -11,9 +11,10 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
-import { UserOutlined, LogoutOutlined, TeamOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import HeaderComponent from "../../components/Header";
+import FooterComponent from "../../components/Footer";
+import ScrollToTop from "../../components/ScrollToTop";
 
 ChartJS.register(
   CategoryScale,
@@ -119,39 +120,15 @@ const GrowthChartMember = () => {
     maintainAspectRatio: false,
   };
 
-  const headerStyle = {
-    background: "linear-gradient(to right, #0082C8, #0056A1)",
-    color: "white",
-    padding: "0 20px",
-    height: "64px",
-    lineHeight: "64px",
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    position: "fixed",
-    width: "100%",
-    zIndex: 1,
-    top: 0,
-  };
-
-  const footerStyle = {
-    background: "#001529",
-    color: "white",
-    textAlign: "center",
-    padding: "20px",
-    marginTop: "auto",
-  };
-
   const contentStyle = {
     minHeight: "calc(100vh - 128px)",
     padding: "80px 20px 20px",
     background: "#f0f2f5",
   };
 
-  const handleLogout = () => {
-    localStorage.clear();
-    navigate("/login");
-  };
+  useEffect(() => {
+    document.title = "Child Growth Tracking - Child Growth Chart";
+  }, []);
 
   return (
     <Layout style={{ minHeight: "100vh" }}>
@@ -160,13 +137,20 @@ const GrowthChartMember = () => {
       <Content style={contentStyle}>
         <Card
           title={
-            <div style={{ textAlign: "center" }}>
-              <Title level={2} style={{ color: "#0056A1", marginBottom: 0 }}>
-                Growth Chart
-              </Title>
-              <Text type="secondary">
-                Track your child's development over time
-              </Text>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
+              <div>
+                <Title level={2} style={{ color: "#0056A1", marginBottom: 0 }}>
+                  Child Growth Chart
+                </Title>
+                <Text type="secondary">Track your child's development over time</Text>
+              </div>
+              <Button
+                type="primary"
+                onClick={() => navigate("/profile/growth-tracker")}
+                style={{ backgroundColor: "#0082c8", borderColor: "#0082c8" }}
+              >
+                Import Data
+              </Button>
             </div>
           }
           style={{
@@ -182,22 +166,9 @@ const GrowthChartMember = () => {
         </Card>
       </Content>
 
-      <Footer style={footerStyle}>
-        <Text style={{ color: "rgba(255,255,255,0.65)" }}>
-          © 2025 Child Growth Tracking. All rights reserved.
-        </Text>
-        <div style={{ marginTop: 8 }}>
-          <Button type="link" style={{ color: "rgba(255,255,255,0.85)" }}>
-            Privacy Policy
-          </Button>
-          <Button type="link" style={{ color: "rgba(255,255,255,0.85)" }}>
-            Terms of Service
-          </Button>
-          <Button type="link" style={{ color: "rgba(255,255,255,0.85)" }}>
-            Contact Us
-          </Button>
-        </div>
-      </Footer>
+      <br /><br /><br /><br />
+      <FooterComponent />
+      <ScrollToTop />
     </Layout>
   );
 };

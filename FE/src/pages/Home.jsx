@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import Header from "./../components/Header";
 import Footer from "./../components/Footer";
 import ScrollToTop from "./../components/ScrollToTop";
@@ -11,6 +12,16 @@ const Home = () => {
   }, []);
 
   const { Title, Text } = Typography;
+  const navigate = useNavigate();
+  const handleGetStarted = () => {
+    const user = localStorage.getItem("user");
+    if (user) {
+      navigate("/profile/growth-chart");
+    } else {
+      navigate("/login");
+    }
+  };
+
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
@@ -55,7 +66,9 @@ const Home = () => {
               padding: "12px 24px 13px 24px",
               fontSize: "15px",
               borderRadius: "50px"
-            }}>
+            }}
+            onClick={handleGetStarted}
+          >
             Get Started
           </Button>
         </div>
@@ -133,7 +146,9 @@ const Home = () => {
               padding: "12px 24px 13px 24px",
               fontSize: "15px",
               borderRadius: "50px"
-            }}>
+            }}
+            onClick={handleGetStarted}
+          >
             Get Started
           </Button>
         </div>

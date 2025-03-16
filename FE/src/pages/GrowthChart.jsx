@@ -25,12 +25,12 @@ const GrowthChart = () => {
     }, []);
 
     return (
-        <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
+        <div style={{ background: "#f9f9f9", minHeight: "100vh", display: "flex", flexDirection: "column" }}>
             <Header />
 
             <div style={{ maxWidth: "1200px", margin: "50px auto", padding: "0 20px" }}>
                 <Title level={2} style={{ textAlign: "center", color: "#0056A1" }}>
-                    Child Growth Chart
+                    Growth Chart
                 </Title>
                 <p style={{ textAlign: "center", color: "#666", fontSize: "16px" }}>
                     Track your child's weight, height, and BMI from infancy to adulthood.
