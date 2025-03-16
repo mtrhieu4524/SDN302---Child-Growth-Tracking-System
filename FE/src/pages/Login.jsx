@@ -18,7 +18,6 @@ const Login = () => {
     document.title = "Child Growth Tracking - Sign In";
   }, []);
 
-  
   const formik = useFormik({
     initialValues: {
       email: "",
@@ -47,7 +46,10 @@ const Login = () => {
           }
         }
       } catch (error) {
-        message.error(error.response.data.message || "An unexpected error occurred. Please try again.");
+        message.error(
+          error.response.data.message ||
+            "An unexpected error occurred. Please try again."
+        );
       }
     },
   });
@@ -119,7 +121,7 @@ const Login = () => {
               <Button
                 type="primary"
                 htmlType="submit"
-                disabled={formik.isSubmitting} 
+                disabled={formik.isSubmitting}
                 style={{
                   width: "100%",
                   height: "40px",

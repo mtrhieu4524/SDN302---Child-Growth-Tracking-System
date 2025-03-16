@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Form,
   InputNumber,
@@ -13,6 +13,8 @@ import { UserOutlined, LogoutOutlined, TeamOutlined } from "@ant-design/icons";
 import moment from "moment";
 import { useNavigate } from "react-router-dom";
 import HeaderComponent from "../../components/Header";
+import FooterComponent from "../../components/Footer";
+import ScrollToTop from "../../components/ScrollToTop";
 
 const { Header, Footer, Content } = Layout;
 const { Title, Text } = Typography;
@@ -42,28 +44,7 @@ const GrowthTracker = () => {
     form.resetFields();
   };
 
-  const headerStyle = {
-    background: "linear-gradient(to right, #0082C8, #0056A1)",
-    color: "white",
-    padding: "0 20px",
-    height: "64px",
-    lineHeight: "64px",
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    position: "fixed",
-    width: "100%",
-    zIndex: 1,
-    top: 0,
-  };
 
-  const footerStyle = {
-    background: "#001529",
-    color: "white",
-    textAlign: "center",
-    padding: "20px",
-    marginTop: "auto",
-  };
 
   const contentStyle = {
     minHeight: "calc(100vh - 128px)",
@@ -76,19 +57,29 @@ const GrowthTracker = () => {
     navigate("/login");
   };
 
+
+  useEffect(() => {
+    document.title = "Child Growth Tracking - Child Growth Tracker";
+  }, []);
+
+
   return (
     <Layout style={{ minHeight: "100vh" }}>
       <HeaderComponent />
       <Content style={contentStyle}>
         <Card
           title={
-            <div style={{ textAlign: "center" }}>
-              <Title level={2} style={{ color: "#0056A1", marginBottom: 0 }}>
-                Growth Tracker
-              </Title>
-              <Text type="secondary">
-                Record your child's growth measurements
-              </Text>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
+              <div>
+                <Title level={2} style={{ color: "#0056A1", marginBottom: 0 }}>
+                  Child Growth Tracker
+                </Title>
+                <Text type="secondary">Record your child's growth measurements</Text>
+              </div>
+              <Button type="primary" style={{ backgroundColor: "#0082c8", borderColor: "#0082c8" }}
+                onClick={() => navigate("/profile/growth-chart")}>
+                Child Growth Chart
+              </Button>
             </div>
           }
           style={{
@@ -169,22 +160,9 @@ const GrowthTracker = () => {
           </Form>
         </Card>
       </Content>
-      <Footer style={footerStyle}>
-        <Text style={{ color: "rgba(255,255,255,0.65)" }}>
-          © 2025 Child Growth Tracking. All rights reserved.
-        </Text>
-        <div style={{ marginTop: 8 }}>
-          <Button type="link" style={{ color: "rgba(255,255,255,0.85)" }}>
-            Privacy Policy
-          </Button>
-          <Button type="link" style={{ color: "rgba(255,255,255,0.85)" }}>
-            Terms of Service
-          </Button>
-          <Button type="link" style={{ color: "rgba(255,255,255,0.85)" }}>
-            Contact Us
-          </Button>
-        </div>
-      </Footer>
+      <br /><br /><br /><br />
+      <FooterComponent />
+      <ScrollToTop />
     </Layout>
   );
 };

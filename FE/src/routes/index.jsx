@@ -8,6 +8,7 @@ export const routes = {
   membership: "/membership",
   paymentDetails: "/payment-details/:id",
   growthChart: "/growth-chart",
+  developmentMilestones: "/development-milestones",
   verificationSent: "/verification-sent",
   blogDetail: "/blogs/:id",
 

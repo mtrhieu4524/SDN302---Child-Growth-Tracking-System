@@ -9,6 +9,7 @@ import FAQs from "../pages/FAQs";
 import Blogs from "../pages/Blogs";
 import Membership from "../pages/Membership";
 import GrowthChart from "../pages/GrowthChart";
+import DevelopmentMilestones from "../pages/DevelopmentMilestones";
 
 import Dashboard from "../pages/AdminPages/Dashboard";
 import RequestManagement from "../pages/AdminPages/RequestManagement";
@@ -40,12 +41,13 @@ export default function AppRoute() {
       />
       <Route path={routes.aboutUs} element={<About />} />
       <Route path={routes.faqs} element={<FAQs />} />
+      <Route path={routes.developmentMilestones} element={<DevelopmentMilestones />} />
       <Route path={routes.blogs} element={<Blogs />} />
       <Route path={routes.membership} element={<Membership />} />
       <Route path={routes.paymentDetails} element={<PaymentDetails />} />
       <Route path={routes.growthChart} element={<GrowthChart />} />
       <Route path={routes.blogDetail} element={<BlogDetailed />} />
-      
+
       {/* Membership pages */}
       <Route path={routes.growthTracker} element={<GrowthTracker />} />
       <Route
