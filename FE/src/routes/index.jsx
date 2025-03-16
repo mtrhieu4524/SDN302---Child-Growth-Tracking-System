@@ -6,6 +6,7 @@ export const routes = {
   faqs: "/faqs",
   blogs: "/blogs",
   membership: "/membership",
+  paymentDetails: "/payment-details/:id",
   growthChart: "/growth-chart",
   verificationSent: "/verification-sent",
   blogDetail: "/blogs/:id",

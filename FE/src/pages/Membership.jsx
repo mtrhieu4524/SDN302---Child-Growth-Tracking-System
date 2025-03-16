@@ -13,8 +13,8 @@ import { CheckCircleOutlined } from "@ant-design/icons";
 import Header from "./../components/Header";
 import Footer from "./../components/Footer";
 import ScrollToTop from "./../components/ScrollToTop";
-import axios from "axios";
 import api from "../configs/api";
+import { useNavigate } from "react-router-dom";
 
 const { Title, Paragraph } = Typography;
 
@@ -26,21 +26,24 @@ const Membership = () => {
     pageSize: 10,
     total: 0,
   });
+  const navigate = useNavigate();
+
+  const handleChoosePlan = (id) => {
+    navigate(`/payment-details/${id}`);
+  };
 
   const fetchMembershipPackages = async (page = 1, size = 10) => {
     setLoading(true);
     try {
-      const response = await api.get("/membership-packages",
-        {
-          params: {
-            page,
-            size,
-            search: "",
-            order: "descending",
-            sortBy: "date",
-          },
-        }
-      );
+      const response = await api.get("/membership-packages", {
+        params: {
+          page,
+          size,
+          search: "",
+          order: "descending",
+          sortBy: "date",
+        },
+      });
 
       console.log("Fetched membership packages:", response.data);
 
@@ -76,7 +79,8 @@ const Membership = () => {
 
   return (
     <div
-      style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
+      style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}
+    >
       <Header />
 
       {/* Membership Header */}
@@ -86,12 +90,14 @@ const Membership = () => {
           color: "white",
           textAlign: "center",
           padding: "30px 20px",
-        }}>
+        }}
+      >
         <Title level={2} style={{ color: "white", marginBottom: 0 }}>
           Choose Your Membership Plan
         </Title>
         <Paragraph
-          style={{ color: "white", fontSize: "16px", marginTop: "10px" }}>
+          style={{ color: "white", fontSize: "16px", marginTop: "10px" }}
+        >
           Select the best plan to track your child's growth effectively.
         </Paragraph>
       </div>
@@ -99,7 +105,8 @@ const Membership = () => {
       <br />
       <br />
       <div
-        style={{ maxWidth: "1200px", margin: "50px auto", padding: "0 20px" }}>
+        style={{ maxWidth: "1200px", margin: "50px auto", padding: "0 20px" }}
+      >
         {loading ? (
           <div style={{ textAlign: "center", padding: "50px 0" }}>
             <Spin size="large" />
@@ -127,18 +134,21 @@ const Membership = () => {
                       color: "white",
                       fontWeight: "bold",
                     }}
-                    hoverable>
+                    hoverable
+                  >
                     <div
                       style={{
                         minHeight: "180px",
                         display: "flex",
                         flexDirection: "column",
                         justifyContent: "center",
-                      }}>
+                      }}
+                    >
                       <Paragraph>{pkg.description}</Paragraph>
                       <Title
                         level={4}
-                        style={{ color: "#0056A1", marginTop: "10px" }}>
+                        style={{ color: "#0056A1", marginTop: "10px" }}
+                      >
                         {formatPrice(pkg.price)}
                         <span style={{ fontSize: "16px", color: "#666" }}>
                           (
@@ -169,7 +179,11 @@ const Membership = () => {
                         borderColor: "#0082C8",
                         width: "100%",
                         marginTop: "15px",
-                      }}>
+                      }}
+                      onClick={() => handleChoosePlan(pkg._id)}
+                    >
+                      {" "}
+                      {/* Add onClick handler */}
                       Choose Plan
                     </Button>
                   </Card>

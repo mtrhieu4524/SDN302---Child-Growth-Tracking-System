@@ -23,6 +23,7 @@ import PrivateRoute from "./PrivateRoute";
 import { Role } from "../enums/Role";
 import VerificationSent from "../pages/VerificationSent";
 import PublicRoute from "./PublicRoute";
+import PaymentDetails from "../pages/PaymentDetails";
 
 export default function AppRoute() {
   return (
@@ -41,6 +42,7 @@ export default function AppRoute() {
       <Route path={routes.faqs} element={<FAQs />} />
       <Route path={routes.blogs} element={<Blogs />} />
       <Route path={routes.membership} element={<Membership />} />
+      <Route path={routes.paymentDetails} element={<PaymentDetails />} />
       <Route path={routes.growthChart} element={<GrowthChart />} />
       <Route path={routes.blogDetail} element={<BlogDetailed />} />
       
