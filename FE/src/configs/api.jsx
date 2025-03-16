@@ -1,13 +1,12 @@
 import axios from "axios";
 
-const API_URL = 'http://localhost:4000/api';
+const API_URL = 'http://localhost:4000/api'; 
 
 const api = axios.create({
   baseURL: API_URL,
   withCredentials: true, 
 });
 
-// Interceptor để tự động refresh token nếu hết hạn
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
@@ -19,7 +18,6 @@ api.interceptors.response.use(
         return api(originalRequest);
       } catch (refreshError) {
         console.error("Refresh token failed:", refreshError);
-        navigate("/login");
       }
     }
     return Promise.reject(error);

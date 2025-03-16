@@ -13,6 +13,9 @@ import {
 } from "antd";
 import { CheckCircleOutlined } from "@ant-design/icons";
 import api from "../configs/api";
+import HeaderComponent from "../components/Header";
+import FooterComponent from "../components/Footer";
+import ScrollToTop from "../components/ScrollToTop";
 
 const { Title, Paragraph } = Typography;
 
@@ -21,7 +24,7 @@ const PaymentDetails = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [packageDetails, setPackageDetails] = useState(null);
-  const [paymentMethod, setPaymentMethod] = useState("vnpay"); // Default to VNPay
+  const [paymentMethod, setPaymentMethod] = useState("vnpay");
 
   useEffect(() => {
     const fetchPackageDetails = async () => {
@@ -48,26 +51,24 @@ const PaymentDetails = () => {
   const handlePayment = async () => {
     try {
       if (paymentMethod === "vnpay") {
-        // Redirect to VNPay payment gateway
-        const response = await api.post("/payment/vnpay/create", {
+        const response = await api.post("/payments/vnpay/create", {
           price: packageDetails.price.value,
           packageId: packageDetails._id,
         });
 
-        if (response.data.paymentUrl) {
-          window.location.href = response.data.paymentUrl; // Redirect to VNPay
+        if (response.data.url) {
+          window.location.href = response.data.url;
         } else {
           throw new Error("Failed to generate VNPay payment URL");
         }
       } else if (paymentMethod === "paypal") {
-        // Redirect to PayPal payment gateway
-        const response = await api.post("/payment/paypal/create", {
+        const response = await api.post("/payments/paypal/create", {
           price: packageDetails.price.value,
           packageId: packageDetails._id,
         });
 
-        if (response.data.approvalUrl) {
-          window.location.href = response.data.approvalUrl; // Redirect to PayPal
+        if (response.data.link) {
+          window.location.href = response.data.link;
         } else {
           throw new Error("Failed to generate PayPal approval URL");
         }
@@ -75,22 +76,17 @@ const PaymentDetails = () => {
     } catch (error) {
       console.error("Payment error:", error);
 
-      // Handle validation errors or other errors
       if (error.response) {
-        // Backend returned a validation error
         const { data } = error.response;
 
         if (data.validationErrors) {
-          // Display validation errors
           data.validationErrors.forEach((err) => {
             message.error(`${err.field}: ${err.error}`);
           });
         } else if (data.message) {
-          // Display general error message
           message.error(data.message);
         }
       } else {
-        // Generic error (e.g., network error)
         message.error("Payment failed. Please try again.");
       }
     }
@@ -113,93 +109,106 @@ const PaymentDetails = () => {
   }
 
   return (
-    <div style={{ maxWidth: "1200px", margin: "50px auto", padding: "0 20px" }}>
-      <Title level={2} style={{ textAlign: "center", marginBottom: "24px" }}>
-        Payment Details
-      </Title>
+    <div
+      style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}
+    >
+      <HeaderComponent />
+      <div style={{ maxWidth: "1500px", margin: "0px auto", padding: "0 20px", flex: 1 }}>
+        <Title level={2} style={{ textAlign: "center", marginBottom: "24px" }}>
+          Payment Details
+        </Title>
 
-      <Row gutter={[24, 24]}>
-        {/* Package Details */}
-        <Col xs={24} md={12}>
-          <Card
-            title="Selected Plan"
-            bordered={false}
-            style={{
-              borderRadius: "8px",
-              boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
-            }}
-            headStyle={{
-              backgroundColor: "#0082C8",
-              color: "white",
-              fontWeight: "bold",
-            }}>
-            <div style={{ padding: "20px" }}>
-              <Title level={4} style={{ color: "#0056A1" }}>
-                {packageDetails.name}
-              </Title>
-              <Paragraph>{packageDetails.description}</Paragraph>
-              <Paragraph>
-                <CheckCircleOutlined style={{ color: "#0082C8" }} /> Price:{" "}
-                {formatPrice(packageDetails.price)}
-              </Paragraph>
-              <Paragraph>
-                <CheckCircleOutlined style={{ color: "#0082C8" }} /> Duration:{" "}
-                {packageDetails.duration?.value} {packageDetails.duration?.unit}
-              </Paragraph>
-              <Paragraph>
-                <CheckCircleOutlined style={{ color: "#0082C8" }} /> Post Limit:{" "}
-                {packageDetails.postLimit}
-              </Paragraph>
-              <Paragraph>
-                <CheckCircleOutlined style={{ color: "#0082C8" }} /> Update
-                Child Data: {packageDetails.updateChildDataLimit} times
-              </Paragraph>
-            </div>
-          </Card>
-        </Col>
+        <Row gutter={[24, 24]}>
+          {/* Package Details */}
+          <Col xs={24} md={12}>
+            <Card
+              title="Selected Plan"
+              bordered={false}
+              style={{
+                borderRadius: "8px",
+                boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+              }}
+              headStyle={{
+                backgroundColor: "#0082C8",
+                color: "white",
+                fontWeight: "bold",
+              }}
+            >
+              <div style={{ padding: "20px" }}>
+                <Title level={4} style={{ color: "#0056A1" }}>
+                  {packageDetails.name}
+                </Title>
+                <Paragraph>{packageDetails.description}</Paragraph>
+                <Paragraph>
+                  <CheckCircleOutlined style={{ color: "#0082C8" }} /> Price:{" "}
+                  {formatPrice(packageDetails.price)}
+                </Paragraph>
+                <Paragraph>
+                  <CheckCircleOutlined style={{ color: "#0082C8" }} /> Duration:{" "}
+                  {packageDetails.duration?.value}{" "}
+                  {packageDetails.duration?.unit}
+                </Paragraph>
+                <Paragraph>
+                  <CheckCircleOutlined style={{ color: "#0082C8" }} /> Post
+                  Limit: {packageDetails.postLimit}
+                </Paragraph>
+                <Paragraph>
+                  <CheckCircleOutlined style={{ color: "#0082C8" }} /> Update
+                  Child Data: {packageDetails.updateChildDataLimit} times
+                </Paragraph>
+              </div>
+            </Card>
+          </Col>
 
-        {/* Payment Form */}
-        <Col xs={24} md={12}>
-          <Card
-            title="Payment Information"
-            bordered={false}
-            style={{
-              borderRadius: "8px",
-              boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
-            }}
-            headStyle={{
-              backgroundColor: "#0082C8",
-              color: "white",
-              fontWeight: "bold",
-            }}>
-            <Form onFinish={handlePayment} layout="vertical">
-              <Form.Item
-                label="Payment Method"
-                name="paymentMethod"
-                initialValue="vnpay">
-                <Radio.Group
-                  onChange={(e) => setPaymentMethod(e.target.value)}
-                  value={paymentMethod}>
-                  <Radio value="vnpay">VNPay</Radio>
-                  <Radio value="paypal">PayPal</Radio>
-                </Radio.Group>
-              </Form.Item>
+          {/* Payment Form */}
+          <Col xs={24} md={12}>
+            <Card
+              title="Payment Information"
+              bordered={false}
+              style={{
+                borderRadius: "8px",
+                boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+              }}
+              headStyle={{
+                backgroundColor: "#0082C8",
+                color: "white",
+                fontWeight: "bold",
+              }}
+            >
+              <Form onFinish={handlePayment} layout="vertical">
+                <Form.Item
+                  label="Payment Method"
+                  name="paymentMethod"
+                  initialValue="vnpay"
+                >
+                  <Radio.Group
+                    onChange={(e) => setPaymentMethod(e.target.value)}
+                    value={paymentMethod}
+                  >
+                    <Radio value="vnpay">VNPay</Radio>
+                    <Radio value="paypal">PayPal</Radio>
+                  </Radio.Group>
+                </Form.Item>
 
-              <Button
-                type="primary"
-                htmlType="submit"
-                style={{
-                  background: "#0082C8",
-                  borderColor: "#0082C8",
-                  width: "100%",
-                  marginTop: "15px",
-                }}>
-                Proceed to Payment
-              </Button>
-            </Form>
-          </Card>
-        </Col>
-      </Row>
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  style={{
+                    background: "#0082C8",
+                    borderColor: "#0082C8",
+                    width: "100%",
+                    marginTop: "15px",
+                  }}
+                >
+                  Proceed to Payment
+                </Button>
+              </Form>
+            </Card>
+          </Col>
+        </Row>
+      </div>
+      <FooterComponent />
+      <ScrollToTop />
     </div>
   );
 };
