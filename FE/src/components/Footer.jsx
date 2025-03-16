@@ -1,5 +1,6 @@
 import { Layout, Row, Col, Typography } from "antd";
-import "./style/Footer.scss";
+import "./style/Footer.css";
+import { UserOutlined, HomeOutlined, PhoneOutlined, MailOutlined } from "@ant-design/icons";
 
 const { Footer } = Layout;
 const { Title, Link, Paragraph } = Typography;
@@ -17,25 +18,32 @@ const FooterComponent = () => {
                 </Col>
                 <Col xs={24} md={1}> </Col>
                 <Col xs={24} md={6}>
-                    <Title level={5} style={{ color: "white" }}>Resources</Title>
+                    <Title level={5} style={{ color: "white" }}>Links</Title>
                     <Paragraph>
-                        <Link href="#" className="footer-link">Content</Link><br />
-                        <Link href="#" className="footer-link">Content</Link><br />
-                        <Link href="#" className="footer-link">Content</Link><br />
-                        <Link href="#" className="footer-link">Content</Link><br />
-                        <Link href="#" className="footer-link">Content</Link>
+                        <Link href="/" className="footer-link">Home</Link><br />
+                        <Link href="/register" className="footer-link">Sign up</Link><br />
+                        <Link href="/blogs" className="footer-link">Blogs</Link><br />
+                        <Link href="/faqs" className="footer-link">FAQs</Link><br />
+                        <Link href="/about-us" className="footer-link">About Us</Link>
                     </Paragraph>
                 </Col>
                 <Col xs={24} md={1}> </Col>
                 <Col xs={24} md={6}>
-                    <Title level={5} style={{ color: "white" }}>Support & Contact</Title>
+                    <Title level={5} style={{ color: "white" }}>Contact Us</Title>
                     <Paragraph>
-                        <Link href="#" className="footer-link">Content</Link><br />
-                        <Link href="#" className="footer-link">Content</Link><br />
-                        <Link href="#" className="footer-link">Content</Link><br />
-                        <Link href="#" className="footer-link">Content</Link><br />
-                        <Link href="#" className="footer-link">Content</Link>
+                        <UserOutlined style={{ marginRight: "8px", color: "white" }} />
+                        <Link href="https://ng.linkedin.com/in/iroro-yarhere-a400a111" target="_blank" rel="noopener noreferrer" className="footer-link">Dr. Iroro E Yarhere Paediatrician and Endocrinologist</Link><br />
+
+                        <HomeOutlined style={{ marginRight: "8px", color: "white" }} />
+                        <Link href="https://upthng.com/" target="_blank" rel="noopener noreferrer" className="footer-link">University of Port Harcourt Teaching Hospital</Link><br />
+
+                        <PhoneOutlined style={{ marginRight: "8px", color: "white" }} />
+                        <Link href="tel:+1234567890" className="footer-link">+123 4567890</Link><br />
+
+                        <MailOutlined style={{ marginRight: "8px", color: "white" }} />
+                        <Link href="mailto:childgrowthtracking@gmail.com" className="footer-link">childgrowthtracking@gmail.com</Link><br />
                     </Paragraph>
+
                 </Col>
             </Row>
         </Footer>
