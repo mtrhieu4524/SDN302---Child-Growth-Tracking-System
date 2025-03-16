@@ -17,7 +17,7 @@ const { Content, Sider } = Layout;
 
 const AdminLayout = ({ children }) => {
   const navigate = useNavigate();
-  const { logout } = useContext(AuthContext)
+  const { logout } = useContext(AuthContext);
 
   const menuItems = [
     {
@@ -28,22 +28,22 @@ const AdminLayout = ({ children }) => {
     {
       key: "/admin/user-management",
       icon: <UserOutlined />,
-      label: "Quản lý người dùng",
+      label: "User Management",
     },
     {
       key: "/admin/request-management",
       icon: <FileOutlined />,
-      label: "Quản lý yêu cầu",
+      label: "Request Management",
     },
     {
       key: "/admin/premium-list",
       icon: <CrownOutlined />,
-      label: "Quản lý Premium",
+      label: "Premium Management",
     },
     {
       key: "/logout",
       icon: <LogoutOutlined />,
-      label: "Đăng xuất",
+      label: "Logout",
       danger: true,
     },
   ];

@@ -1,27 +1,27 @@
+import { CrownOutlined, FileOutlined, UserOutlined } from "@ant-design/icons";
+import { Card, Col, Row, Spin, Statistic, Typography } from "antd";
+import message from "antd/es/message";
 import React, { useEffect, useState } from "react";
-import { Row, Col, Card, Statistic, Typography, Spin } from "antd";
-import { UserOutlined, FileOutlined, CrownOutlined } from "@ant-design/icons";
-import AdminLayout from "../../layouts/AdminLayout";
 import {
-  LineChart,
+  CartesianGrid,
+  Legend,
   Line,
+  LineChart,
+  Tooltip,
   XAxis,
   YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
 } from "recharts";
 import api from "../../configs/api";
-import message from "antd/es/message";
+import AdminLayout from "../../layouts/AdminLayout";
 
 const { Title } = Typography;
 
 const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({
-    totalUsers: 150, 
+    totalUsers: 150,
     totalRequests: 45,
-    totalPremiumUsers: 30, 
+    totalPremiumUsers: 30,
   });
   const [revenueData, setRevenueData] = useState([]);
 
@@ -86,9 +86,7 @@ const Dashboard = () => {
             <Col xs={24} sm={8}>
               <Card style={cardStyle}>
                 <Statistic
-                  title={
-                    <span style={{ color: "#0056A1" }}>Tổng số người dùng</span>
-                  }
+                  title={<span style={{ color: "#0056A1" }}>Total Users</span>}
                   value={stats.totalUsers}
                   prefix={<UserOutlined style={{ color: "#0082C8" }} />}
                   valueStyle={{ color: "#0056A1" }}
@@ -99,7 +97,7 @@ const Dashboard = () => {
               <Card style={cardStyle}>
                 <Statistic
                   title={
-                    <span style={{ color: "#0056A1" }}>Yêu cầu tư vấn</span>
+                    <span style={{ color: "#0056A1" }}>Totle Requests</span>
                   }
                   value={stats.totalRequests}
                   prefix={<FileOutlined style={{ color: "#0082C8" }} />}
@@ -111,7 +109,9 @@ const Dashboard = () => {
               <Card style={cardStyle}>
                 <Statistic
                   title={
-                    <span style={{ color: "#0056A1" }}>Người dùng Premium</span>
+                    <span style={{ color: "#0056A1" }}>
+                      Total Used Premium Pack
+                    </span>
                   }
                   value={stats.totalPremiumUsers}
                   prefix={<CrownOutlined style={{ color: "#0082C8" }} />}

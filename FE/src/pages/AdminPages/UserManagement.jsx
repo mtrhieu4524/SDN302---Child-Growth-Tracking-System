@@ -101,24 +101,9 @@ const UserManagement = () => {
     fetchUsers(page, pageSize);
   };
 
-  const handleDelete = (userId) => {
-    Modal.confirm({
-      title: "Xác nhận xóa người dùng",
-      content: "Bạn có chắc chắn muốn xóa người dùng này?",
-      okText: "Xóa",
-      cancelText: "Hủy",
-      okButtonProps: {
-        style: { background: "#ff4d4f", borderColor: "#ff4d4f" },
-      },
-      onOk: () => {
-        message.success("Đã xóa người dùng");
-      },
-    });
-  };
-
   const columns = [
     {
-      title: "Tên đăng nhập",
+      title: "Username",
       dataIndex: "username",
       key: "username",
     },
@@ -128,7 +113,7 @@ const UserManagement = () => {
       key: "email",
     },
     {
-      title: "Vai trò",
+      title: "Role",
       dataIndex: "role",
       key: "role",
       render: (role) => (
@@ -145,7 +130,7 @@ const UserManagement = () => {
       ),
     },
     {
-      title: "Trạng thái",
+      title: "Status",
       dataIndex: "status",
       key: "status",
       render: (status) => (
@@ -155,7 +140,7 @@ const UserManagement = () => {
       ),
     },
     {
-      title: "Premium",
+      title: "Package",
       dataIndex: "premium",
       key: "premium",
       render: (premium, record) => {
@@ -174,7 +159,7 @@ const UserManagement = () => {
   return (
     <AdminLayout>
       <Title level={2} style={{ color: "#0056A1", marginBottom: "24px" }}>
-        Quản lý người dùng
+        User Management
       </Title>
       {loading ? (
         <div style={{ textAlign: "center", padding: "50px 0" }}>

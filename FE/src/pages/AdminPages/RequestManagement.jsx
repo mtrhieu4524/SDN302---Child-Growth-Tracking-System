@@ -1,19 +1,19 @@
-import React, { useEffect, useState } from "react";
+import { EyeOutlined } from "@ant-design/icons";
 import {
-  Table,
-  Space,
   Button,
-  Tag,
-  Modal,
   message,
-  Typography,
+  Modal,
   Pagination,
+  Space,
   Spin,
+  Table,
+  Tag,
+  Typography,
 } from "antd";
-import { CheckOutlined, CloseOutlined, EyeOutlined } from "@ant-design/icons";
-import AdminLayout from "../../layouts/AdminLayout";
-import api from "../../configs/api";
 import moment from "moment";
+import React, { useEffect, useState } from "react";
+import api from "../../configs/api";
+import AdminLayout from "../../layouts/AdminLayout";
 
 const { Title } = Typography;
 
@@ -121,27 +121,21 @@ const RequestManagement = () => {
     });
   };
 
-  const handleUpdateStatus = (requestId, newStatus) => {
-    message.success(
-      `Đã ${newStatus === "approved" ? "chấp nhận" : "từ chối"} yêu cầu`
-    );
-  };
-
   const columns = [
     {
-      title: "Người yêu cầu",
+      title: "Requestor",
       dataIndex: "username",
       key: "username",
       align: "center",
     },
     {
-      title: "Tên bác sĩ",
+      title: "Doctor Name",
       dataIndex: "doctorName",
       key: "doctorName",
       align: "center",
     },
     {
-      title: "Trạng thái",
+      title: "Status",
       dataIndex: "status",
       key: "status",
       align: "center",
@@ -177,7 +171,7 @@ const RequestManagement = () => {
       align: "center",
     },
     {
-      title: "Thao tác",
+      title: "Action",
       key: "action",
       align: "center",
       render: (_, record) => (
@@ -189,7 +183,7 @@ const RequestManagement = () => {
               color: "#0056A1",
               borderColor: "#0056A1",
             }}>
-            Chi tiết
+            View Details
           </Button>
         </Space>
       ),

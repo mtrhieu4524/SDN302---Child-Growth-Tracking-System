@@ -1,19 +1,19 @@
-import React, { useEffect, useState } from "react";
+import { DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 import {
-  Table,
-  Space,
   Button,
-  Tag,
-  Modal,
   message,
-  Typography,
+  Modal,
   Pagination,
+  Space,
   Spin,
+  Table,
+  Tag,
+  Typography,
 } from "antd";
-import { EditOutlined, DeleteOutlined, PlusOutlined } from "@ant-design/icons";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import AdminLayout from "../../../layouts/AdminLayout";
 import api from "../../../configs/api";
+import AdminLayout from "../../../layouts/AdminLayout";
 
 const { Title } = Typography;
 
@@ -53,20 +53,20 @@ const PremiumList = () => {
         const formattedPackages = response.data.packages.map((pkg) => ({
           key: pkg._id,
           name: pkg.name,
-          price: pkg.price.value, // Lấy giá từ price.value
-          duration: pkg.duration.value, // Lấy thời hạn từ duration.value
+          price: pkg.price.value,
+          duration: pkg.duration.value,
           features: [
             pkg.description,
             `Post limit: ${pkg.postLimit}`,
             `Update child data limit: ${pkg.updateChildDataLimit}`,
           ], // Tạo mảng features từ description, postLimit, updateChildDataLimit
-          status: pkg.isDeleted ? "inactive" : "active", // Suy ra status từ isDeleted
+          status: pkg.isDeleted ? "inactive" : "active",
         }));
         setPackages(formattedPackages);
         setPagination({
           current: page,
           pageSize: size,
-          total: response.data.total || response.data.packages.length, // Cập nhật total
+          total: response.data.total || response.data.packages.length,
         });
       } else {
         message.error("No packages found");
@@ -90,15 +90,6 @@ const PremiumList = () => {
     fetchPackages(pagination.current, pagination.pageSize);
   }, []);
 
-  const handlePageChange = (page, pageSize) => {
-    setPagination({
-      ...pagination,
-      current: page,
-      pageSize: pageSize,
-    });
-    fetchPackages(page, pageSize);
-  };
-
   const handleDelete = (packageId) => {
     Modal.confirm({
       title: "Xác nhận xóa gói Premium",
@@ -116,26 +107,26 @@ const PremiumList = () => {
 
   const columns = [
     {
-      title: "Tên gói",
+      title: "Package Name",
       dataIndex: "name",
       key: "name",
       align: "center",
     },
     {
-      title: "Giá (VNĐ)",
+      title: "Price (VNĐ)",
       dataIndex: "price",
       key: "price",
       align: "center",
       render: (price) => new Intl.NumberFormat("vi-VN").format(price),
     },
     {
-      title: "Thời hạn (ngày)",
+      title: "Duration (days)",
       dataIndex: "duration",
       key: "duration",
       align: "center",
     },
     {
-      title: "Tính năng",
+      title: "Features",
       dataIndex: "features",
       key: "features",
       align: "center",
@@ -150,7 +141,7 @@ const PremiumList = () => {
       ),
     },
     {
-      title: "Trạng thái",
+      title: "Status",
       dataIndex: "status",
       key: "status",
       align: "center",
@@ -161,7 +152,7 @@ const PremiumList = () => {
       ),
     },
     {
-      title: "Thao tác",
+      title: "Action",
       key: "action",
       align: "center",
       render: (_, record) => (
