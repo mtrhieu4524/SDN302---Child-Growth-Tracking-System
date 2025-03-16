@@ -5,6 +5,7 @@ import {
   SolutionOutlined,
   HeartOutlined,
   HistoryOutlined,
+  DashboardOutlined,
 } from "@ant-design/icons";
 import { useContext } from "react";
 import { AuthContext } from "../contexts/AuthContext";
@@ -12,14 +13,53 @@ import { useNavigate } from "react-router-dom";
 
 const { Header } = Layout;
 
+const ROLE_MAP = {
+  0: "member",
+  1: "admin",
+  2: "doctor",
+};
+
 const HeaderComponent = () => {
-  const { user, logout } = useContext(AuthContext); // Get user and logout from AuthContext
+  const { user, logout } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const handleLogout = async () => {
     await logout();
     navigate("/");
   };
+
+  const role = ROLE_MAP[user?.role] || "member";
+
+  const adminDropdownMenuItems = [
+    {
+      key: "dashboard",
+      label: <a href="/admin/dashboard">Dashboard</a>,
+      icon: <DashboardOutlined />,
+    },
+    {
+      key: "logout",
+      label: "Sign Out",
+      icon: <LogoutOutlined />,
+      onClick: handleLogout,
+    },
+  ];
+
+  const adminMenuItems = [
+    {
+      key: "health",
+      label: "Health & Nutrition",
+      children: [
+        { key: "growth-chart", label: <a href="/growth-chart">Growth Chart</a> },
+        {
+          key: "milestones",
+          label: <a href="/development-milestones">Development Milestones</a>,
+        },
+      ],
+    },
+    { key: "blogs", label: <a href="/blogs">Blogs</a> },
+    { key: "faqs", label: <a href="/faqs">FAQs</a> },
+    { key: "about-us", label: <a href="/about-us">About Us</a> },
+  ];
 
   const doctorDropdownMenuItems = [
     {
@@ -103,16 +143,25 @@ const HeaderComponent = () => {
         },
       ],
     },
-    { key: "membership", label: <a href="/membership">Membership</a> },
     { key: "blogs", label: <a href="/blogs">Blogs</a> },
+    { key: "membership", label: <a href="/membership">Membership</a> }, // Excluded for Admin
     { key: "faqs", label: <a href="/faqs">FAQs</a> },
     { key: "about-us", label: <a href="/about-us">About Us</a> },
   ];
 
-  // Determine menu and dropdown items based on user role
-  const menuItems = user?.role === "doctor" ? doctorMenuItems : memberMenuItems;
+  const menuItems =
+    role === "admin"
+      ? adminMenuItems
+      : role === "doctor"
+        ? doctorMenuItems
+        : memberMenuItems;
+
   const dropdownItems =
-    user?.role === "doctor" ? doctorDropdownMenuItems : memberDropdownMenuItems;
+    role === "admin"
+      ? adminDropdownMenuItems
+      : role === "doctor"
+        ? doctorDropdownMenuItems
+        : memberDropdownMenuItems;
 
   return (
     <div>
@@ -201,7 +250,8 @@ const HeaderComponent = () => {
                   style={{ marginRight: "5px", marginTop: "4px", fontSize: 24 }}
                 />
                 <p style={{ marginRight: "20px", marginTop: "22px" }}>
-                  {user.name.charAt(0).toUpperCase() + user.name.slice(1)}
+                  {user.name.charAt(0).toUpperCase() + user.name.slice(1)} (
+                  {role.charAt(0).toUpperCase() + role.slice(1)})
                 </p>
               </a>
             </Dropdown>
