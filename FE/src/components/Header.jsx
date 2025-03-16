@@ -34,7 +34,6 @@ const HeaderComponent = () => {
       key: "tracking",
       label: "Growth Tracking",
       children: [
-        { key: "growth-tracker", label: <a href="/growth-tracker">Tracker</a> },
         {
           key: "growth-chart",
           label: <a href="/growth-chart">Growth Chart</a>,
@@ -47,9 +46,9 @@ const HeaderComponent = () => {
       children: [
         {
           key: "milestones",
-          label: <a href="/milestones">Development Milestones</a>,
+          label: <a href="#">Development Milestones</a>,
         },
-        { key: "alerts", label: <a href="/alerts">Health Alerts</a> },
+        { key: "alerts", label: <a href="#">Health Alerts</a> },
       ],
     },
     {
@@ -58,7 +57,7 @@ const HeaderComponent = () => {
       children: [
         {
           key: "consultation",
-          label: <a href="/consultation">Doctor Consultation</a>,
+          label: <a href="#">Doctor Consultation</a>,
         },
         { key: "membership", label: <a href="/membership">Membership Plan</a> },
       ],

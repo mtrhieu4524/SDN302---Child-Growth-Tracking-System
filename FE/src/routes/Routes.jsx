@@ -16,7 +16,9 @@ import UserManagement from "../pages/AdminPages/UserManagement";
 import AddPremium from "../pages/AdminPages/PremiumManagement/AddPremium";
 import UpdatePremium from "../pages/AdminPages/PremiumManagement/UpdatePremium";
 import PremiumList from "../pages/AdminPages/PremiumManagement/PremiumList";
-
+import GrowthTracker from "../pages/MemberPages/GrowthTracker";
+import GrowthChartMember from "../pages/MemberPages/GrowthChartMember";
+import BlogDetailed from "../pages/BlogDetailed";
 import PrivateRoute from "./PrivateRoute";
 import { Role } from "../enums/Role";
 import VerificationSent from "../pages/VerificationSent";
@@ -38,7 +40,14 @@ export default function AppRoute() {
       <Route path={routes.blogs} element={<Blogs />} />
       <Route path={routes.membership} element={<Membership />} />
       <Route path={routes.growthChart} element={<GrowthChart />} />
-      <Route path={routes.verificationSent} element={<VerificationSent />} />
+        <Route path={routes.blogDetail} element={<BlogDetailed />} />
+
+        {/* Membership pages */}
+        <Route path={routes.growthTracker} element={<GrowthTracker />} />
+        <Route
+          path={routes.growthChartMember}
+          element={<GrowthChartMember />}
+        />      <Route path={routes.verificationSent} element={<VerificationSent />} />
 
       {/* Admin Routes */}
       <Route
@@ -48,11 +57,14 @@ export default function AppRoute() {
         }
       />
       <Route
-        path={routes.requestManagement}
-        element={
+       
+          path={routes.requestManagement}
+       
+          element={
           <PrivateRoute
             element={<RequestManagement />}
-          />
+         
+        />
         }
       />
       <Route
