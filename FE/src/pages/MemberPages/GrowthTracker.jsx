@@ -48,7 +48,7 @@ const GrowthTracker = () => {
 
   const contentStyle = {
     minHeight: "calc(100vh - 128px)",
-    padding: "80px 20px 20px",
+    padding: "80px 20px 80px 20px",
     background: "#f0f2f5",
   };
 
@@ -160,7 +160,6 @@ const GrowthTracker = () => {
           </Form>
         </Card>
       </Content>
-      <br /><br /><br /><br />
       <FooterComponent />
       <ScrollToTop />
     </Layout>
