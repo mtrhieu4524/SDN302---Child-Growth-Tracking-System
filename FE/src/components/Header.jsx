@@ -7,13 +7,7 @@ import { AuthContext } from "../contexts/AuthContext";
 const { Header } = Layout;
 
 const HeaderComponent = () => {
-  const navigate = useNavigate();
   const { user, logout } = useContext(AuthContext);
-
-  const handleLogout = () => {
-    logout();
-    navigate("/login");
-  };
 
   const userMenuItems = [
     {
@@ -25,7 +19,7 @@ const HeaderComponent = () => {
       key: "logout",
       label: "Logout",
       icon: <LogoutOutlined />,
-      onClick: handleLogout,
+      onClick: logout,
     },
   ];
 
