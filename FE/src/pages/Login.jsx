@@ -12,7 +12,6 @@ import { AuthContext } from "../contexts/AuthContext";
 const { Title, Text } = Typography;
 
 const Login = () => {
-  const navigate = useNavigate();
   const { login } = useContext(AuthContext);
 
   useEffect(() => {
@@ -38,7 +37,6 @@ const Login = () => {
 
         if (response.status >= 200 && response.status < 300) {
           message.success("Login success!");
-          navigate("/");
         } else {
           if (response.validationErrors) {
             response.validationErrors.forEach((error) => {

@@ -20,6 +20,9 @@ const PublicRoute = ({ element }) => {
   }
 
   if (user) {
+    if (user.role === Role.ADMIN) {
+      return <Navigate to="/admin/dashboard" replace />
+    }
     return <Navigate to="/" replace />;
   }
 

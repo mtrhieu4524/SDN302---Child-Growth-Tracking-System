@@ -19,6 +19,7 @@ api.interceptors.response.use(
         return api(originalRequest);
       } catch (refreshError) {
         console.error("Refresh token failed:", refreshError);
+        navigate("/login");
       }
     }
     return Promise.reject(error);
