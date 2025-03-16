@@ -18,10 +18,9 @@ export const AuthProvider = ({ children }) => {
       } catch (error) {
         if (error.response?.status === 401) {
           await refreshAccessToken();
-        } 
-        else if (error.response?.status === 403) {
-           await logout();
-         }
+        } else if (error.response?.status === 403) {
+          await logout();
+        }
       } finally {
         setLoading(false);
       }
@@ -33,10 +32,9 @@ export const AuthProvider = ({ children }) => {
   const refreshAccessToken = async () => {
     try {
       await api.post("/auth/renew-access-token");
-      const { data } = await api.get("/auth/me"); 
+      const { data } = await api.get("/auth/me");
       setUser(data.user);
-    } catch (error) {
-    }
+    } catch (error) {}
   };
 
   const login = async (email, password) => {
@@ -67,7 +65,7 @@ export const AuthProvider = ({ children }) => {
   const logout = async () => {
     await api.post("/auth/logout");
     setUser(null);
-    navigate('/login')
+    navigate("/login");
   };
 
   return (
