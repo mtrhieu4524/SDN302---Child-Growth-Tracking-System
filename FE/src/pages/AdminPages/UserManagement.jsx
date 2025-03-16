@@ -1,21 +1,16 @@
-import React, { useEffect, useState } from "react";
-import {
-  Table,
-  Space,
-  Button,
-  Tag,
-  Modal,
-  message,
-  Typography,
-  Pagination,
-  Spin,
-} from "antd";
-import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
-import AdminLayout from "../../layouts/AdminLayout";
-import axios from "axios";
+import { message, Modal, Pagination, Spin, Table, Tag, Typography } from "antd";
 import moment from "moment";
+import React, { useEffect, useState } from "react";
+import api from "../../configs/api";
+import AdminLayout from "../../layouts/AdminLayout";
 
 const { Title } = Typography;
+
+const ROLE_MAP = {
+  0: "member",
+  1: "admin",
+  2: "doctor",
+};
 
 const UserManagement = () => {
   const [loading, setLoading] = useState(true);
@@ -26,10 +21,10 @@ const UserManagement = () => {
     total: 0,
   });
 
-  const fetchUsers = async (page = 1, size = 10) => {
+  const fetchUsers = async (page = 1, size = pagination.pageSize) => {
     setLoading(true);
     try {
-      const response = await axios.get("http://localhost:4000/api/users", {
+      const response = await api.get("/users", {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${
@@ -49,15 +44,30 @@ const UserManagement = () => {
       console.log("Fetched users:", response.data);
 
       if (response.data && response.data.users) {
-        const formattedUsers = response.data.users.map((user) => ({
-          key: user._id,
-          username: user.username,
-          email: user.email,
-          role: user.role || "user",
-          status: user.status || "active",
-          premium: user.premium || false,
-          createdAt: moment(user.createdAt).format("YYYY-MM-DD"),
-        }));
+        const formattedUsers = response.data.users.map((user) => {
+          const role = ROLE_MAP[user.role] || "member";
+          let premium = null;
+
+          if (role === "member" && user.subscription) {
+            premium =
+              user.subscription.startDate &&
+              user.subscription.endDate &&
+              moment().isBetween(
+                moment(user.subscription.startDate),
+                moment(user.subscription.endDate)
+              );
+          }
+
+          return {
+            key: user._id,
+            username: user.name,
+            email: user.email,
+            role,
+            status: user.status || "active",
+            premium,
+            createdAt: moment(user.createdAt).format("YYYY-MM-DD"),
+          };
+        });
         setUsers(formattedUsers);
         setPagination({
           current: page,
@@ -122,7 +132,14 @@ const UserManagement = () => {
       dataIndex: "role",
       key: "role",
       render: (role) => (
-        <Tag color={role === "admin" ? "#0056A1" : "#0082C8"}>
+        <Tag
+          color={
+            role === "admin"
+              ? "#0056A1"
+              : role === "doctor"
+              ? "#52c41a"
+              : "#0082C8"
+          }>
           {role.toUpperCase()}
         </Tag>
       ),
@@ -141,35 +158,16 @@ const UserManagement = () => {
       title: "Premium",
       dataIndex: "premium",
       key: "premium",
-      render: (premium) => (
-        <Tag color={premium ? "#722ed1" : "#d9d9d9"}>
-          {premium ? "Premium" : "Free"}
-        </Tag>
-      ),
-    },
-    {
-      title: "Thao tác",
-      key: "action",
-      render: (_, record) => (
-        <Space size="middle">
-          <Button
-            type="primary"
-            icon={<EditOutlined />}
-            onClick={() => message.info("Chức năng đang phát triển")}
-            style={{
-              background: "linear-gradient(to right, #0056A1, #0082C8)",
-              border: "none",
-            }}>
-            Sửa
-          </Button>
-          <Button
-            danger
-            icon={<DeleteOutlined />}
-            onClick={() => handleDelete(record.key)}>
-            Xóa
-          </Button>
-        </Space>
-      ),
+      render: (premium, record) => {
+        if (record.role === "doctor") {
+          return <Tag color="#d9d9d9">Không áp dụng</Tag>;
+        }
+        return (
+          <Tag color={premium ? "#722ed1" : "#1890ff"}>
+            {premium ? "Premium" : "Free"}
+          </Tag>
+        );
+      },
     },
   ];
 
@@ -204,8 +202,6 @@ const UserManagement = () => {
               pageSize={pagination.pageSize}
               total={pagination.total}
               onChange={handlePageChange}
-              showSizeChanger
-              showTotal={(total) => `Tổng ${total} người dùng`}
             />
           </div>
         </>
