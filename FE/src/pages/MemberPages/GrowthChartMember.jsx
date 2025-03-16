@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Card, Button, Typography } from "antd";
+import { Card, Button, Typography, Select } from "antd";
 import { Line } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -15,6 +15,7 @@ import { useNavigate } from "react-router-dom";
 import HeaderComponent from "../../components/Header";
 import FooterComponent from "../../components/Footer";
 import ScrollToTop from "../../components/ScrollToTop";
+import { RightOutlined } from "@ant-design/icons";
 
 ChartJS.register(
   CategoryScale,
@@ -27,26 +28,48 @@ ChartJS.register(
 );
 
 const { Title, Text } = Typography;
+const { Option } = Select;
 
-const GrowthChartMember = () => {
-  const navigate = useNavigate();
-  const [chartData, setChartData] = useState({});
-
-  useEffect(() => {
-    const hardcodedData = [
+const fakeChildren = [
+  {
+    id: 1, name: "Emma Johnson", data: [
       { date: "2023-01-01", weight: 3.5, height: 50, bmi: 14.0 },
       { date: "2023-06-01", weight: 6.0, height: 60, bmi: 16.67 },
       { date: "2024-01-01", weight: 9.0, height: 70, bmi: 18.37 },
       { date: "2024-06-01", weight: 11.0, height: 80, bmi: 17.19 },
       { date: "2025-01-01", weight: 13.0, height: 90, bmi: 16.05 },
-    ];
+    ],
+  },
+  {
+    id: 2, name: "Liam Smith", data: [
+      { date: "2023-01-01", weight: 4.0, height: 52, bmi: 14.8 },
+      { date: "2023-06-01", weight: 7.2, height: 62, bmi: 18.76 },
+      { date: "2024-01-01", weight: 10.5, height: 72, bmi: 20.21 },
+      { date: "2024-06-01", weight: 12.8, height: 82, bmi: 19.06 },
+      { date: "2025-01-01", weight: 15.0, height: 92, bmi: 17.72 },
+    ],
+  },
+];
 
-    const chartDataFormat = {
-      labels: hardcodedData.map((item) => item.date),
+const GrowthChartMember = () => {
+  const navigate = useNavigate();
+  const [selectedChild, setSelectedChild] = useState(fakeChildren[0].id);
+  const [chartData, setChartData] = useState({});
+
+  useEffect(() => {
+    updateChartData(selectedChild);
+  }, [selectedChild]);
+
+  const updateChartData = (childId) => {
+    const child = fakeChildren.find((c) => c.id === childId);
+    if (!child) return;
+
+    const formattedData = {
+      labels: child.data.map((item) => item.date),
       datasets: [
         {
           label: "Weight (kg)",
-          data: hardcodedData.map((item) => item.weight),
+          data: child.data.map((item) => item.weight),
           borderColor: "rgb(255, 99, 132)",
           backgroundColor: "rgba(255, 99, 132, 0.2)",
           tension: 0.4,
@@ -55,7 +78,7 @@ const GrowthChartMember = () => {
         },
         {
           label: "Height (cm)",
-          data: hardcodedData.map((item) => item.height),
+          data: child.data.map((item) => item.height),
           borderColor: "rgb(53, 162, 235)",
           backgroundColor: "rgba(53, 162, 235, 0.2)",
           tension: 0.4,
@@ -64,7 +87,7 @@ const GrowthChartMember = () => {
         },
         {
           label: "BMI",
-          data: hardcodedData.map((item) => item.bmi),
+          data: child.data.map((item) => item.bmi),
           borderColor: "rgb(75, 192, 192)",
           backgroundColor: "rgba(75, 192, 192, 0.2)",
           tension: 0.4,
@@ -74,21 +97,15 @@ const GrowthChartMember = () => {
       ],
     };
 
-    setChartData(chartDataFormat);
-  }, []);
+    setChartData(formattedData);
+  };
 
   const options = {
     responsive: true,
     plugins: {
       legend: {
         position: "top",
-        labels: {
-          font: { size: 14 },
-          padding: 20,
-        },
-      },
-      title: {
-        display: false,
+        labels: { font: { size: 14 }, padding: 20 },
       },
       tooltip: {
         backgroundColor: "rgba(0,0,0,0.8)",
@@ -100,20 +117,12 @@ const GrowthChartMember = () => {
     scales: {
       x: {
         grid: { display: false },
-        title: {
-          display: true,
-          text: "Date",
-          font: { size: 14 },
-        },
+        title: { display: true, text: "Date", font: { size: 14 } },
       },
       y: {
         beginAtZero: true,
         grid: { color: "rgba(0,0,0,0.05)" },
-        title: {
-          display: true,
-          text: "Measurements",
-          font: { size: 14 },
-        },
+        title: { display: true, text: "Measurements", font: { size: 14 } },
       },
     },
     maintainAspectRatio: false,
@@ -143,13 +152,26 @@ const GrowthChartMember = () => {
                 </Title>
                 <Text type="secondary">Track your child's development over time</Text>
               </div>
-              <Button
-                type="primary"
-                onClick={() => navigate("/profile/growth-tracker")}
-                style={{ backgroundColor: "#0082c8", borderColor: "#0082c8" }}
-              >
-                Import Data
-              </Button>
+              <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                <Select
+                  value={selectedChild}
+                  onChange={(value) => setSelectedChild(value)}
+                  style={{ width: 200 }}
+                >
+                  {fakeChildren.map((child) => (
+                    <Option key={child.id} value={child.id}>
+                      {child.name}
+                    </Option>
+                  ))}
+                </Select>
+                <Button
+                  type="primary"
+                  onClick={() => navigate("/profile/growth-tracker")}
+                  style={{ backgroundColor: "#0082c8", borderColor: "#0082c8" }}
+                >
+                  Import Data <RightOutlined />
+                </Button>
+              </div>
             </div>
           }
           style={{
@@ -158,13 +180,13 @@ const GrowthChartMember = () => {
             borderRadius: 8,
             boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
           }}
-          headStyle={{ background: "#fafafa", borderBottom: "none" }}>
+          headStyle={{ background: "#fafafa", borderBottom: "none" }}
+        >
           <div style={{ height: "400px" }}>
             {chartData.labels && <Line options={options} data={chartData} />}
           </div>
         </Card>
       </div>
-
 
       <FooterComponent />
       <ScrollToTop />
