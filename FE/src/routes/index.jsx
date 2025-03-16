@@ -7,8 +7,13 @@ export const routes = {
   blogs: "/blogs",
   membership: "/membership",
   growthChart: "/growth-chart",
+  blogDetail: "/blogs/:id",
 
-  // Admin pages 
+  // Membership pages
+  growthTracker: "profile/growth-tracker",
+  growthChartMember: "profile/growth-chart",
+
+  // Admin pages
   dashboard: "/dashboard",
   userManagement: "/user-management",
   requestManagement: "/request-management",

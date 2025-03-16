@@ -16,7 +16,9 @@ import UserManagement from "../pages/AdminPages/UserManagement";
 import AddPremium from "../pages/AdminPages/PremiumManagement/AddPremium";
 import UpdatePremium from "../pages/AdminPages/PremiumManagement/UpdatePremium";
 import PremiumList from "../pages/AdminPages/PremiumManagement/PremiumList";
-
+import GrowthTracker from "../pages/MemberPages/GrowthTracker";
+import GrowthChartMember from "../pages/MemberPages/GrowthChartMember";
+import BlogDetailed from "../pages/BlogDetailed";
 
 export default function AppRoute() {
   return (
@@ -30,11 +32,21 @@ export default function AppRoute() {
         <Route path={routes.blogs} element={<Blogs />} />
         <Route path={routes.membership} element={<Membership />} />
         <Route path={routes.growthChart} element={<GrowthChart />} />
+        <Route path={routes.blogDetail} element={<BlogDetailed />} />
 
+        {/* Membership pages */}
+        <Route path={routes.growthTracker} element={<GrowthTracker />} />
+        <Route
+          path={routes.growthChartMember}
+          element={<GrowthChartMember />}
+        />
 
         {/* Admin pages */}
         <Route path={routes.dashboard} element={<Dashboard />} />
-        <Route path={routes.requestManagement} element={<RequestManagement />} />
+        <Route
+          path={routes.requestManagement}
+          element={<RequestManagement />}
+        />
         <Route path={routes.userManagement} element={<UserManagement />} />
         <Route path={routes.addPremium} element={<AddPremium />} />
         <Route path={routes.updatePremium} element={<UpdatePremium />} />
