@@ -7,6 +7,7 @@ export const routes = {
   blogs: "/blogs",
   membership: "/membership",
   growthChart: "/growth-chart",
+  verificationSent: "/verification-sent",
   blogDetail: "/blogs/:id",
 
   // Membership pages

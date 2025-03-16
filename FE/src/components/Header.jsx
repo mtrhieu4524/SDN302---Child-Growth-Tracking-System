@@ -1,46 +1,29 @@
 import { Layout, Menu, Button, Input, Dropdown } from "antd";
 import { useNavigate } from "react-router-dom";
 import { UserOutlined, LogoutOutlined } from "@ant-design/icons";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
+import { AuthContext } from "../contexts/AuthContext";
 
 const { Header } = Layout;
 
 const HeaderComponent = () => {
   const navigate = useNavigate();
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [userName, setUserName] = useState("");
-
-  useEffect(() => {
-    const user = localStorage.getItem("user");
-    const adminToken = localStorage.getItem("adminToken");
-
-    if (adminToken) {
-      setIsLoggedIn(true);
-      setUserName("Admin User");
-    } else if (user) {
-      const userData = JSON.parse(user);
-      setIsLoggedIn(true);
-      setUserName(userData.username || "User");
-    }
-  }, []);
+  const { user, logout } = useContext(AuthContext);
 
   const handleLogout = () => {
-    localStorage.removeItem("user");
-    localStorage.removeItem("adminToken");
-    setIsLoggedIn(false);
-    setUserName("");
+    logout();
     navigate("/login");
   };
 
   const userMenuItems = [
     {
       key: "profile",
-      label: <a href="/profile">Hồ sơ</a>,
+      label: <a href="/profile">Profile</a>,
       icon: <UserOutlined />,
     },
     {
       key: "logout",
-      label: "Đăng xuất",
+      label: "Logout",
       icon: <LogoutOutlined />,
       onClick: handleLogout,
     },
@@ -158,7 +141,7 @@ const HeaderComponent = () => {
             gap: "15px",
             marginRight: "10px",
           }}>
-          {isLoggedIn ? (
+          {user ? (
             <Dropdown menu={{ items: userMenuItems }} placement="bottomRight">
               <a
                 style={{
@@ -168,7 +151,7 @@ const HeaderComponent = () => {
                   alignItems: "center",
                 }}>
                 <UserOutlined style={{ marginRight: 8 }} />
-                {userName}
+                {user.name} {/* Directly use user.name */}
               </a>
             </Dropdown>
           ) : (
