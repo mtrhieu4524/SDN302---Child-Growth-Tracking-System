@@ -17,29 +17,72 @@ import AddPremium from "../pages/AdminPages/PremiumManagement/AddPremium";
 import UpdatePremium from "../pages/AdminPages/PremiumManagement/UpdatePremium";
 import PremiumList from "../pages/AdminPages/PremiumManagement/PremiumList";
 
+import PrivateRoute from "./PrivateRoute";
+import { Role } from "../enums/Role";
+import VerificationSent from "../pages/VerificationSent";
+import PublicRoute from "./PublicRoute";
 
 export default function AppRoute() {
   return (
-    <>
-      <Routes>
-        <Route path={routes.home} element={<Home />} />
-        <Route path={routes.login} element={<Login />} />
-        <Route path={routes.register} element={<Register />} />
-        <Route path={routes.aboutUs} element={<About />} />
-        <Route path={routes.faqs} element={<FAQs />} />
-        <Route path={routes.blogs} element={<Blogs />} />
-        <Route path={routes.membership} element={<Membership />} />
-        <Route path={routes.growthChart} element={<GrowthChart />} />
+    <Routes>
+      {/* Public Routes */}
+      <Route path={routes.home} element={<Home />} />
+      <Route path={routes.login} element={
+        <PublicRoute element={<Login />} />
+      } />
+      <Route path={routes.register} element={
+        <PublicRoute element={<Register />} />
+      } />
+      <Route path={routes.aboutUs} element={<About />} />
+      <Route path={routes.faqs} element={<FAQs />} />
+      <Route path={routes.blogs} element={<Blogs />} />
+      <Route path={routes.membership} element={<Membership />} />
+      <Route path={routes.growthChart} element={<GrowthChart />} />
+      <Route path={routes.verificationSent} element={<VerificationSent />} />
 
-
-        {/* Admin pages */}
-        <Route path={routes.dashboard} element={<Dashboard />} />
-        <Route path={routes.requestManagement} element={<RequestManagement />} />
-        <Route path={routes.userManagement} element={<UserManagement />} />
-        <Route path={routes.addPremium} element={<AddPremium />} />
-        <Route path={routes.updatePremium} element={<UpdatePremium />} />
-        <Route path={routes.premiumList} element={<PremiumList />} />
-      </Routes>
-    </>
+      {/* Admin Routes */}
+      <Route
+        path={routes.dashboard}
+        element={
+          <PrivateRoute element={<Dashboard />} />
+        }
+      />
+      <Route
+        path={routes.requestManagement}
+        element={
+          <PrivateRoute
+            element={<RequestManagement />}
+          />
+        }
+      />
+      <Route
+        path={routes.userManagement}
+        element={
+          <PrivateRoute
+            element={<UserManagement />}
+          />
+        }
+      />
+      <Route
+        path={routes.addPremium}
+        element={
+          <PrivateRoute requiredRole={Role.ADMIN} element={<AddPremium />} />
+        }
+      />
+      <Route
+        path={routes.updatePremium}
+        element={
+          <PrivateRoute
+            element={<UpdatePremium />}
+          />
+        }
+      />
+      <Route
+        path={routes.premiumList}
+        element={
+          <PrivateRoute requiredRole={Role.ADMIN} element={<PremiumList />} />
+        }
+      />
+    </Routes>
   );
 }

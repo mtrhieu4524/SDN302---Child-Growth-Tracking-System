@@ -1,72 +1,58 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Form, Input, Button, Checkbox, Card, Typography, message } from "antd";
+import { Form, Input, Button, Card, Typography, message } from "antd";
 import { UserOutlined, LockOutlined } from "@ant-design/icons";
+import { useFormik } from "formik";
+import * as Yup from "yup";
 import Header from "./../components/Header";
 import Footer from "./../components/Footer";
 import ScrollToTop from "./../components/ScrollToTop";
+import { AuthContext } from "../contexts/AuthContext";
 
 const { Title, Text } = Typography;
 
 const Login = () => {
-  const [form] = Form.useForm();
   const navigate = useNavigate();
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const { login } = useContext(AuthContext);
 
   useEffect(() => {
     document.title = "Child Growth Tracking - Sign In";
   }, []);
 
-  const handleLogin = async () => {
-    const response = await fetch("http://localhost:4000/api/auth/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        email: username,
-        password,
-      }),
-    });
+  
+  const formik = useFormik({
+    initialValues: {
+      email: "",
+      password: "",
+      remember: false,
+    },
+    validationSchema: Yup.object({
+      email: Yup.string()
+        .email("Invalid email address")
+        .required("Email is required"),
+      password: Yup.string().required("Password is required"),
+    }),
+    onSubmit: async (values) => {
+      try {
+        const response = await login(values.email, values.password);
 
-    const data = await response.json();
-
-    console.log(data);
-
-    if (response.ok) {
-      const data = await response.json();
-      localStorage.setItem("access_token", JSON.stringify(data));
-      localStorage.setItem("loggedIn", true);
-      message.success("Đăng nhập thành công!");
-      navigate("/");
-    } else {
-      setError(data.message);
-    }
-  };
-
-  // Hardcoded admin credentials
-  // const ADMIN_CREDENTIALS = {
-  //   username: "admin",
-  //   password: "admin123",
-  // };
-
-  // const onFinish = (values) => {
-  //   // Check if credentials match admin account
-  //   if (
-  //     values.username === ADMIN_CREDENTIALS.username &&
-  //     values.password === ADMIN_CREDENTIALS.password
-  //   ) {
-  //     // Store admin token
-  //     localStorage.setItem("adminToken", "dummy-admin-token");
-  //     message.success("Đăng nhập thành công!");
-  //     navigate("/dashboard");
-  //   } else {
-  //     // Handle normal user login here
-  //     message.error("Tài khoản hoặc mật khẩu không đúng!");
-  //   }
-  // };
+        if (response.status >= 200 && response.status < 300) {
+          message.success("Login success!");
+          navigate("/");
+        } else {
+          if (response.validationErrors) {
+            response.validationErrors.forEach((error) => {
+              formik.setFieldError(error.field, error.error);
+            });
+          } else {
+            message.error(response.message || "Login failed");
+          }
+        }
+      } catch (error) {
+        message.error(error.response.data.message || "An unexpected error occurred. Please try again.");
+      }
+    },
+  });
 
   return (
     <div
@@ -100,66 +86,49 @@ const Login = () => {
             </Text>
           </div>
 
-          <Form
-            form={form}
-            name="login"
-            onFinish={handleLogin}
-            layout="vertical"
-            size="large">
+          <Form onFinish={formik.handleSubmit}>
             <Form.Item
-              name="username"
-              rules={[
-                {
-                  required: true,
-                  message: "Please enter username!",
-                },
-              ]}>
+              help={formik.touched.email && formik.errors.email}
+              validateStatus={
+                formik.touched.email && formik.errors.email ? "error" : ""
+              }>
               <Input
                 prefix={<UserOutlined style={{ color: "rgba(0,0,0,.25)" }} />}
-                onChange={(e) => setUsername(e.target.value)}
-                placeholder="Username"
+                name="email"
+                placeholder="Email"
+                value={formik.values.email}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
               />
             </Form.Item>
 
             <Form.Item
-              name="password"
-              rules={[
-                {
-                  required: true,
-                  message: "Please enter password!",
-                },
-              ]}>
+              help={formik.touched.password && formik.errors.password}
+              validateStatus={
+                formik.touched.password && formik.errors.password ? "error" : ""
+              }>
               <Input.Password
                 prefix={<LockOutlined style={{ color: "rgba(0,0,0,.25)" }} />}
-                onChange={(e) => setPassword(e.target.value)}
+                name="password"
                 placeholder="Password"
+                value={formik.values.password}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
               />
-            </Form.Item>
-
-            <Form.Item>
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                }}>
-                <Form.Item name="remember" valuePropName="checked" noStyle>
-                  <Checkbox>Remember me</Checkbox>
-                </Form.Item>
-              </div>
             </Form.Item>
 
             <Form.Item>
               <Button
                 type="primary"
                 htmlType="submit"
+                disabled={formik.isSubmitting} 
                 style={{
                   width: "100%",
                   height: "40px",
                   background: "linear-gradient(to right, #0056A1, #0082C8)",
                   border: "none",
                 }}>
-                Sign in
+                {formik.isSubmitting ? "Signing in..." : "Sign in"}
               </Button>
             </Form.Item>
           </Form>
