@@ -14,10 +14,10 @@ export const routes = {
   growthChartMember: "profile/growth-chart",
 
   // Admin pages
-  dashboard: "/dashboard",
-  userManagement: "/user-management",
-  requestManagement: "/request-management",
-  premiumList: "/premium-list",
-  addPremium: "/add-premium",
-  updatePremium: "/update-premium",
+  dashboard: "admin/dashboard",
+  userManagement: "admin/user-management",
+  requestManagement: "admin/request-management",
+  premiumList: "admin/premium-list",
+  addPremium: "admin/add-premium",
+  updatePremium: "admin/update-premium",
 };

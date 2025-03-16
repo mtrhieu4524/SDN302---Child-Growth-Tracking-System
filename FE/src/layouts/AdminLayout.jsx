@@ -1,16 +1,16 @@
-import React from 'react';
-import { Layout, Menu } from 'antd';
-import { useNavigate } from 'react-router-dom';
+import React from "react";
+import { Layout, Menu } from "antd";
+import { useNavigate } from "react-router-dom";
 import {
   DashboardOutlined,
   UserOutlined,
   FileOutlined,
   CrownOutlined,
   LogoutOutlined,
-} from '@ant-design/icons';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
-import ScrollToTop from '../components/ScrollToTop';
+} from "@ant-design/icons";
+import Header from "../components/Header";
+import Footer from "../components/Footer";
+import ScrollToTop from "../components/ScrollToTop";
 
 const { Content, Sider } = Layout;
 
@@ -19,89 +19,93 @@ const AdminLayout = ({ children }) => {
 
   const menuItems = [
     {
-      key: '/dashboard',
+      key: "/admin/dashboard",
       icon: <DashboardOutlined />,
-      label: 'Dashboard',
+      label: "Dashboard",
     },
     {
-      key: '/user-management',
+      key: "/admin/user-management",
       icon: <UserOutlined />,
-      label: 'Quản lý người dùng',
+      label: "Quản lý người dùng",
     },
     {
-      key: '/request-management',
+      key: "/admin/request-management",
       icon: <FileOutlined />,
-      label: 'Quản lý yêu cầu',
+      label: "Quản lý yêu cầu",
     },
     {
-      key: '/premium-list',
+      key: "/admin/premium-list",
       icon: <CrownOutlined />,
-      label: 'Quản lý Premium',
+      label: "Quản lý Premium",
     },
     {
-      key: '/logout',
+      key: "/logout",
       icon: <LogoutOutlined />,
-      label: 'Đăng xuất',
+      label: "Đăng xuất",
       danger: true,
     },
   ];
 
   const handleMenuClick = (e) => {
-    if (e.key === '/logout') {
-      localStorage.removeItem('adminToken');
-      navigate('/login');
+    if (e.key === "/logout") {
+      localStorage.removeItem("adminToken");
+      navigate("/login");
     } else {
       navigate(e.key);
     }
   };
 
   return (
-    <div style={{ 
-      display: "flex", 
-      flexDirection: "column", 
-      minHeight: "100vh",
-      backgroundColor: "#e5f1f1",
-      margin: "-8px",
-      width: "calc(100% + 16px)",
-    }}>
-      <Header />
-      <div style={{ 
-        flex: 1, 
-        display: 'flex', 
-        marginTop: "20px",
-        marginBottom: "40px",
-        minHeight: "calc(100vh - 300px)",
-        gap: "24px",
-        padding: "0 24px",
-        width: "100%",
-        boxSizing: "border-box",
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        minHeight: "100vh",
+        backgroundColor: "#e5f1f1",
+        margin: "-8px",
+        width: "calc(100% + 16px)",
       }}>
+      <Header />
+      <div
+        style={{
+          flex: 1,
+          display: "flex",
+          marginTop: "20px",
+          marginBottom: "40px",
+          minHeight: "calc(100vh - 300px)",
+          gap: "24px",
+          padding: "0 24px",
+          width: "100%",
+          boxSizing: "border-box",
+        }}>
         <Sider
           width={250}
           style={{
             background: "#fff",
             borderRight: "1px solid #f0f0f0",
             minHeight: "calc(100% - 20px)",
-            position: 'sticky',
-            top: '120px',
-            overflowY: 'auto',
-            marginTop: '10px',
-            borderRadius: '8px',
+            position: "sticky",
+            top: "120px",
+            overflowY: "auto",
+            marginTop: "10px",
+            borderRadius: "8px",
             boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
-          }}
-        >
-          <div style={{ 
-            height: '64px', 
-            display: 'flex', 
-            alignItems: 'center', 
-            justifyContent: 'center',
-            background: "linear-gradient(to right, #0056A1, #0082C8)",
-            position: 'sticky',
-            top: 0,
-            zIndex: 1,
-            borderRadius: '8px 8px 0 0',
           }}>
-            <h1 style={{ color: 'white', margin: 0, fontSize: '20px' }}>Admin Panel</h1>
+          <div
+            style={{
+              height: "64px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              background: "linear-gradient(to right, #0056A1, #0082C8)",
+              position: "sticky",
+              top: 0,
+              zIndex: 1,
+              borderRadius: "8px 8px 0 0",
+            }}>
+            <h1 style={{ color: "white", margin: 0, fontSize: "20px" }}>
+              Admin Panel
+            </h1>
           </div>
           <Menu
             mode="inline"
@@ -110,23 +114,23 @@ const AdminLayout = ({ children }) => {
             onClick={handleMenuClick}
             style={{
               borderRight: 0,
-              padding: '12px 0'
+              padding: "12px 0",
             }}
           />
         </Sider>
-        <div style={{ 
-          flex: 1,
-          marginTop: '10px',
-        }}>
+        <div
+          style={{
+            flex: 1,
+            marginTop: "10px",
+          }}>
           <div
             style={{
-              background: '#fff',
+              background: "#fff",
               padding: 24,
-              borderRadius: '8px',
+              borderRadius: "8px",
               boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
-              minHeight: 'calc(100% - 20px)'
-            }}
-          >
+              minHeight: "calc(100% - 20px)",
+            }}>
             {children}
           </div>
         </div>
@@ -137,4 +141,4 @@ const AdminLayout = ({ children }) => {
   );
 };
 
-export default AdminLayout; 
+export default AdminLayout;
