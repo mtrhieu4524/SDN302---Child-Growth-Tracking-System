@@ -135,7 +135,7 @@ const UserManagement = () => {
       key: "status",
       render: (status) => (
         <Tag color={status === "active" ? "#52c41a" : "#faad14"}>
-          {status === "active" ? "Hoạt động" : "Không hoạt động"}
+          {status === "active" ? "Active" : "Inactive"}
         </Tag>
       ),
     },
@@ -145,7 +145,7 @@ const UserManagement = () => {
       key: "premium",
       render: (premium, record) => {
         if (record.role === "doctor") {
-          return <Tag color="#d9d9d9">Không áp dụng</Tag>;
+          return <Tag color="#d9d9d9">Not Applicable</Tag>;
         }
         return (
           <Tag color={premium ? "#722ed1" : "#1890ff"}>

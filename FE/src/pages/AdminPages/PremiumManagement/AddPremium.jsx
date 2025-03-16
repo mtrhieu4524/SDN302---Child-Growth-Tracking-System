@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { Form, Input, Button, InputNumber, Select, Typography, message } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import AdminLayout from '../../../layouts/AdminLayout';
+import api from '../../../configs/api';
 
 const { Title } = Typography;
 const { TextArea } = Input;
@@ -15,24 +16,41 @@ const AddPremium = () => {
         document.title = "Admin - Add Premium Package";
     }, []);
 
-    const features = [
-        'Tư vấn dinh dưỡng',
-        'Theo dõi phát triển',
-        'Tư vấn trực tiếp',
-        'Báo cáo chi tiết',
-        'Hỗ trợ 24/7'
-    ];
+    const onFinish = async (values) => {
+        try {
+            const formattedData = {
+                name: values.name,
+                description: values.description,
+                price: values.price,
+                unit: "VND",
+                duration: values.duration,
+                postLimit: values.postLimit,
+                updateChildDataLimit: values.updateChildDataLimit
+            };
 
-    const onFinish = (values) => {
-        console.log('Form values:', values);
-        message.success('Thêm gói Premium thành công!');
-        navigate('/premium-list');
+            console.log('Data being sent:', formattedData);
+
+            const response = await api.post('/membership-packages', formattedData);
+
+            if (response.status === 201) {
+                message.success('Premium package added successfully!');
+                navigate('/admin/premium-list');
+            }
+        } catch (error) {
+            console.error('Error details:', error.response || error);
+            if (error.response?.status === 401) {
+                message.error('Your session has expired. Please login again.');
+                navigate('/login');
+            } else {
+                message.error(error.response?.data?.message || 'Failed to add premium package');
+            }
+        }
     };
 
     return (
         <AdminLayout>
             <Title level={2} style={{ color: "#0056A1", marginBottom: "24px" }}>
-                Thêm gói Premium mới
+                Add New Premium Package
             </Title>
             
             <Form
@@ -43,16 +61,27 @@ const AddPremium = () => {
             >
                 <Form.Item
                     name="name"
-                    label="Tên gói"
-                    rules={[{ required: true, message: 'Vui lòng nhập tên gói!' }]}
+                    label="Package Name"
+                    rules={[{ required: true, message: 'Please enter package name!' }]}
                 >
-                    <Input placeholder="Nhập tên gói Premium" />
+                    <Input placeholder="Enter premium package name" />
+                </Form.Item>
+
+                <Form.Item
+                    name="description"
+                    label="Description"
+                    rules={[{ required: true, message: 'Please enter package description!' }]}
+                >
+                    <TextArea
+                        rows={4}
+                        placeholder="Enter detailed description of premium package"
+                    />
                 </Form.Item>
 
                 <Form.Item
                     name="price"
-                    label="Giá (VNĐ)"
-                    rules={[{ required: true, message: 'Vui lòng nhập giá gói!' }]}
+                    label="Price (VND)"
+                    rules={[{ required: true, message: 'Please enter package price!' }]}
                 >
                     <InputNumber
                         style={{ width: '100%' }}
@@ -60,65 +89,50 @@ const AddPremium = () => {
                         step={1000}
                         formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                         parser={value => value.replace(/\$\s?|(,*)/g, '')}
-                        placeholder="Nhập giá gói"
+                        placeholder="Enter package price"
                     />
                 </Form.Item>
 
                 <Form.Item
                     name="duration"
-                    label="Thời hạn (ngày)"
-                    rules={[{ required: true, message: 'Vui lòng nhập thời hạn!' }]}
+                    label="Duration (days)"
+                    rules={[{ required: true, message: 'Please enter duration!' }]}
                 >
                     <InputNumber
                         style={{ width: '100%' }}
                         min={1}
-                        placeholder="Nhập số ngày"
+                        placeholder="Enter number of days"
                     />
                 </Form.Item>
 
                 <Form.Item
-                    name="features"
-                    label="Tính năng"
-                    rules={[{ required: true, message: 'Vui lòng chọn ít nhất một tính năng!' }]}
+                    name="postLimit"
+                    label="Post Limit"
+                    rules={[{ required: true, message: 'Please enter post limit!' }]}
                 >
-                    <Select
-                        mode="multiple"
-                        placeholder="Chọn các tính năng của gói"
+                    <InputNumber
                         style={{ width: '100%' }}
-                    >
-                        {features.map(feature => (
-                            <Option key={feature} value={feature}>
-                                {feature}
-                            </Option>
-                        ))}
-                    </Select>
-                </Form.Item>
-
-                <Form.Item
-                    name="description"
-                    label="Mô tả"
-                >
-                    <TextArea
-                        rows={4}
-                        placeholder="Nhập mô tả chi tiết về gói Premium"
+                        min={1}
+                        placeholder="Enter post limit"
                     />
                 </Form.Item>
 
                 <Form.Item
-                    name="status"
-                    label="Trạng thái"
-                    initialValue="active"
+                    name="updateChildDataLimit"
+                    label="Update Child Data Limit"
+                    rules={[{ required: true, message: 'Please enter update child data limit!' }]}
                 >
-                    <Select>
-                        <Option value="active">Hoạt động</Option>
-                        <Option value="inactive">Tạm ngưng</Option>
-                    </Select>
+                    <InputNumber
+                        style={{ width: '100%' }}
+                        min={1}
+                        placeholder="Enter update child data limit"
+                    />
                 </Form.Item>
 
                 <Form.Item>
                     <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
-                        <Button onClick={() => navigate('/premium-list')}>
-                            Hủy
+                        <Button onClick={() => navigate('/admin/premium-list')}>
+                            Cancel
                         </Button>
                         <Button
                             type="primary"
@@ -128,7 +142,7 @@ const AddPremium = () => {
                                 border: "none"
                             }}
                         >
-                            Thêm gói
+                            Add Package
                         </Button>
                     </div>
                 </Form.Item>

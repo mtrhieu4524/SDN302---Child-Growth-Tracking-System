@@ -50,23 +50,25 @@ const PremiumList = () => {
       console.log("Fetched packages:", response.data.packages);
 
       if (response.data && response.data.packages) {
-        const formattedPackages = response.data.packages.map((pkg) => ({
-          key: pkg._id,
-          name: pkg.name,
-          price: pkg.price.value,
-          duration: pkg.duration.value,
-          features: [
-            pkg.description,
-            `Post limit: ${pkg.postLimit}`,
-            `Update child data limit: ${pkg.updateChildDataLimit}`,
-          ], // Tạo mảng features từ description, postLimit, updateChildDataLimit
-          status: pkg.isDeleted ? "inactive" : "active",
-        }));
+        const formattedPackages = response.data.packages
+          .filter(pkg => !pkg.isDeleted)
+          .map((pkg) => ({
+            key: pkg._id,
+            name: pkg.name,
+            price: pkg.price.value,
+            duration: pkg.duration.value,
+            features: [
+              pkg.description,
+              `Post limit: ${pkg.postLimit}`,
+              `Update child data limit: ${pkg.updateChildDataLimit}`,
+            ],
+            status: "active"
+          }));
         setPackages(formattedPackages);
         setPagination({
           current: page,
           pageSize: size,
-          total: response.data.total || response.data.packages.length,
+          total: formattedPackages.length,
         });
       } else {
         message.error("No packages found");
@@ -78,7 +80,7 @@ const PremiumList = () => {
       setPackages([]);
       setPagination({
         ...pagination,
-        total: 0, // Đặt lại total nếu có lỗi
+        total: 0,
       });
     } finally {
       setLoading(false);
@@ -92,15 +94,29 @@ const PremiumList = () => {
 
   const handleDelete = (packageId) => {
     Modal.confirm({
-      title: "Xác nhận xóa gói Premium",
-      content: "Bạn có chắc chắn muốn xóa gói Premium này?",
-      okText: "Xóa",
-      cancelText: "Hủy",
+      title: "Confirm Delete Premium Package",
+      content: "Are you sure you want to delete this premium package?",
+      okText: "Delete",
+      cancelText: "Cancel",
       okButtonProps: {
         style: { background: "#ff4d4f", borderColor: "#ff4d4f" },
       },
-      onOk: () => {
-        message.success("Đã xóa gói Premium");
+      onOk: async () => {
+        try {
+          const response = await api.delete(`/membership-packages/${packageId}`);
+          
+          if (response.status === 200) {
+            message.success('Premium package deleted successfully');
+            setPackages(packages.filter(pkg => pkg.key !== packageId));
+            setPagination(prev => ({
+              ...prev,
+              total: prev.total - 1
+            }));
+          }
+        } catch (error) {
+          console.error('Error deleting package:', error);
+          message.error(error.response?.data?.message || 'Failed to delete package');
+        }
       },
     });
   };
@@ -146,8 +162,8 @@ const PremiumList = () => {
       key: "status",
       align: "center",
       render: (status) => (
-        <Tag color={status === "active" ? "#52c41a" : "#d9d9d9"}>
-          {status === "active" ? "Đang hoạt động" : "Tạm ngưng"}
+        <Tag color="#52c41a">
+          Active
         </Tag>
       ),
     },
@@ -161,7 +177,7 @@ const PremiumList = () => {
             danger
             icon={<DeleteOutlined />}
             onClick={() => handleDelete(record.key)}>
-            Xóa
+            Delete
           </Button>
         </Space>
       ),
@@ -178,17 +194,17 @@ const PremiumList = () => {
           marginBottom: "24px",
         }}>
         <Title level={2} style={{ color: "#0056A1", margin: 0 }}>
-          Quản lý gói Premium
+          Premium Package Management
         </Title>
         <Button
           type="primary"
           icon={<PlusOutlined />}
-          onClick={() => navigate("/add-premium")}
+          onClick={() => navigate("/admin/add-premium")}
           style={{
             background: "linear-gradient(to right, #0056A1, #0082C8)",
             border: "none",
           }}>
-          Thêm gói mới
+          Add New Package
         </Button>
       </div>
       {loading ? (

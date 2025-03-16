@@ -1,4 +1,4 @@
-import { EyeOutlined } from "@ant-design/icons";
+import { EyeOutlined, CloseOutlined } from "@ant-design/icons";
 import {
   Button,
   message,
@@ -9,6 +9,7 @@ import {
   Table,
   Tag,
   Typography,
+  Avatar,
 } from "antd";
 import moment from "moment";
 import React, { useEffect, useState } from "react";
@@ -20,6 +21,8 @@ const { Title } = Typography;
 const RequestManagement = () => {
   const [loading, setLoading] = useState(true);
   const [requests, setRequests] = useState([]);
+  const [requestDetail, setRequestDetail] = useState(null);
+  const [detailLoading, setDetailLoading] = useState(false);
   const [pagination, setPagination] = useState({
     current: 1,
     pageSize: 10,
@@ -103,22 +106,107 @@ const RequestManagement = () => {
     fetchRequests(page, pageSize);
   };
 
-  const handleViewDetails = (requestId) => {
-    Modal.info({
-      title: "Chi tiết yêu cầu tư vấn",
-      content: (
-        <div>
-          <p>ID: {requestId}</p>
-          <p>Nội dung chi tiết sẽ được hiển thị ở đây</p>
-        </div>
-      ),
-      okButtonProps: {
-        style: {
-          background: "linear-gradient(to right, #0056A1, #0082C8)",
-          border: "none",
+  const handleViewDetails = async (requestId) => {
+    setDetailLoading(true);
+    try {
+      const response = await api.get(`/requests/${requestId}`);
+      const detail = response.data.request;
+      setRequestDetail(detail);
+
+      Modal.info({
+        title: "Consultation Request Details",
+        width: 600,
+        icon: null,
+        closeIcon: <CloseOutlined style={{ color: "#666666" }} />,
+        content: (
+          <div style={{ padding: "0" }}>
+            <div style={{ 
+              display: 'grid', 
+              gridTemplateColumns: '150px 1fr',
+              rowGap: '24px',
+              marginBottom: '20px'
+            }}>
+              <div>Request ID</div>
+              <div>{detail._id}</div>
+
+              <div>Title</div>
+              <div>{detail.title}</div>
+
+              <div>Status</div>
+              <div style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
+                <Tag color={
+                  detail.status.toLowerCase() === "pending" ? "#faad14" :
+                  detail.status.toLowerCase() === "approved" ? "#52c41a" :
+                  "#ff4d4f"
+                }>
+                  {detail.status === "Pending" ? "Pending" : 
+                   detail.status === "Approved" ? "Approved" :
+                   detail.status === "Canceled" ? "Canceled" : "Rejected"}
+                </Tag>
+                <span>Created Date</span>
+                <span>{moment(detail.createdAt).format("DD/MM/YYYY HH:mm")}</span>
+              </div>
+
+              <div>Requestor Information</div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <Avatar src={detail.member.avatar} size={40} style={{ backgroundColor: '#f0f0f0' }}>
+                  {!detail.member.avatar && detail.member.name.charAt(0)}
+                </Avatar>
+                <div>
+                  <div><strong>Name:</strong> {detail.member.name}</div>
+                  <div><strong>ID:</strong> {detail.member._id}</div>
+                </div>
+              </div>
+
+              <div>Doctor Information</div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <Avatar src={detail.doctor.avatar} size={40} style={{ backgroundColor: '#f0f0f0' }}>
+                  {!detail.doctor.avatar && detail.doctor.name.charAt(0)}
+                </Avatar>
+                <div>
+                  <div><strong>Name:</strong> {detail.doctor.name}</div>
+                  <div><strong>ID:</strong> {detail.doctor._id}</div>
+                </div>
+              </div>
+
+              <div>Child Information</div>
+              <div>
+                {detail.children.map((child) => (
+                  <div key={child._id}>
+                    <div><strong>Name:</strong> {child.name}</div>
+                    <div><strong>Birth Date:</strong> {moment(child.birthDate).format("DD/MM/YYYY")}</div>
+                    <div><strong>Gender:</strong> {child.gender === 1 ? "Male" : "Female"}</div>
+                    <div>
+                      <strong>Relationship:</strong> {
+                        child.relationships?.find(r => r.memberId === detail.member._id)?.type || "Other"
+                      }
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div>Last Updated</div>
+              <div>{moment(detail.updatedAt).format("DD/MM/YYYY HH:mm")}</div>
+            </div>
+          </div>
+        ),
+        okText: "Close",
+        okButtonProps: {
+          style: {
+            background: "#0056A1",
+            borderColor: "#0056A1",
+          },
         },
-      },
-    });
+        onOk() {
+          setRequestDetail(null);
+        },
+      });
+    } catch (error) {
+      console.error("Error fetching request details:", error);
+      message.error("Failed to load request details");
+    } finally {
+      setDetailLoading(false);
+    }
   };
 
   const columns = [
@@ -149,12 +237,12 @@ const RequestManagement = () => {
               : "#ff4d4f"
           }>
           {status === "pending"
-            ? "Đang chờ"
+            ? "Pending"
             : status === "approved"
-            ? "Đã duyệt"
+            ? "Approved"
             : status === "canceled"
-            ? "Đã hủy"
-            : "Từ chối"}
+            ? "Canceled"
+            : "Rejected"}
         </Tag>
       ),
     },
@@ -193,7 +281,7 @@ const RequestManagement = () => {
   return (
     <AdminLayout>
       <Title level={2} style={{ color: "#0056A1", marginBottom: "24px" }}>
-        Quản lý yêu cầu tư vấn
+        Consultation Request Management
       </Title>
       {loading ? (
         <div style={{ textAlign: "center", padding: "50px 0" }}>
