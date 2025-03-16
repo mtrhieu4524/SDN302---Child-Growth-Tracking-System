@@ -43,7 +43,7 @@ export const AuthProvider = ({ children }) => {
       const { data } = await api.get("/auth/me");
       setUser(data.user);
       if (data.user.role === Role.ADMIN) {
-        navigate("/dashboard");
+        navigate("/admin/dashboard");
       } else {
         navigate("/");
       }
