@@ -2,7 +2,6 @@ import { useContext } from "react";
 import { Navigate } from "react-router-dom";
 import { AuthContext } from "../contexts/AuthContext";
 import { Role } from "../enums/Role";
-import AdminLayout from "../layouts/AdminLayout";
 
 const LoadingSpinner = () => {
   return (
@@ -12,7 +11,7 @@ const LoadingSpinner = () => {
   );
 };
 
-const PrivateRoute = ({ element }) => {
+const PrivateRoute = ({ element, requiredRole }) => {
   const { user, loading } = useContext(AuthContext);
 
   if (loading) {
@@ -23,12 +22,8 @@ const PrivateRoute = ({ element }) => {
     return <Navigate to="/login" replace />;
   }
 
-  if (user.role && user.role === Role.MEMBER) {
+  if (requiredRole && user.role !== requiredRole) {
     return <Navigate to="/" replace />;
-  }
-
-  if (user.role === Role.ADMIN) {
-    return <AdminLayout>{element}</AdminLayout>;
   }
 
   return element;
