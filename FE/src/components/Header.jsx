@@ -62,11 +62,11 @@ const HeaderComponent = () => {
   ];
 
   const doctorDropdownMenuItems = [
-    {
-      key: "profile",
-      label: <a href="/profile">Profile</a>,
-      icon: <UserOutlined />,
-    },
+    // {
+    //   key: "profile",
+    //   label: <a href="/profile">Profile</a>,
+    //   icon: <UserOutlined />,
+    // },
     {
       key: "doctor-consultation",
       label: <a href="/doctor-consultation">Consultation Request</a>,
@@ -103,11 +103,11 @@ const HeaderComponent = () => {
   ];
 
   const memberDropdownMenuItems = [
-    {
-      key: "profile",
-      label: <a href="/profile">Profile</a>,
-      icon: <UserOutlined />,
-    },
+    // {
+    //   key: "profile",
+    //   label: <a href="/profile">Profile</a>,
+    //   icon: <UserOutlined />,
+    // },
     {
       key: "child-tracker",
       label: <a href="/profile/growth-chart">Child Tracker</a>,
@@ -144,7 +144,7 @@ const HeaderComponent = () => {
       ],
     },
     { key: "blogs", label: <a href="/blogs">Blogs</a> },
-    { key: "membership", label: <a href="/membership">Membership</a> }, // Excluded for Admin
+    { key: "membership", label: <a href="/membership">Membership</a> },
     { key: "faqs", label: <a href="/faqs">FAQs</a> },
     { key: "about-us", label: <a href="/about-us">About Us</a> },
   ];

@@ -80,7 +80,7 @@ const Membership = () => {
 
   return (
     <div
-      style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}
+      style={{ background: "#f9f9f9", minHeight: "100vh", display: "flex", flexDirection: "column" }}
     >
       <Header />
 

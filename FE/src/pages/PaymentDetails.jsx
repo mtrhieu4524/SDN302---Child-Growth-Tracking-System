@@ -110,12 +110,13 @@ const PaymentDetails = () => {
 
   return (
     <div
-      style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}
+      style={{ minHeight: "100vh", display: "flex", flexDirection: "column", background: "#f9f9f9" }}
     >
       <HeaderComponent />
       <div style={{ maxWidth: "1500px", margin: "0px auto", padding: "0 20px", flex: 1 }}>
-        <Title level={2} style={{ textAlign: "center", marginBottom: "24px" }}>
-          Payment Details
+        <br></br><br></br><br></br>
+        <Title level={2} style={{ textAlign: "center", color: "#00274E", fontWeight: "bold" }}>
+          Payment Detail
         </Title>
 
         <Row gutter={[24, 24]}>
@@ -207,6 +208,8 @@ const PaymentDetails = () => {
           </Col>
         </Row>
       </div>
+
+      <br></br><br></br><br></br><br></br><br></br><br></br>
       <FooterComponent />
       <ScrollToTop />
     </div>
