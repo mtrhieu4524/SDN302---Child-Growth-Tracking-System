@@ -16,7 +16,7 @@ const About = () => {
         <div>
             <Header />
             <Content style={{ maxWidth: "100%", marginLeft: "-8px", marginRight: "-8px", background: "white", padding: "40px", borderRadius: "8px", boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)" }}>
-                <Title level={2} style={{ textAlign: "center", color: "#0056A1" }}>
+                <Title level={2} style={{ textAlign: "center", color: "#00274E", fontWeight: "bold" }}>
                     About Child Growth Tracking
                 </Title>
                 <Paragraph style={{ textAlign: "center", fontSize: "16px", color: "#666" }}>
@@ -101,7 +101,7 @@ const About = () => {
                     <Col xs={24} md={18}>
                         <Title level={4}>Dr. Alex Smith, Chief Pediatrician</Title>
                         <Paragraph>
-                            Dr. Moyer provides executive leadership and strategic direction for the center’s statistical programs and policies. Dr. Moyer serves as the statistical official for the U.S. Department of Health and Human Services (HHS), and senior advisor to the CDC director and HHS secretary.                        </Paragraph>
+                            - Alex Smith is Professor of Medicine, UCSF Division of Geriatrics. He is co-host of the GeriPal podcast, a geriatrics and palliative care podcast for every healthcare professional. <br></br>- Dr. Smith is co-creator of ePrognosis, an online compendium of prognostic indices for use in clinical practice. Dr. Smith is heavily engaged in mentoring the next generations of aging and palliative care research scholars. <br></br>- Dr. Moyer provides executive leadership and strategic direction for the center’s statistical programs and policies. Dr. Moyer serves as the statistical official for the U.S. Department of Health and Human Services (HHS), and senior advisor to the CDC director and HHS secretary.                        </Paragraph>
                     </Col>
                 </Row>
 
