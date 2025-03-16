@@ -1,11 +1,10 @@
 import { useState, useEffect } from "react";
-import { Layout, Card, List, Button, Typography, message, Modal, Input } from "antd";
+import { Card, List, Button, Typography, message, Modal, Input } from "antd";
 import { Line } from "react-chartjs-2";
 import HeaderComponent from "../../components/Header";
 import FooterComponent from "../../components/Footer";
 import ScrollToTop from "../../components/ScrollToTop";
 
-const { Content } = Layout;
 const { Title, Text } = Typography;
 const { TextArea } = Input;
 
@@ -66,9 +65,9 @@ const DoctorConsultation = () => {
     };
 
     return (
-        <Layout style={{ minHeight: "100vh" }}>
+        <div style={{ minHeight: "100vh" }}>
             <HeaderComponent />
-            <Content style={{ padding: "80px 20px", background: "#f0f2f5" }}>
+            <div style={{ padding: "80px 20px", background: "#f0f2f5" }}>
                 <Card
                     title={
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
@@ -135,7 +134,7 @@ const DoctorConsultation = () => {
                         )}
                     />
                 </Card>
-            </Content>
+            </div>
             <FooterComponent />
             <ScrollToTop />
 
@@ -205,7 +204,7 @@ const DoctorConsultation = () => {
                     </>
                 )}
             </Modal>
-        </Layout>
+        </div>
     );
 };
 

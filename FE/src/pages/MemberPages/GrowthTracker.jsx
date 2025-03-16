@@ -6,17 +6,14 @@ import {
   DatePicker,
   message,
   Card,
-  Layout,
   Typography,
 } from "antd";
-import { UserOutlined, LogoutOutlined, TeamOutlined } from "@ant-design/icons";
 import moment from "moment";
 import { useNavigate } from "react-router-dom";
 import HeaderComponent from "../../components/Header";
 import FooterComponent from "../../components/Footer";
 import ScrollToTop from "../../components/ScrollToTop";
 
-const { Header, Footer, Content } = Layout;
 const { Title, Text } = Typography;
 
 const GrowthTracker = () => {
@@ -64,9 +61,9 @@ const GrowthTracker = () => {
 
 
   return (
-    <Layout style={{ minHeight: "100vh" }}>
+    <div style={{ minHeight: "100vh" }}>
       <HeaderComponent />
-      <Content style={contentStyle}>
+      <div style={contentStyle}>
         <Card
           title={
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
@@ -159,10 +156,10 @@ const GrowthTracker = () => {
             </Form.Item>
           </Form>
         </Card>
-      </Content>
+      </div>
       <FooterComponent />
       <ScrollToTop />
-    </Layout>
+    </div>
   );
 };
 

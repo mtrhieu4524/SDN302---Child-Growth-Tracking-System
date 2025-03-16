@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Card, Layout, Button, Typography } from "antd";
+import { Card, Button, Typography } from "antd";
 import { Line } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -26,7 +26,6 @@ ChartJS.register(
   Legend
 );
 
-const { Content } = Layout;
 const { Title, Text } = Typography;
 
 const GrowthChartMember = () => {
@@ -131,10 +130,10 @@ const GrowthChartMember = () => {
   }, []);
 
   return (
-    <Layout style={{ minHeight: "100vh" }}>
+    <div style={{ minHeight: "100vh" }}>
       <HeaderComponent />
 
-      <Content style={contentStyle}>
+      <div style={contentStyle}>
         <Card
           title={
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
@@ -164,12 +163,12 @@ const GrowthChartMember = () => {
             {chartData.labels && <Line options={options} data={chartData} />}
           </div>
         </Card>
-      </Content>
+      </div>
 
 
       <FooterComponent />
       <ScrollToTop />
-    </Layout>
+    </div>
   );
 };
 

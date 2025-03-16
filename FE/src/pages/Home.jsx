@@ -5,18 +5,24 @@ import Footer from "./../components/Footer";
 import ScrollToTop from "./../components/ScrollToTop";
 import { Card, Typography, Avatar, Button } from "antd";
 import { UserAddOutlined, LineChartOutlined, SearchOutlined, CheckCircleOutlined } from "@ant-design/icons";
+import { useContext } from "react";
+import { AuthContext } from "../contexts/AuthContext";
 
 const Home = () => {
   useEffect(() => {
     document.title = "Child Growth Tracking - Home";
   }, []);
 
+
   const { Title, Text } = Typography;
   const navigate = useNavigate();
+  const { user } = useContext(AuthContext);
+
   const handleGetStarted = () => {
-    const user = localStorage.getItem("user");
     if (user) {
-      navigate("/profile/growth-chart");
+      if (user.role === 0) {
+        navigate("/profile/growth-chart");
+      }
     } else {
       navigate("/login");
     }
@@ -25,7 +31,6 @@ const Home = () => {
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
-
       <div style={{
         display: "flex",
         alignItems: "center",
@@ -53,24 +58,27 @@ const Home = () => {
             }} />
           </div>
           <div style={{ marginTop: "20px", marginBottom: "20px" }}>
-            <Text style={{ fontSize: "15px", color: "#333", marginTop: "20px", marginBottom: "30px" }}>
+            <Text style={{ fontSize: "15px", color: "#333" }}>
               Our system helps you visualize your child’s growth and development, compare it to world-class standards,
               and get up-to-date insights on how your child is progressing relative to others.
             </Text>
           </div>
-          <Button
-            type="primary"
-            style={{
-              backgroundColor: "#0082C8",
-              borderColor: "#0082C8",
-              padding: "12px 24px 13px 24px",
-              fontSize: "15px",
-              borderRadius: "50px"
-            }}
-            onClick={handleGetStarted}
-          >
-            Get Started
-          </Button>
+
+          {(!user || user.role === 0) && (
+            <Button
+              type="primary"
+              style={{
+                backgroundColor: "#0082C8",
+                borderColor: "#0082C8",
+                padding: "12px 24px",
+                fontSize: "15px",
+                borderRadius: "50px"
+              }}
+              onClick={handleGetStarted}
+            >
+              Get Started
+            </Button>
+          )}
         </div>
 
         <div style={{ height: 250, flex: 1, display: "flex", justifyContent: "center", position: "relative" }}>
@@ -138,19 +146,21 @@ const Home = () => {
           <Title style={{ fontSize: "25px", color: "#00274E", marginBottom: "20px", paddingLeft: "80px", paddingRight: "80px" }}>
             Want to monitor your child’s growth to avoid future complications and track potential health issues?
           </Title>
-          <Button
-            type="primary"
-            style={{
-              backgroundColor: "#0082C8",
-              borderColor: "#0082C8",
-              padding: "12px 24px 13px 24px",
-              fontSize: "15px",
-              borderRadius: "50px"
-            }}
-            onClick={handleGetStarted}
-          >
-            Get Started
-          </Button>
+          {(!user || user.role === 0) && (
+            <Button
+              type="primary"
+              style={{
+                backgroundColor: "#0082C8",
+                borderColor: "#0082C8",
+                padding: "12px 24px",
+                fontSize: "15px",
+                borderRadius: "50px"
+              }}
+              onClick={handleGetStarted}
+            >
+              Get Started
+            </Button>
+          )}
         </div>
       </div>
 
