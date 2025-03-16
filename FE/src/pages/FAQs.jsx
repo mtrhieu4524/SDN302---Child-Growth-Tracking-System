@@ -13,7 +13,7 @@ const FAQs = () => {
     }, []);
 
     return (
-        <div className="flex flex-col min-h-screen">
+        <div className="flex flex-col min-h-screen" style={{ background: "#f9f9f9" }}>
             <Header />
 
             <br /><br />
@@ -25,7 +25,7 @@ const FAQs = () => {
                     Find answers to the most commonly asked questions about Child Growth Tracking.
                 </Paragraph>
 
-                <Collapse accordion style={{ maxWidth: "800px", margin: "40px auto" }}>
+                <Collapse accordion style={{ maxWidth: "800px", margin: "40px auto", background: "white" }}>
                     <Panel header="How do I start tracking my child's growth?" key="1">
                         <Paragraph>To start tracking your child's growth, sign up for an account, add your child's profile, and enter their measurements.</Paragraph>
                     </Panel>

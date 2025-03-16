@@ -1,134 +1,213 @@
-import React, { useEffect, useState } from 'react';
-import { Table, Space, Button, Tag, Modal, message, Typography } from 'antd';
-import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
-import AdminLayout from '../../layouts/AdminLayout';
+import { message, Modal, Pagination, Spin, Table, Tag, Typography } from "antd";
+import moment from "moment";
+import React, { useEffect, useState } from "react";
+import api from "../../configs/api";
+import AdminLayout from "../../layouts/AdminLayout";
 
 const { Title } = Typography;
 
+const ROLE_MAP = {
+  0: "member",
+  1: "admin",
+  2: "doctor",
+};
+
 const UserManagement = () => {
-    useEffect(() => {
-        document.title = "Admin - User Management";
-    }, []);
+  const [loading, setLoading] = useState(true);
+  const [users, setUsers] = useState([]);
+  const [pagination, setPagination] = useState({
+    current: 1,
+    pageSize: 10,
+    total: 0,
+  });
 
-    // Temporary hardcoded data
-    const [users] = useState([
-        {
-            key: '1',
-            username: 'user1',
-            email: 'user1@example.com',
-            role: 'user',
-            status: 'active',
-            premium: true,
+  const fetchUsers = async (page = 1, size = pagination.pageSize) => {
+    setLoading(true);
+    try {
+      const response = await api.get("/users", {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${
+            JSON.parse(localStorage.getItem("access_token") || "{}")?.token ||
+            ""
+          }`,
         },
-        {
-            key: '2',
-            username: 'user2',
-            email: 'user2@example.com',
-            role: 'user',
-            status: 'inactive',
-            premium: false,
+        params: {
+          page,
+          size,
+          search: "",
+          order: "descending",
+          sortBy: "date",
         },
-    ]);
+      });
 
-    const handleDelete = (userId) => {
-        Modal.confirm({
-            title: 'Xác nhận xóa người dùng',
-            content: 'Bạn có chắc chắn muốn xóa người dùng này?',
-            okText: 'Xóa',
-            cancelText: 'Hủy',
-            okButtonProps: {
-                style: { background: '#ff4d4f', borderColor: '#ff4d4f' }
-            },
-            onOk: () => {
-                message.success('Đã xóa người dùng');
-            },
+      console.log("Fetched users:", response.data);
+
+      if (response.data && response.data.users) {
+        const formattedUsers = response.data.users.map((user) => {
+          const role = ROLE_MAP[user.role] || "member";
+          let premium = null;
+
+          if (role === "member" && user.subscription) {
+            premium =
+              user.subscription.startDate &&
+              user.subscription.endDate &&
+              moment().isBetween(
+                moment(user.subscription.startDate),
+                moment(user.subscription.endDate)
+              );
+          }
+
+          return {
+            key: user._id,
+            username: user.name,
+            email: user.email,
+            role,
+            status: user.status || "active",
+            premium,
+            createdAt: moment(user.createdAt).format("YYYY-MM-DD"),
+          };
         });
-    };
+        setUsers(formattedUsers);
+        setPagination({
+          current: page,
+          pageSize: size,
+          total: response.data.total || response.data.users.length,
+        });
+      } else {
+        message.error("No users found");
+        setUsers([]);
+      }
+    } catch (error) {
+      console.error("Error fetching users:", error);
+      message.error("Failed to load users");
+      setUsers([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    const columns = [
-        {
-            title: 'Tên đăng nhập',
-            dataIndex: 'username',
-            key: 'username',
-        },
-        {
-            title: 'Email',
-            dataIndex: 'email',
-            key: 'email',
-        },
-        {
-            title: 'Vai trò',
-            dataIndex: 'role',
-            key: 'role',
-            render: (role) => (
-                <Tag color={role === 'admin' ? '#0056A1' : '#0082C8'}>
-                    {role.toUpperCase()}
-                </Tag>
-            ),
-        },
-        {
-            title: 'Trạng thái',
-            dataIndex: 'status',
-            key: 'status',
-            render: (status) => (
-                <Tag color={status === 'active' ? '#52c41a' : '#faad14'}>
-                    {status === 'active' ? 'Hoạt động' : 'Không hoạt động'}
-                </Tag>
-            ),
-        },
-        {
-            title: 'Premium',
-            dataIndex: 'premium',
-            key: 'premium',
-            render: (premium) => (
-                <Tag color={premium ? '#722ed1' : '#d9d9d9'}>
-                    {premium ? 'Premium' : 'Free'}
-                </Tag>
-            ),
-        },
-        {
-            title: 'Thao tác',
-            key: 'action',
-            render: (_, record) => (
-                <Space size="middle">
-                    <Button
-                        type="primary"
-                        icon={<EditOutlined />}
-                        onClick={() => message.info('Chức năng đang phát triển')}
-                        style={{
-                            background: "linear-gradient(to right, #0056A1, #0082C8)",
-                            border: "none"
-                        }}
-                    >
-                        Sửa
-                    </Button>
-                    <Button
-                        danger
-                        icon={<DeleteOutlined />}
-                        onClick={() => handleDelete(record.key)}
-                    >
-                        Xóa
-                    </Button>
-                </Space>
-            ),
-        },
-    ];
+  useEffect(() => {
+    document.title = "Admin - User Management";
+    fetchUsers(pagination.current, pagination.pageSize);
+  }, []);
 
-    return (
-        <AdminLayout>
-            <Title level={2} style={{ color: "#0056A1", marginBottom: "24px" }}>
-                Quản lý người dùng
-            </Title>
-            <Table 
-                columns={columns} 
-                dataSource={users} 
-                style={{ 
-                    background: '#fff',
-                    borderRadius: '8px',
-                }}
+  const handlePageChange = (page, pageSize) => {
+    setPagination({
+      ...pagination,
+      current: page,
+      pageSize: pageSize,
+    });
+    fetchUsers(page, pageSize);
+  };
+
+  const handleDelete = (userId) => {
+    Modal.confirm({
+      title: "Xác nhận xóa người dùng",
+      content: "Bạn có chắc chắn muốn xóa người dùng này?",
+      okText: "Xóa",
+      cancelText: "Hủy",
+      okButtonProps: {
+        style: { background: "#ff4d4f", borderColor: "#ff4d4f" },
+      },
+      onOk: () => {
+        message.success("Đã xóa người dùng");
+      },
+    });
+  };
+
+  const columns = [
+    {
+      title: "Tên đăng nhập",
+      dataIndex: "username",
+      key: "username",
+    },
+    {
+      title: "Email",
+      dataIndex: "email",
+      key: "email",
+    },
+    {
+      title: "Vai trò",
+      dataIndex: "role",
+      key: "role",
+      render: (role) => (
+        <Tag
+          color={
+            role === "admin"
+              ? "#0056A1"
+              : role === "doctor"
+              ? "#52c41a"
+              : "#0082C8"
+          }>
+          {role.toUpperCase()}
+        </Tag>
+      ),
+    },
+    {
+      title: "Trạng thái",
+      dataIndex: "status",
+      key: "status",
+      render: (status) => (
+        <Tag color={status === "active" ? "#52c41a" : "#faad14"}>
+          {status === "active" ? "Hoạt động" : "Không hoạt động"}
+        </Tag>
+      ),
+    },
+    {
+      title: "Premium",
+      dataIndex: "premium",
+      key: "premium",
+      render: (premium, record) => {
+        if (record.role === "doctor") {
+          return <Tag color="#d9d9d9">Không áp dụng</Tag>;
+        }
+        return (
+          <Tag color={premium ? "#722ed1" : "#1890ff"}>
+            {premium ? "Premium" : "Free"}
+          </Tag>
+        );
+      },
+    },
+  ];
+
+  return (
+    <AdminLayout>
+      <Title level={2} style={{ color: "#0056A1", marginBottom: "24px" }}>
+        Quản lý người dùng
+      </Title>
+      {loading ? (
+        <div style={{ textAlign: "center", padding: "50px 0" }}>
+          <Spin size="large" />
+        </div>
+      ) : (
+        <>
+          <Table
+            columns={columns}
+            dataSource={users}
+            pagination={false}
+            style={{
+              background: "#fff",
+              borderRadius: "8px",
+            }}
+          />
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              marginTop: "24px",
+            }}>
+            <Pagination
+              current={pagination.current}
+              pageSize={pagination.pageSize}
+              total={pagination.total}
+              onChange={handlePageChange}
             />
-        </AdminLayout>
-    );
+          </div>
+        </>
+      )}
+    </AdminLayout>
+  );
 };
 
 export default UserManagement;

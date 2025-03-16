@@ -1,95 +1,118 @@
-import { Layout, Menu, Button, Input, Dropdown } from "antd";
+import { Layout, Menu, Button, Dropdown } from "antd";
+import {
+  UserOutlined,
+  LogoutOutlined,
+  SolutionOutlined,
+  HeartOutlined,
+  HistoryOutlined,
+} from "@ant-design/icons";
+import { useContext } from "react";
+import { AuthContext } from "../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
-import { UserOutlined, LogoutOutlined } from "@ant-design/icons";
-import { useState, useEffect } from "react";
 
 const { Header } = Layout;
 
 const HeaderComponent = () => {
+  const { user, logout } = useContext(AuthContext); // Get user and logout from AuthContext
   const navigate = useNavigate();
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [userName, setUserName] = useState("");
 
-  useEffect(() => {
-    const user = localStorage.getItem("user");
-    const adminToken = localStorage.getItem("adminToken");
-
-    if (adminToken) {
-      setIsLoggedIn(true);
-      setUserName("Admin User");
-    } else if (user) {
-      const userData = JSON.parse(user);
-      setIsLoggedIn(true);
-      setUserName(userData.username || "User");
-    }
-  }, []);
-
-  const handleLogout = () => {
-    localStorage.removeItem("user");
-    localStorage.removeItem("adminToken");
-    setIsLoggedIn(false);
-    setUserName("");
-    navigate("/login");
+  const handleLogout = async () => {
+    await logout();
+    navigate("/");
   };
 
-  const userMenuItems = [
+  const doctorDropdownMenuItems = [
     {
       key: "profile",
-      label: <a href="/profile">Hồ sơ</a>,
+      label: <a href="/profile">Profile</a>,
       icon: <UserOutlined />,
     },
     {
+      key: "doctor-consultation",
+      label: <a href="/doctor-consultation">Consultation Request</a>,
+      icon: <HeartOutlined />,
+    },
+    {
+      key: "doctor-consultation-history",
+      label: <a href="/doctor-consultation-history">Consultation History</a>,
+      icon: <HistoryOutlined />,
+    },
+    {
       key: "logout",
-      label: "Đăng xuất",
+      label: "Sign Out",
       icon: <LogoutOutlined />,
       onClick: handleLogout,
     },
   ];
 
-  const menuItems = [
-    {
-      key: "tracking",
-      label: "Growth Tracking",
-      children: [
-        { key: "growth-tracker", label: <a href="/growth-tracker">Tracker</a> },
-        {
-          key: "growth-chart",
-          label: <a href="/growth-chart">Growth Chart</a>,
-        },
-      ],
-    },
+  const doctorMenuItems = [
     {
       key: "health",
       label: "Health & Nutrition",
       children: [
+        { key: "growth-chart", label: <a href="/growth-chart">Growth Chart</a> },
         {
           key: "milestones",
-          label: <a href="/milestones">Development Milestones</a>,
+          label: <a href="/development-milestones">Development Milestones</a>,
         },
-        { key: "alerts", label: <a href="/alerts">Health Alerts</a> },
       ],
     },
-    {
-      key: "services",
-      label: "Services",
-      children: [
-        {
-          key: "consultation",
-          label: <a href="/consultation">Doctor Consultation</a>,
-        },
-        { key: "membership", label: <a href="/membership">Membership Plan</a> },
-      ],
-    },
-    {
-      key: "blogs&faqs",
-      label: "Blog & FAQ",
-      children: [
-        { key: "blogs", label: <a href="/blogs">Blogs</a> },
-        { key: "faqs", label: <a href="/faqs">FAQs</a> },
-      ],
-    },
+    { key: "blogs", label: <a href="/blogs">Blogs</a> },
+    { key: "faqs", label: <a href="/faqs">FAQs</a> },
     { key: "about-us", label: <a href="/about-us">About Us</a> },
   ];
+
+  const memberDropdownMenuItems = [
+    {
+      key: "profile",
+      label: <a href="/profile">Profile</a>,
+      icon: <UserOutlined />,
+    },
+    {
+      key: "child-tracker",
+      label: <a href="/profile/growth-chart">Child Tracker</a>,
+      icon: <SolutionOutlined />,
+    },
+    {
+      key: "member-consultation",
+      label: <a href="/member-consultation">Doctor Consultation</a>,
+      icon: <HeartOutlined />,
+    },
+    {
+      key: "member-consultation-history",
+      label: <a href="/member-consultation-history">Consultation History</a>,
+      icon: <HistoryOutlined />,
+    },
+    {
+      key: "logout",
+      label: "Sign Out",
+      icon: <LogoutOutlined />,
+      onClick: handleLogout,
+    },
+  ];
+
+  const memberMenuItems = [
+    {
+      key: "health",
+      label: "Health & Nutrition",
+      children: [
+        { key: "growth-chart", label: <a href="/growth-chart">Growth Chart</a> },
+        {
+          key: "milestones",
+          label: <a href="/development-milestones">Development Milestones</a>,
+        },
+      ],
+    },
+    { key: "membership", label: <a href="/membership">Membership</a> },
+    { key: "blogs", label: <a href="/blogs">Blogs</a> },
+    { key: "faqs", label: <a href="/faqs">FAQs</a> },
+    { key: "about-us", label: <a href="/about-us">About Us</a> },
+  ];
+
+  // Determine menu and dropdown items based on user role
+  const menuItems = user?.role === "doctor" ? doctorMenuItems : memberMenuItems;
+  const dropdownItems =
+    user?.role === "doctor" ? doctorDropdownMenuItems : memberDropdownMenuItems;
 
   return (
     <div>
@@ -106,7 +129,8 @@ const HeaderComponent = () => {
           marginRight: "-8px",
           paddingTop: "10px",
           marginBottom: "5px",
-        }}>
+        }}
+      >
         Welcome to Child Growth Tracking
       </div>
 
@@ -126,15 +150,17 @@ const HeaderComponent = () => {
           position: "sticky",
           top: "10px",
           zIndex: 50,
-        }}>
+        }}
+      >
         <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
           <a href="/" title="Logo">
             <h3
               style={{
                 marginTop: "25px",
-                marginLeft: "10px",
+                marginLeft: "30px",
                 marginRight: "25px",
-              }}>
+              }}
+            >
               CHILD GROWTH TRACKING
             </h3>
           </a>
@@ -148,6 +174,7 @@ const HeaderComponent = () => {
               justifyContent: "center",
               display: "flex",
               borderBottom: "none",
+              marginRight: "125px",
             }}
           />
         </div>
@@ -158,18 +185,24 @@ const HeaderComponent = () => {
             alignItems: "center",
             gap: "15px",
             marginRight: "10px",
-          }}>
-          {isLoggedIn ? (
-            <Dropdown menu={{ items: userMenuItems }} placement="bottomRight">
+          }}
+        >
+          {user ? (
+            <Dropdown menu={{ items: dropdownItems }} placement="bottomRight">
               <a
                 style={{
                   color: "#1890ff",
                   fontWeight: "500",
                   display: "flex",
                   alignItems: "center",
-                }}>
-                <UserOutlined style={{ marginRight: 8 }} />
-                {userName}
+                }}
+              >
+                <UserOutlined
+                  style={{ marginRight: "5px", marginTop: "4px", fontSize: 24 }}
+                />
+                <p style={{ marginRight: "20px", marginTop: "22px" }}>
+                  {user.name.charAt(0).toUpperCase() + user.name.slice(1)}
+                </p>
               </a>
             </Dropdown>
           ) : (
@@ -180,7 +213,8 @@ const HeaderComponent = () => {
               <Button
                 type="primary"
                 href="/register"
-                style={{ background: "#0082C8", borderColor: "#0082C8" }}>
+                style={{ background: "#0082C8", borderColor: "#0082C8" }}
+              >
                 Create account
               </Button>
             </>
