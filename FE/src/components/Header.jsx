@@ -1,8 +1,9 @@
-import { Layout, Menu, Button, Input, Dropdown } from "antd";
+import { Layout, Menu, Button, Dropdown } from "antd";
 import { useNavigate } from "react-router-dom";
-import { UserOutlined, LogoutOutlined } from "@ant-design/icons";
+import { UserOutlined, LogoutOutlined, SolutionOutlined, HeartOutlined } from "@ant-design/icons";
 import { useState, useEffect, useContext } from "react";
 import { AuthContext } from "../contexts/AuthContext";
+
 
 const { Header } = Layout;
 
@@ -16,24 +17,45 @@ const HeaderComponent = () => {
       icon: <UserOutlined />,
     },
     {
+      key: "child-tracker",
+      label: <a href="profile/growth-chart">Child Tracker</a>,
+      icon: <SolutionOutlined />,
+    },
+    {
+      key: "doctor-consultation",
+      label: <a href="/doctor-consultation">Doctor Consultation</a>,
+      icon: <HeartOutlined />,
+    },
+    {
       key: "logout",
-      label: "Logout",
+      label: "Sign Out",
       icon: <LogoutOutlined />,
       onClick: logout,
     },
   ];
 
+  //Doctor dropdown menu
+  // const userMenuItems = [
+  //   {
+  //     key: "profile",
+  //     label: <a href="/profile">Profile</a>,
+  //     icon: <UserOutlined />,
+  //   },
+  //   {
+  //     key: "doctor-consultation",
+  //     label: <a href="/doctor-consultation">Consultation</a>,
+  //     icon: <HeartOutlined />,
+  //   },
+  //   {
+  //     key: "logout",
+  //     label: "Sign Out",
+  //     icon: <LogoutOutlined />,
+  //     onClick: handleLogout,
+  //   },
+  // ];
+
   const menuItems = [
-    {
-      key: "tracking",
-      label: "Growth Tracking",
-      children: [
-        {
-          key: "growth-chart",
-          label: <a href="/growth-chart">Growth Chart</a>,
-        },
-      ],
-    },
+    { key: "growth-chart", label: <a href="/growth-chart">Growth Chart</a> },
     {
       key: "health",
       label: "Health & Nutrition",
@@ -46,17 +68,6 @@ const HeaderComponent = () => {
       ],
     },
     {
-      key: "services",
-      label: "Services",
-      children: [
-        {
-          key: "consultation",
-          label: <a href="#">Doctor Consultation</a>,
-        },
-        { key: "membership", label: <a href="/membership">Membership Plan</a> },
-      ],
-    },
-    {
       key: "blogs&faqs",
       label: "Blog & FAQ",
       children: [
@@ -64,6 +75,7 @@ const HeaderComponent = () => {
         { key: "faqs", label: <a href="/faqs">FAQs</a> },
       ],
     },
+    { key: "membership", label: <a href="/membership">Membership Plan</a> },
     { key: "about-us", label: <a href="/about-us">About Us</a> },
   ];
 
@@ -108,7 +120,7 @@ const HeaderComponent = () => {
             <h3
               style={{
                 marginTop: "25px",
-                marginLeft: "10px",
+                marginLeft: "30px",
                 marginRight: "25px",
               }}>
               CHILD GROWTH TRACKING
@@ -144,10 +156,10 @@ const HeaderComponent = () => {
                   display: "flex",
                   alignItems: "center",
                 }}>
-                <UserOutlined style={{ marginRight: 8 }} />
-                {user.name} {/* Directly use user.name */}
-              </a>
-            </Dropdown>
+                <UserOutlined style={{ marginRight: "5px", marginTop: "4px", fontSize: 24 }} />
+                <p style={{ marginRight: "20px", marginTop: "22px" }}>( Member )</p>
+              </a >
+            </Dropdown >
           ) : (
             <>
               <a href="/login" style={{ color: "#1890ff", fontWeight: "500" }}>
@@ -159,11 +171,22 @@ const HeaderComponent = () => {
                 style={{ background: "#0082C8", borderColor: "#0082C8" }}>
                 Create account
               </Button>
+              {/* <Dropdown menu={{ items: userMenuItems }} placement="bottomRight">
+                <a
+                  style={{
+                    color: "#1890ff",
+                    fontWeight: "500",
+                    display: "flex",
+                    alignItems: "center",
+                  }}>
+                  <UserOutlined style={{ fontSize: 24 }} />
+                </a>
+              </Dropdown> */}
             </>
           )}
-        </div>
-      </Header>
-    </div>
+        </div >
+      </Header >
+    </div >
   );
 };
 
