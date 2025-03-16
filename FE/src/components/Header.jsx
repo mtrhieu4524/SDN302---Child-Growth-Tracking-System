@@ -1,38 +1,23 @@
 import { Layout, Menu, Button, Dropdown } from "antd";
-import { UserOutlined, LogoutOutlined, SolutionOutlined, HeartOutlined, HistoryOutlined } from "@ant-design/icons";
-import { useState, useEffect, useContext } from "react";
+import {
+  UserOutlined,
+  LogoutOutlined,
+  SolutionOutlined,
+  HeartOutlined,
+  HistoryOutlined,
+} from "@ant-design/icons";
+import { useContext } from "react";
 import { AuthContext } from "../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
+
 const { Header } = Layout;
 
 const HeaderComponent = () => {
-  const { logout } = useContext(AuthContext);
-  const [user, setUser] = useState(null);
-  const [menuItems, setMenuItems] = useState([]);
-  const [dropdownItems, setDropdownItems] = useState([]);
+  const { user, logout } = useContext(AuthContext); // Get user and logout from AuthContext
   const navigate = useNavigate();
-  useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      const parsedUser = JSON.parse(storedUser);
-      setUser(parsedUser);
-
-      if (parsedUser.role === "doctor") {
-        setMenuItems(doctorMenuItems);
-        setDropdownItems(doctorDropdownMenuItems);
-      } else {
-        setMenuItems(memberMenuItems);
-        setDropdownItems(memberDropdownMenuItems);
-      }
-    }
-  }, []);
 
   const handleLogout = async () => {
     await logout();
-    localStorage.removeItem("user");
-    setUser(null);
-    setMenuItems(memberMenuItems);
-    setDropdownItems(memberDropdownMenuItems);
     navigate("/");
   };
 
@@ -66,7 +51,10 @@ const HeaderComponent = () => {
       label: "Health & Nutrition",
       children: [
         { key: "growth-chart", label: <a href="/growth-chart">Growth Chart</a> },
-        { key: "milestones", label: <a href="/development-milestones">Development Milestones</a> },
+        {
+          key: "milestones",
+          label: <a href="/development-milestones">Development Milestones</a>,
+        },
       ],
     },
     { key: "blogs", label: <a href="/blogs">Blogs</a> },
@@ -99,7 +87,7 @@ const HeaderComponent = () => {
       key: "logout",
       label: "Sign Out",
       icon: <LogoutOutlined />,
-      onClick: logout,
+      onClick: handleLogout,
     },
   ];
 
@@ -109,7 +97,10 @@ const HeaderComponent = () => {
       label: "Health & Nutrition",
       children: [
         { key: "growth-chart", label: <a href="/growth-chart">Growth Chart</a> },
-        { key: "milestones", label: <a href="/development-milestones">Development Milestones</a> },
+        {
+          key: "milestones",
+          label: <a href="/development-milestones">Development Milestones</a>,
+        },
       ],
     },
     { key: "membership", label: <a href="/membership">Membership</a> },
@@ -117,6 +108,11 @@ const HeaderComponent = () => {
     { key: "faqs", label: <a href="/faqs">FAQs</a> },
     { key: "about-us", label: <a href="/about-us">About Us</a> },
   ];
+
+  // Determine menu and dropdown items based on user role
+  const menuItems = user?.role === "doctor" ? doctorMenuItems : memberMenuItems;
+  const dropdownItems =
+    user?.role === "doctor" ? doctorDropdownMenuItems : memberDropdownMenuItems;
 
   return (
     <div>
@@ -201,9 +197,11 @@ const HeaderComponent = () => {
                   alignItems: "center",
                 }}
               >
-                <UserOutlined style={{ marginRight: "5px", marginTop: "4px", fontSize: 24 }} />
+                <UserOutlined
+                  style={{ marginRight: "5px", marginTop: "4px", fontSize: 24 }}
+                />
                 <p style={{ marginRight: "20px", marginTop: "22px" }}>
-                  ( {user.role.charAt(0).toUpperCase() + user.role.slice(1)} )
+                  {user.name.charAt(0).toUpperCase() + user.name.slice(1)}
                 </p>
               </a>
             </Dropdown>

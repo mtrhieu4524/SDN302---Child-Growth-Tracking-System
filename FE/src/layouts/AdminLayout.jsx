@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Layout, Menu } from "antd";
 import { useNavigate } from "react-router-dom";
 import {
@@ -11,11 +11,13 @@ import {
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import ScrollToTop from "../components/ScrollToTop";
+import { AuthContext } from "../contexts/AuthContext";
 
 const { Content, Sider } = Layout;
 
 const AdminLayout = ({ children }) => {
   const navigate = useNavigate();
+  const { logout } = useContext(AuthContext)
 
   const menuItems = [
     {
@@ -46,10 +48,9 @@ const AdminLayout = ({ children }) => {
     },
   ];
 
-  const handleMenuClick = (e) => {
+  const handleMenuClick = async (e) => {
     if (e.key === "/logout") {
-      localStorage.removeItem("adminToken");
-      navigate("/login");
+      await logout();
     } else {
       navigate(e.key);
     }
