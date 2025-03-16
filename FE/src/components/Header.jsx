@@ -1,35 +1,80 @@
 import { Layout, Menu, Button, Dropdown } from "antd";
-import { UserOutlined, LogoutOutlined, SolutionOutlined, HeartOutlined } from "@ant-design/icons";
+import { UserOutlined, LogoutOutlined, SolutionOutlined, HeartOutlined, HistoryOutlined } from "@ant-design/icons";
 import { useState, useEffect, useContext } from "react";
 import { AuthContext } from "../contexts/AuthContext";
-
+import { useNavigate } from "react-router-dom";
 const { Header } = Layout;
 
 const HeaderComponent = () => {
-  const { user, logout } = useContext(AuthContext);
+  const { logout } = useContext(AuthContext);
+  const [user, setUser] = useState(null);
+  const [menuItems, setMenuItems] = useState([]);
+  const [dropdownItems, setDropdownItems] = useState([]);
+  const navigate = useNavigate();
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      const parsedUser = JSON.parse(storedUser);
+      setUser(parsedUser);
 
+      if (parsedUser.role === "doctor") {
+        setMenuItems(doctorMenuItems);
+        setDropdownItems(doctorDropdownMenuItems);
+      } else {
+        setMenuItems(memberMenuItems);
+        setDropdownItems(memberDropdownMenuItems);
+      }
+    }
+  }, []);
 
-  //Doctor dropdown menu
-  // const userMenuItems = [
-  //   {
-  //     key: "profile",
-  //     label: <a href="/profile">Profile</a>,
-  //     icon: <UserOutlined />,
-  //   },
-  //   {
-  //     key: "doctor-consultation",
-  //     label: <a href="/doctor-consultation">Consultation</a>,
-  //     icon: <HeartOutlined />,
-  //   },
-  //   {
-  //     key: "logout",
-  //     label: "Sign Out",
-  //     icon: <LogoutOutlined />,
-  //     onClick: handleLogout,
-  //   },
-  // ];
+  const handleLogout = async () => {
+    await logout();
+    localStorage.removeItem("user");
+    setUser(null);
+    setMenuItems(memberMenuItems);
+    setDropdownItems(memberDropdownMenuItems);
+    navigate("/");
+  };
 
-  const userMenuItems = [
+  const doctorDropdownMenuItems = [
+    {
+      key: "profile",
+      label: <a href="/profile">Profile</a>,
+      icon: <UserOutlined />,
+    },
+    {
+      key: "doctor-consultation",
+      label: <a href="/doctor-consultation">Consultation Request</a>,
+      icon: <HeartOutlined />,
+    },
+    {
+      key: "doctor-consultation-history",
+      label: <a href="/doctor-consultation-history">Consultation History</a>,
+      icon: <HistoryOutlined />,
+    },
+    {
+      key: "logout",
+      label: "Sign Out",
+      icon: <LogoutOutlined />,
+      onClick: handleLogout,
+    },
+  ];
+
+  const doctorMenuItems = [
+    {
+      key: "health",
+      label: "Health & Nutrition",
+      children: [
+        { key: "growth-chart", label: <a href="/growth-chart">Growth Chart</a> },
+        { key: "milestones", label: <a href="/development-milestones">Development Milestones</a> },
+      ],
+    },
+    { key: "blogs", label: <a href="/blogs">Blogs</a> },
+    { key: "faqs", label: <a href="/faqs">FAQs</a> },
+    { key: "about-us", label: <a href="/about-us">About Us</a> },
+  ];
+
+  const memberDropdownMenuItems = [
     {
       key: "profile",
       label: <a href="/profile">Profile</a>,
@@ -41,9 +86,14 @@ const HeaderComponent = () => {
       icon: <SolutionOutlined />,
     },
     {
-      key: "doctor-consultation",
-      label: <a href="/doctor-consultation">Doctor Consultation</a>,
+      key: "member-consultation",
+      label: <a href="/member-consultation">Doctor Consultation</a>,
       icon: <HeartOutlined />,
+    },
+    {
+      key: "member-consultation-history",
+      label: <a href="/member-consultation-history">Consultation History</a>,
+      icon: <HistoryOutlined />,
     },
     {
       key: "logout",
@@ -53,7 +103,7 @@ const HeaderComponent = () => {
     },
   ];
 
-  const menuItems = [
+  const memberMenuItems = [
     {
       key: "health",
       label: "Health & Nutrition",
@@ -83,7 +133,8 @@ const HeaderComponent = () => {
           marginRight: "-8px",
           paddingTop: "10px",
           marginBottom: "5px",
-        }}>
+        }}
+      >
         Welcome to Child Growth Tracking
       </div>
 
@@ -103,7 +154,8 @@ const HeaderComponent = () => {
           position: "sticky",
           top: "10px",
           zIndex: 50,
-        }}>
+        }}
+      >
         <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
           <a href="/" title="Logo">
             <h3
@@ -111,7 +163,8 @@ const HeaderComponent = () => {
                 marginTop: "25px",
                 marginLeft: "30px",
                 marginRight: "25px",
-              }}>
+              }}
+            >
               CHILD GROWTH TRACKING
             </h3>
           </a>
@@ -136,19 +189,21 @@ const HeaderComponent = () => {
             alignItems: "center",
             gap: "15px",
             marginRight: "10px",
-          }}>
+          }}
+        >
           {user ? (
-            <Dropdown menu={{ items: userMenuItems }} placement="bottomRight">
+            <Dropdown menu={{ items: dropdownItems }} placement="bottomRight">
               <a
                 style={{
                   color: "#1890ff",
                   fontWeight: "500",
                   display: "flex",
                   alignItems: "center",
-                }}>
+                }}
+              >
                 <UserOutlined style={{ marginRight: "5px", marginTop: "4px", fontSize: 24 }} />
                 <p style={{ marginRight: "20px", marginTop: "22px" }}>
-                  ( {user.role || "Member"} )
+                  ( {user.role.charAt(0).toUpperCase() + user.role.slice(1)} )
                 </p>
               </a>
             </Dropdown>
@@ -160,7 +215,8 @@ const HeaderComponent = () => {
               <Button
                 type="primary"
                 href="/register"
-                style={{ background: "#0082C8", borderColor: "#0082C8" }}>
+                style={{ background: "#0082C8", borderColor: "#0082C8" }}
+              >
                 Create account
               </Button>
             </>
@@ -172,4 +228,3 @@ const HeaderComponent = () => {
 };
 
 export default HeaderComponent;
-

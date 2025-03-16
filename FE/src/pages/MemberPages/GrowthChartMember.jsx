@@ -26,7 +26,7 @@ ChartJS.register(
   Legend
 );
 
-const { Header, Footer, Content } = Layout;
+const { Content } = Layout;
 const { Title, Text } = Typography;
 
 const GrowthChartMember = () => {

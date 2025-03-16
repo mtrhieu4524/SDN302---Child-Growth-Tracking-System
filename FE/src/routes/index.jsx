@@ -15,6 +15,10 @@ export const routes = {
   // Membership pages
   growthTracker: "/profile/growth-tracker",
   growthChartMember: "/profile/growth-chart",
+  consultaion: "/member-consultation",
+
+  //Doctor pages
+  doctorConsultaion: "/doctor-consultation",
 
   // Admin pages
   dashboard: "/admin/dashboard",

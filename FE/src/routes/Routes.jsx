@@ -10,6 +10,8 @@ import Blogs from "../pages/Blogs";
 import Membership from "../pages/Membership";
 import GrowthChart from "../pages/GrowthChart";
 import DevelopmentMilestones from "../pages/DevelopmentMilestones";
+import Consultation from "../pages/MemberPages/Consultaion";
+import DoctorConsultation from "../pages/DoctorPages/DoctorConsultation";
 
 import Dashboard from "../pages/AdminPages/Dashboard";
 import RequestManagement from "../pages/AdminPages/RequestManagement";
@@ -55,6 +57,10 @@ export default function AppRoute() {
         element={<GrowthChartMember />}
       />{" "}
       <Route path={routes.verificationSent} element={<VerificationSent />} />
+      <Route path={routes.consultation} element={<Consultation />} />
+
+      {/* Doctor Routes */}
+      <Route path={routes.doctorConsultaion} element={<DoctorConsultation />} />
 
       {/* Admin Routes */}
       <Route
