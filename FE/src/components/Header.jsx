@@ -6,21 +6,7 @@ import { AuthContext } from "../contexts/AuthContext";
 const { Header } = Layout;
 
 const HeaderComponent = () => {
-  const { logout } = useContext(AuthContext);
-  const [user, setUser] = useState(null);
-
-  useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
-  }, []);
-
-  const handleLogout = async () => {
-    await logout();
-    localStorage.removeItem("user"); // Clear user from local storage
-    setUser(null); // Update state
-  };
+  const { user, logout } = useContext(AuthContext);
 
 
   //Doctor dropdown menu
@@ -43,7 +29,6 @@ const HeaderComponent = () => {
   //   },
   // ];
 
-
   const userMenuItems = [
     {
       key: "profile",
@@ -64,7 +49,7 @@ const HeaderComponent = () => {
       key: "logout",
       label: "Sign Out",
       icon: <LogoutOutlined />,
-      onClick: handleLogout,
+      onClick: logout,
     },
   ];
 
