@@ -55,27 +55,21 @@ const HeaderComponent = () => {
   // ];
 
   const menuItems = [
-    { key: "growth-chart", label: <a href="/growth-chart">Growth Chart</a> },
     {
       key: "health",
       label: "Health & Nutrition",
       children: [
+        { key: "growth-chart", label: <a href="/growth-chart">Growth Chart</a> },
         {
           key: "milestones",
-          label: <a href="#">Development Milestones</a>,
+          label: <a href="/development-milestones">Development Milestones</a>,
         },
-        { key: "alerts", label: <a href="#">Health Alerts</a> },
+        // { key: "alerts", label: <a href="#">Health Alerts</a> },
       ],
     },
-    {
-      key: "blogs&faqs",
-      label: "Blog & FAQ",
-      children: [
-        { key: "blogs", label: <a href="/blogs">Blogs</a> },
-        { key: "faqs", label: <a href="/faqs">FAQs</a> },
-      ],
-    },
-    { key: "membership", label: <a href="/membership">Membership Plan</a> },
+    { key: "membership", label: <a href="/membership">Membership</a> },
+    { key: "blogs", label: <a href="/blogs">Blogs</a> },
+    { key: "faqs", label: <a href="/faqs">FAQs</a> },
     { key: "about-us", label: <a href="/about-us">About Us</a> },
   ];
 
