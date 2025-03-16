@@ -34,7 +34,9 @@ export const AuthProvider = ({ children }) => {
       await api.post("/auth/renew-access-token");
       const { data } = await api.get("/auth/me");
       setUser(data.user);
-    } catch (error) {}
+    } catch (error) {
+      throw error;
+    }
   };
 
   const login = async (email, password) => {

@@ -11,8 +11,8 @@ export const routes = {
   blogDetail: "/blogs/:id",
 
   // Membership pages
-  growthTracker: "profile/growth-tracker",
-  growthChartMember: "profile/growth-chart",
+  growthTracker: "/profile/growth-tracker",
+  growthChartMember: "/profile/growth-chart",
 
   // Admin pages
   dashboard: "/admin/dashboard",

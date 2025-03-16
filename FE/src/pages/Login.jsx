@@ -12,7 +12,6 @@ import { AuthContext } from "../contexts/AuthContext";
 const { Title, Text } = Typography;
 
 const Login = () => {
-  const navigate = useNavigate();
   const { login } = useContext(AuthContext);
 
   useEffect(() => {

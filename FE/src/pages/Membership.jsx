@@ -14,6 +14,7 @@ import Header from "./../components/Header";
 import Footer from "./../components/Footer";
 import ScrollToTop from "./../components/ScrollToTop";
 import axios from "axios";
+import api from "../configs/api";
 
 const { Title, Paragraph } = Typography;
 
@@ -29,16 +30,8 @@ const Membership = () => {
   const fetchMembershipPackages = async (page = 1, size = 10) => {
     setLoading(true);
     try {
-      const response = await axios.get(
-        "http://localhost:4000/api/membership-packages",
+      const response = await api.get("/membership-packages",
         {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${
-              JSON.parse(localStorage.getItem("access_token") || "{}")?.token ||
-              ""
-            }`,
-          },
           params: {
             page,
             size,

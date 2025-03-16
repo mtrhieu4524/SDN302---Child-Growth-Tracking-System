@@ -29,51 +29,41 @@ export default function AppRoute() {
     <Routes>
       {/* Public Routes */}
       <Route path={routes.home} element={<Home />} />
-      <Route path={routes.login} element={
-        <PublicRoute element={<Login />} />
-      } />
-      <Route path={routes.register} element={
-        <PublicRoute element={<Register />} />
-      } />
+      <Route
+        path={routes.login}
+        element={<PublicRoute element={<Login />} />}
+      />
+      <Route
+        path={routes.register}
+        element={<PublicRoute element={<Register />} />}
+      />
       <Route path={routes.aboutUs} element={<About />} />
       <Route path={routes.faqs} element={<FAQs />} />
       <Route path={routes.blogs} element={<Blogs />} />
       <Route path={routes.membership} element={<Membership />} />
       <Route path={routes.growthChart} element={<GrowthChart />} />
-        <Route path={routes.blogDetail} element={<BlogDetailed />} />
-
-        {/* Membership pages */}
-        <Route path={routes.growthTracker} element={<GrowthTracker />} />
-        <Route
-          path={routes.growthChartMember}
-          element={<GrowthChartMember />}
-        />      <Route path={routes.verificationSent} element={<VerificationSent />} />
+      <Route path={routes.blogDetail} element={<BlogDetailed />} />
+      
+      {/* Membership pages */}
+      <Route path={routes.growthTracker} element={<GrowthTracker />} />
+      <Route
+        path={routes.growthChartMember}
+        element={<GrowthChartMember />}
+      />{" "}
+      <Route path={routes.verificationSent} element={<VerificationSent />} />
 
       {/* Admin Routes */}
       <Route
         path={routes.dashboard}
-        element={
-          <PrivateRoute element={<Dashboard />} />
-        }
+        element={<PrivateRoute element={<Dashboard />} />}
       />
       <Route
-       
-          path={routes.requestManagement}
-       
-          element={
-          <PrivateRoute
-            element={<RequestManagement />}
-         
-        />
-        }
+        path={routes.requestManagement}
+        element={<PrivateRoute element={<RequestManagement />} />}
       />
       <Route
         path={routes.userManagement}
-        element={
-          <PrivateRoute
-            element={<UserManagement />}
-          />
-        }
+        element={<PrivateRoute element={<UserManagement />} />}
       />
       <Route
         path={routes.addPremium}
@@ -83,11 +73,7 @@ export default function AppRoute() {
       />
       <Route
         path={routes.updatePremium}
-        element={
-          <PrivateRoute
-            element={<UpdatePremium />}
-          />
-        }
+        element={<PrivateRoute element={<UpdatePremium />} />}
       />
       <Route
         path={routes.premiumList}
