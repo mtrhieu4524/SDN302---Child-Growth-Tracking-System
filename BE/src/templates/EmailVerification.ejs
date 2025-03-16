@@ -51,46 +51,50 @@
       margin: 0;
     }
 
-    .verify-button {
-      text-decoration: none;
-      display: inline-block;
-      padding: 12px 20px;
-      background-color: #f5f0e1;
-      color: #0c0e0c !important;
-      font-size: 17px;
-      font-weight: bold;
-      border-radius: 5px;
-    }
-  </style>
-</head>
-
-<body>
-  <!-- Use a table to center content -->
-  <table class="container" role="presentation" width="100%" cellspacing="0" cellpadding="0">
-    <tr>
-      <td align="center">
-        <div class="email-wrapper">
-          <h1 class="header-title">Confirm Your Email</h1>
-          <p style="border-top: 1px solid #f5f0e1; padding-top: 20px;">
-            Hello <span style="font-weight: bold;"><%= name %></span>,
-          </p>
-          <p>
-            Please click the button below to confirm your email address and
-            finish setting up your account. This link is valid for <%= expiration %>.
-          </p>
-          <form id="verifyForm" action="<%= verificationLink %>" method="POST">
-            <input type="hidden" name="verificationToken" value="<%= verificationToken %>" />
-            <button type="submit" class="verify-button">Click here to verify</button>
-          </form>
-          <p style="border-bottom: 1px solid #f5f0e1; padding-bottom: 20px">
-            You're receiving this email because you sign up for an account for
-            our website. If you are not sure why you're receiving this,
-            someone is probably using your email to sign up.
-          </p>
-        </div>
-      </td>
-    </tr>
-  </table>
-</body>
-
+      .verify-button {
+        text-decoration: none;
+        display: inline-block;
+        padding: 12px 20px;
+        background-color: #f5f0e1;
+        color: #0c0e0c !important;
+        font-size: 17px;
+        font-weight: bold;
+        border-radius: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Use a table to center content -->
+    <table
+      class="container"
+      role="presentation"
+      width="100%"
+      cellspacing="0"
+      cellpadding="0"
+    >
+      <tr>
+        <td align="center">
+          <div class="email-wrapper">
+            <h1 class="header-title">Confirm Your Email</h1>
+            <p style="border-top: 1px solid #f5f0e1; padding-top: 20px;">
+              Hello <span style="font-weight: bold;"><%= name %></span>,
+            </p>
+            <p>
+              Please click the button below to confirm your email address and
+              finish setting up your account. This link is valid for <%= expiration %>.
+            </p>
+            <form id="verifyForm" action="<%= verificationLink %>" method="POST">
+              <input type="hidden" name="verificationToken" value="<%= verificationToken %>" />
+              <button type="submit" class="verify-button">Click here to verify</button>
+            </form>            
+            <p style="border-bottom: 1px solid #f5f0e1; padding-bottom: 20px">
+              You're receiving this email because you sign up for an account for
+              our website. If you are not sure why you're receiving this,
+              someone is probably using your email to sign up.
+            </p>
+          </div>
+        </td>
+      </tr>
+    </table>
+  </body>
 </html>
