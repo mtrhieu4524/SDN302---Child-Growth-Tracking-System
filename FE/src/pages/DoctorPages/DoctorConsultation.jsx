@@ -1,211 +1,418 @@
-import { useState, useEffect } from "react";
-import { Card, List, Button, Typography, message, Modal, Input } from "antd";
-import { Line } from "react-chartjs-2";
+import { useState, useEffect, useContext } from "react";
+import {
+  Card,
+  List,
+  Button,
+  Typography,
+  message,
+  Modal,
+  Input,
+  Form,
+  Space,
+  Spin,
+  Pagination,
+} from "antd";
 import HeaderComponent from "../../components/Header";
 import FooterComponent from "../../components/Footer";
 import ScrollToTop from "../../components/ScrollToTop";
+import { AuthContext } from "../../contexts/AuthContext";
+import axios from "axios";
+import api from "../../configs/api";
 
 const { Title, Text } = Typography;
 const { TextArea } = Input;
 
 const DoctorConsultation = () => {
-    const [consultations, setConsultations] = useState([]);
-    const [selectedConsultation, setSelectedConsultation] = useState(null);
-    const [responseText, setResponseText] = useState("");
-    const [modalVisible, setModalVisible] = useState(false);
+  const { user } = useContext(AuthContext);
+  const [consultations, setConsultations] = useState([]);
+  const [selectedConsultation, setSelectedConsultation] = useState(null);
+  const [responseText, setResponseText] = useState("");
+  const [modalVisible, setModalVisible] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalRequests, setTotalRequests] = useState(0);
+  const pageSize = 5; 
 
-    useEffect(() => {
-        document.title = "Child Growth Tracker - Consultation Request";
-        fetchConsultations();
-    }, []);
+  useEffect(() => {
+    document.title = "Child Growth Tracker - Consultation Request";
+    if (user && user._id) {
+      fetchConsultations();
+    }
+  }, [user, currentPage]);
 
-    const fetchConsultations = async () => {
-        const data = [
-            {
-                id: 1,
-                parentName: "Jane Doe",
-                child: { name: "John Doe", weight: 13, height: 90, bmi: 16.05 },
-                message: "My child has been losing weight. Is this normal?",
-                submittedAt: "2025-03-14",
-                weightHistory: [3.5, 4, 10, 19, 8],
-                heightHistory: [5, 6, 10, 11, 13],
-                bmiHistory: [4, 6, 3, 11, 16],
-            },
-            {
-                id: 2,
-                parentName: "Robert Smith",
-                child: { name: "Emma Smith", weight: 15, height: 95, bmi: 16.6 },
-                message: "Emma has been eating less lately. What should I do?",
-                submittedAt: "2025-03-13",
-                weightHistory: [3.5, 4, 10, 19, 8],
-                heightHistory: [5, 6, 10, 11, 13],
-                bmiHistory: [4, 6, 3, 11, 16],
-            },
-        ];
-        setConsultations(data);
-    };
+  const fetchConsultations = async () => {
+    try {
+      setLoading(true);
+      const response = await api.get(`/requests/users/${user._id}`, {
+        params: {
+          id: user._id,
+          page: currentPage,
+          size: pageSize,
+          search: "",
+          order: "descending",
+          sortBy: "date",
+          status: "",
+          as: "DOCTOR",
+        },
+      });
 
-    const handleReview = (consultation) => {
-        setSelectedConsultation(consultation);
-        setModalVisible(true);
-    };
+      if (
+        response.data &&
+        response.data.requests &&
+        response.data.requests.requests
+      ) {
+        setConsultations(response.data.requests.requests);
+        setTotalRequests(response.data.requests.total);
+      } else {
+        message.error("Failed to load consultation requests");
+      }
+    } catch (error) {
+      console.error("Error fetching consultations:", error);
+      message.error("Failed to load consultation requests");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    const handleSubmitResponse = () => {
-        if (!responseText.trim()) {
-            message.error("Please enter your response.");
-            return;
-        }
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
 
-        setConsultations(consultations.filter(c => c.id !== selectedConsultation.id));
+  // Handle review action (show details in modal)
+  const handleReview = (consultation) => {
+    setSelectedConsultation(consultation);
+    setModalVisible(true);
+  };
 
-        message.success("Response submitted successfully!");
-        setModalVisible(false);
-        setResponseText("");
-        setSelectedConsultation(null);
-    };
+  // Handle accept request
+  const handleAccept = async (consultationId) => {
+    try {
+      setLoading(true);
+      await axios.put(`/api/requests/${consultationId}/accept`, {
+        doctorId: user._id,
+      });
+      message.success("Request accepted successfully!");
+      fetchConsultations();
+    } catch (error) {
+      console.error("Error accepting request:", error);
+      message.error("Failed to accept the request");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    return (
-        <div style={{ minHeight: "100vh" }}>
-            <HeaderComponent />
-            <div style={{ padding: "80px 20px", background: "#f0f2f5" }}>
-                <Card
-                    title={
-                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
-                            <div>
-                                <Title level={2} style={{ color: "#0056A1", marginBottom: 0 }}>
-                                    Consultation Request
-                                </Title>
-                                <Text type="secondary"> Review and give advice for member child's health.
-                                </Text>
-                            </div>
-                        </div>
-                    }
-                    style={{ maxWidth: 900, margin: "0 auto", borderRadius: 8, boxShadow: "0 4px 12px rgba(0,0,0,0.1)" }}
-                >
-                    <List
-                        itemLayout="vertical"
-                        dataSource={consultations}
-                        renderItem={(item) => (
-                            <Card style={{ marginBottom: 15, borderRadius: 8, paddingBottom: 10 }}>
-                                <Text strong>Parent:</Text> {item.parentName} <br />
-                                <Text strong>Child:</Text> {item.child.name} <br />
-                                <Text strong>Submitted At:</Text> {item.submittedAt} <br />
-                                <Text strong>Message:</Text> <Text>{item.message}</Text>
+  // Handle reject request
+  const handleReject = async (consultationId) => {
+    try {
+      setLoading(true);
+      await axios.put(`/api/requests/${consultationId}/reject`, {
+        doctorId: user._id,
+      });
+      message.success("Request rejected successfully!");
+      fetchConsultations();
+    } catch (error) {
+      console.error("Error rejecting request:", error);
+      message.error("Failed to reject the request");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-                                <div style={{ height: "200px", marginTop: "15px" }}>
-                                    <Line
-                                        data={{
-                                            labels: ["2023-01", "2023-06", "2024-01", "2024-06", "2025-01"],
-                                            datasets: [
-                                                {
-                                                    label: "Weight (kg)",
-                                                    data: item.weightHistory,
-                                                    borderColor: "rgb(255, 99, 132)",
-                                                    backgroundColor: "rgba(255, 99, 132, 0.2)",
-                                                    tension: 0.4,
-                                                },
-                                                {
-                                                    label: "Height (cm)",
-                                                    data: item.heightHistory,
-                                                    borderColor: "rgb(99, 255, 122)",
-                                                    backgroundColor: "rgba(102, 255, 99, 0.2)",
-                                                    tension: 0.4,
-                                                },
-                                                {
-                                                    label: "BMI",
-                                                    data: item.bmiHistory,
-                                                    borderColor: "rgb(255, 180, 99)",
-                                                    backgroundColor: "rgba(255, 198, 99, 0.2)",
-                                                    tension: 0.4,
-                                                },
-                                            ],
-                                        }}
-                                    />
-                                </div>
+  // Handle submit response
+  const handleSubmitResponse = async () => {
+    if (!responseText.trim()) {
+      message.error("Please enter your response.");
+      return;
+    }
 
-                                {/* Button positioned at the right bottom corner */}
-                                <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 10 }}>
-                                    <Button type="primary" onClick={() => handleReview(item)}>
-                                        Review & Respond
-                                    </Button>
-                                </div>
-                            </Card>
+    try {
+      setLoading(true);
+      await axios.post(`/api/requests/${selectedConsultation._id}/respond`, {
+        doctorId: user._id,
+        response: responseText,
+      });
+      message.success("Response submitted successfully!");
+      setModalVisible(false);
+      setResponseText("");
+      setSelectedConsultation(null);
+      fetchConsultations();
+    } catch (error) {
+      console.error("Error submitting response:", error);
+      message.error("Failed to submit the response");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-                        )}
-                    />
-                </Card>
+  // Format date for display
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
+
+  // Calculate age from birthdate
+  const calculateAge = (birthDate) => {
+    const birth = new Date(birthDate);
+    const now = new Date();
+    let years = now.getFullYear() - birth.getFullYear();
+    let months = now.getMonth() - birth.getMonth();
+
+    if (months < 0 || (months === 0 && now.getDate() < birth.getDate())) {
+      years--;
+      months += 12;
+    }
+
+    return years === 0
+      ? `${months} months`
+      : `${years} years, ${months} months`;
+  };
+
+  // Capitalize status and set color
+  const getStatusProps = (status) => {
+    const capitalizedStatus =
+      status.charAt(0).toUpperCase() + status.slice(1).toLowerCase();
+    let color;
+
+    switch (status.toLowerCase()) {
+      case "rejected":
+        color = "danger"; 
+        break;
+      case "pending":
+        color = "warning";
+        break;
+      case "accepted":
+        color = "success"; 
+        break;
+      default:
+        color = "default";
+    }
+
+    return { text: capitalizedStatus, color };
+  };
+
+  // Render loading spinner
+  const renderLoading = () => (
+    <div style={{ textAlign: "center", padding: "50px 0" }}>
+      <Spin size="large" />
+    </div>
+  );
+
+  return (
+    <div style={{ minHeight: "100vh" }}>
+      <HeaderComponent />
+      <div style={{ padding: "80px 20px", background: "#f0f2f5" }}>
+        <Card
+          title={
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                marginBottom: "20px",
+              }}>
+              <div>
+                <Title level={2} style={{ color: "#0056A1", marginBottom: 0 }}>
+                  Consultation Requests
+                </Title>
+                <Text type="secondary">
+                  Review and respond to parent consultation requests
+                </Text>
+              </div>
             </div>
-            <FooterComponent />
-            <ScrollToTop />
+          }
+          style={{
+            maxWidth: 900,
+            margin: "0 auto",
+            borderRadius: 8,
+            boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+          }}>
+          {loading ? (
+            renderLoading()
+          ) : (
+            <>
+              <List
+                itemLayout="vertical"
+                dataSource={consultations}
+                locale={{ emptyText: "No consultation requests found" }}
+                renderItem={(item) => {
+                  const { text: statusText, color: statusColor } =
+                    getStatusProps(item.status);
+                  return (
+                    <Card
+                      style={{
+                        marginBottom: 15,
+                        borderRadius: 8,
+                        paddingBottom: 10,
+                      }}
+                      title={item.title || "Consultation Request"}
+                      extra={<Text type={statusColor}>{statusText}</Text>}>
+                      <div style={{ marginBottom: 15 }}>
+                        <Text strong>Parent:</Text>{" "}
+                        {item.member?.name || "Unknown"}
+                        <br />
+                        <Text strong>Child:</Text>{" "}
+                        {item.children && item.children.length > 0
+                          ? item.children[0].name
+                          : "Unknown"}
+                        <br />
+                        {item.children &&
+                          item.children.length > 0 &&
+                          item.children[0].birthDate && (
+                            <>
+                              <Text strong>Age:</Text>{" "}
+                              {calculateAge(item.children[0].birthDate)}
+                              <br />
+                            </>
+                          )}
+                        <Text strong>Submitted:</Text>{" "}
+                        {formatDate(item.createdAt)}
+                        <br />
+                      </div>
 
-            {/* Modal for Doctor's Response */}
-            <Modal
-                title="Provide Consultation Response"
-                open={modalVisible}
-                onCancel={() => setModalVisible(false)}
-                footer={[
-                    <Button key="cancel" onClick={() => setModalVisible(false)}>
-                        Cancel
-                    </Button>,
-                    <Button key="submit" type="primary" onClick={handleSubmitResponse}>
-                        Submit Response
-                    </Button>,
-                ]}
-            >
-                {selectedConsultation && (
-                    <>
-                        <Title level={4}>Patient: {selectedConsultation.child.name}</Title>
-                        <Text strong>Weight:</Text> {selectedConsultation.child.weight} kg <br />
-                        <Text strong>Height:</Text> {selectedConsultation.child.height} cm <br />
-                        <Text strong>BMI:</Text> {selectedConsultation.child.bmi} <br />
-
-                        <div style={{ height: "200px", marginTop: "15px" }}>
-                            <Line
-                                data={{
-                                    labels: ["2023-01", "2023-06", "2024-01", "2024-06", "2025-01"],
-                                    datasets: [
-                                        {
-                                            label: "Weight (kg)",
-                                            data: selectedConsultation.weightHistory,
-                                            borderColor: "rgb(255, 99, 132)",
-                                            backgroundColor: "rgba(255, 99, 132, 0.2)",
-                                            tension: 0.4,
-                                        },
-                                        {
-                                            label: "Height (cm)",
-                                            data: selectedConsultation.heightHistory,
-                                            borderColor: "rgb(99, 255, 122)",
-                                            backgroundColor: "rgba(102, 255, 99, 0.2)",
-                                            tension: 0.4,
-                                        },
-                                        {
-                                            label: "BMI",
-                                            data: selectedConsultation.weightHistory,
-                                            borderColor: "rgb(255, 180, 99)",
-                                            backgroundColor: "rgba(255, 198, 99, 0.2)",
-                                            tension: 0.4,
-                                        },
-                                    ],
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "flex-end",
+                          marginTop: 10,
+                        }}>
+                        <Space>
+                          {item.status.toLowerCase() === "pending" && (
+                            <>
+                              <Button
+                                danger
+                                onClick={() => handleReject(item._id)}
+                                loading={loading}>
+                                Reject
+                              </Button>
+                              <Button
+                                type="primary"
+                                style={{
+                                  backgroundColor: "#52c41a",
+                                  borderColor: "#52c41a",
                                 }}
-                            />
-                        </div>
+                                onClick={() => handleAccept(item._id)}
+                                loading={loading}>
+                                Accept
+                              </Button>
+                            </>
+                          )}
+                          <Button
+                            type="primary"
+                            onClick={() => handleReview(item)}
+                            loading={loading}>
+                            Review
+                          </Button>
+                        </Space>
+                      </div>
+                    </Card>
+                  );
+                }}
+              />
+              {totalRequests > pageSize && (
+                <div style={{ textAlign: "center", marginTop: 20 }}>
+                  <Pagination
+                    current={currentPage}
+                    pageSize={pageSize}
+                    total={totalRequests}
+                    onChange={handlePageChange}
+                    showSizeChanger={false}
+                  />
+                </div>
+              )}
+            </>
+          )}
+        </Card>
+      </div>
+      <FooterComponent />
+      <ScrollToTop />
 
-                        <Text strong>Message from Parent:</Text>
-                        <TextArea rows={3} value={selectedConsultation.message} disabled />
-
-                        <Form.Item label="Your Response">
-                            <TextArea
-                                rows={4}
-                                placeholder="Provide your advice..."
-                                value={responseText}
-                                onChange={(e) => setResponseText(e.target.value)}
-                            />
-                        </Form.Item>
-                    </>
-                )}
-            </Modal>
-        </div>
-    );
+      <Modal
+        title="Consultation Request Details"
+        open={modalVisible}
+        onCancel={() => setModalVisible(false)}
+        footer={[
+          <Button key="cancel" onClick={() => setModalVisible(false)}>
+            Cancel
+          </Button>,
+        ]}
+        width={700}>
+        {selectedConsultation &&
+          selectedConsultation.children &&
+          selectedConsultation.children.length > 0 && (
+            <>
+              <Title level={4}>
+                Child: {selectedConsultation.children[0].name}
+              </Title>
+              <Text strong>Age:</Text>{" "}
+              {calculateAge(selectedConsultation.children[0].birthDate)}
+              <br />
+              <Text strong>Parent:</Text>{" "}
+              {selectedConsultation.member?.name || "Unknown"}
+              <br />
+              <Text strong>Status:</Text>{" "}
+              {(() => {
+                const { text: statusText, color: statusColor } = getStatusProps(
+                  selectedConsultation.status
+                );
+                return <Text type={statusColor}>{statusText}</Text>;
+              })()}
+              <br />
+              <Text strong>Request:</Text>{" "}
+              {selectedConsultation.title || "No title provided"}
+              <br />
+              <Text strong>Submitted:</Text>{" "}
+              {formatDate(selectedConsultation.createdAt)}
+              <br />
+              {selectedConsultation.children[0].growthVelocityResult && (
+                <div style={{ marginTop: 20, marginBottom: 20 }}>
+                  <Text strong>Growth Velocity Results:</Text>
+                  <List
+                    size="small"
+                    dataSource={
+                      selectedConsultation.children[0].growthVelocityResult
+                    }
+                    renderItem={(growthData) => (
+                      <List.Item>
+                        <Text>
+                          {growthData.period} (
+                          {new Date(growthData.startDate).toLocaleDateString()}{" "}
+                          - {new Date(growthData.endDate).toLocaleDateString()}
+                          ):
+                        </Text>
+                        {growthData.weight.description !==
+                        "Insufficient data" ? (
+                          <Text>
+                            Weight: {growthData.weight.weightVelocity}
+                          </Text>
+                        ) : (
+                          <Text type="secondary">Insufficient weight data</Text>
+                        )}
+                        {growthData.height.description !==
+                        "Insufficient data" ? (
+                          <Text>
+                            , Height: {growthData.height.heightVelocity}
+                          </Text>
+                        ) : (
+                          <Text type="secondary">
+                            , Insufficient height data
+                          </Text>
+                        )}
+                      </List.Item>
+                    )}
+                  />
+                </div>
+              )}
+            </>
+          )}
+      </Modal>
+    </div>
+  );
 };
 
 export default DoctorConsultation;

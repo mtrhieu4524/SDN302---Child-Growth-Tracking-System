@@ -54,6 +54,7 @@ const PaymentDetails = () => {
         const response = await api.post("/payments/vnpay/create", {
           price: packageDetails.price.value,
           packageId: packageDetails._id,
+          purchaseType: "CURRENT",
         });
 
         if (response.data.url) {
@@ -65,6 +66,8 @@ const PaymentDetails = () => {
         const response = await api.post("/payments/paypal/create", {
           price: packageDetails.price.value,
           packageId: packageDetails._id,
+          purchaseType: "CURRENT",
+          // nếu muốn mua trươc thì đổi lại là FUTURE
         });
 
         if (response.data.link) {
@@ -110,12 +113,26 @@ const PaymentDetails = () => {
 
   return (
     <div
-      style={{ minHeight: "100vh", display: "flex", flexDirection: "column", background: "#f9f9f9" }}
-    >
+      style={{
+        minHeight: "100vh",
+        display: "flex",
+        flexDirection: "column",
+        background: "#f9f9f9",
+      }}>
       <HeaderComponent />
-      <div style={{ maxWidth: "1500px", margin: "0px auto", padding: "0 20px", flex: 1 }}>
-        <br></br><br></br><br></br>
-        <Title level={2} style={{ textAlign: "center", color: "#00274E", fontWeight: "bold" }}>
+      <div
+        style={{
+          maxWidth: "1500px",
+          margin: "0px auto",
+          padding: "0 20px",
+          flex: 1,
+        }}>
+        <br></br>
+        <br></br>
+        <br></br>
+        <Title
+          level={2}
+          style={{ textAlign: "center", color: "#00274E", fontWeight: "bold" }}>
           Payment Detail
         </Title>
 
@@ -133,8 +150,7 @@ const PaymentDetails = () => {
                 backgroundColor: "#0082C8",
                 color: "white",
                 fontWeight: "bold",
-              }}
-            >
+              }}>
               <div style={{ padding: "20px" }}>
                 <Title level={4} style={{ color: "#0056A1" }}>
                   {packageDetails.name}
@@ -174,18 +190,15 @@ const PaymentDetails = () => {
                 backgroundColor: "#0082C8",
                 color: "white",
                 fontWeight: "bold",
-              }}
-            >
+              }}>
               <Form onFinish={handlePayment} layout="vertical">
                 <Form.Item
                   label="Payment Method"
                   name="paymentMethod"
-                  initialValue="vnpay"
-                >
+                  initialValue="vnpay">
                   <Radio.Group
                     onChange={(e) => setPaymentMethod(e.target.value)}
-                    value={paymentMethod}
-                  >
+                    value={paymentMethod}>
                     <Radio value="vnpay">VNPay</Radio>
                     <Radio value="paypal">PayPal</Radio>
                   </Radio.Group>
@@ -199,8 +212,7 @@ const PaymentDetails = () => {
                     borderColor: "#0082C8",
                     width: "100%",
                     marginTop: "15px",
-                  }}
-                >
+                  }}>
                   Proceed to Payment
                 </Button>
               </Form>
@@ -209,7 +221,12 @@ const PaymentDetails = () => {
         </Row>
       </div>
 
-      <br></br><br></br><br></br><br></br><br></br><br></br>
+      <br></br>
+      <br></br>
+      <br></br>
+      <br></br>
+      <br></br>
+      <br></br>
       <FooterComponent />
       <ScrollToTop />
     </div>
