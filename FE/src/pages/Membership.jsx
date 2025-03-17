@@ -86,7 +86,7 @@ const Membership = () => {
       {/* Membership Header */}
       <div
         style={{
-          background: "linear-gradient(to right, #0082C8, #0056A1)",
+          background: "#0082C8",
           color: "white",
           textAlign: "center",
           padding: "30px 20px",
@@ -147,7 +147,7 @@ const Membership = () => {
                       <Paragraph>{pkg.description}</Paragraph>
                       <Title
                         level={4}
-                        style={{ color: "#0056A1", marginTop: "10px" }}
+                        style={{ color: "#0082C8", marginTop: "10px" }}
                       >
                         {formatPrice(pkg.price)}
                         <span style={{ fontSize: "16px", color: "#666" }}>

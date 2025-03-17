@@ -39,7 +39,7 @@ const GrowthChartMember = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    document.title = "Growth Chart";
+    document.title = "Child Growth Tracking - Growth Chart";
     if (childId) {
       fetchChildData();
     } else {

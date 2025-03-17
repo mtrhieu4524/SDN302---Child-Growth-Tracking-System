@@ -227,8 +227,8 @@ const RequestManagement = () => {
         okText: "Close",
         okButtonProps: {
           style: {
-            background: "#0056A1",
-            borderColor: "#0056A1",
+            background: "#0082C8",
+            borderColor: "#0082C8",
           },
         },
         onOk() {
@@ -303,8 +303,8 @@ const RequestManagement = () => {
             icon={<EyeOutlined />}
             onClick={() => handleViewDetails(record.key)}
             style={{
-              color: "#0056A1",
-              borderColor: "#0056A1",
+              color: "#0082C8",
+              borderColor: "#0082C8",
             }}
           >
             View Details
@@ -316,7 +316,7 @@ const RequestManagement = () => {
 
   return (
     <AdminLayout>
-      <Title level={2} style={{ color: "#0056A1", marginBottom: "24px" }}>
+      <Title level={2} style={{ color: "#0082C8", marginBottom: "24px" }}>
         Consultation Request Management
       </Title>
       <div style={{ marginBottom: "16px", display: "flex", gap: "16px", alignItems: "center" }}>

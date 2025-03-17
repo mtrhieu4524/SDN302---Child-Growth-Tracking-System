@@ -48,7 +48,7 @@ const ChildList = () => {
   };
 
   useEffect(() => {
-    document.title = "Children List";
+    document.title = "Child Growth Tracking - Children List";
     fetchChildren();
   }, []);
 
@@ -66,7 +66,7 @@ const ChildList = () => {
       };
 
       const response = await api.post('/children', formattedData);
-      
+
       if (response.data && response.data.message === "Child created successfully") {
         message.success('Thêm trẻ thành công');
         setIsModalVisible(false);
@@ -124,7 +124,7 @@ const ChildList = () => {
     try {
       setDeleteLoading(true);
       const response = await api.delete(`/children/${childId}`);
-      
+
       if (response.data && response.data.message === "Child deleted successfully") {
         message.success(`Đã xóa ${childName} thành công`);
         fetchChildren(); // Refresh danh sách sau khi xóa
@@ -150,8 +150,8 @@ const ChildList = () => {
           <Title level={2} style={{ margin: 0, color: '#0056A1' }}>
             My Children
           </Title>
-          <Button 
-            type="primary" 
+          <Button
+            type="primary"
             icon={<PlusOutlined />}
             onClick={() => setIsModalVisible(true)}
             style={{ backgroundColor: '#0082c8' }}
@@ -181,14 +181,14 @@ const ChildList = () => {
                 <Card
                   hoverable
                   onClick={(e) => handleCardClick(e, child._id)}
-                  style={{ 
+                  style={{
                     borderRadius: '8px',
                     cursor: 'pointer',
                     position: 'relative'
                   }}
                 >
-                  <div 
-                    style={{ 
+                  <div
+                    style={{
                       position: 'absolute',
                       top: '10px',
                       right: '10px',
@@ -238,7 +238,7 @@ const ChildList = () => {
                       onCancel={(e) => e.stopPropagation()}
                       okText="Xóa"
                       cancelText="Hủy"
-                      okButtonProps={{ 
+                      okButtonProps={{
                         loading: deleteLoading,
                         danger: true
                       }}

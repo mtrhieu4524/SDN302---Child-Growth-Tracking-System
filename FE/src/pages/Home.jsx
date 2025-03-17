@@ -35,7 +35,7 @@ const Home = () => {
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
-        background: "linear-gradient(to bottom, #fcfcf3, #d6eaff)",
+        background: "linear-gradient(to bottom, #fcfcf3, #f9f7f5)",
         padding: "30px 10%",
         minHeight: "400px",
       }}>
@@ -69,7 +69,7 @@ const Home = () => {
               type="primary"
               style={{
                 backgroundColor: "#0082C8",
-                borderColor: "#0082C8",
+                borderColor: "white",
                 padding: "12px 24px",
                 fontSize: "15px",
                 borderRadius: "50px"
@@ -81,14 +81,17 @@ const Home = () => {
           )}
         </div>
 
-        <div style={{ height: 250, flex: 1, display: "flex", justifyContent: "center", position: "relative" }}>
-          <img src="https://nigrowth.com/assets/img/banner-img.png" alt="Growth Tracking" style={{ maxWidth: "400px", borderRadius: "10px" }} />
+        <div style={{ height: "100%", flex: 1, display: "flex", justifyContent: "center", position: "relative" }}>
+          <img 
+            src="https://img.freepik.com/free-vector/flat-mothers-day-illustration_23-2149353572.jpg?t=st=1742228645~exp=1742232245~hmac=3d7f9d3eb563e4546d53495afbc5657dafed1a76759674b0ba4e0081331af4e8&w=740" 
+            alt="Growth Tracking" 
+            style={{ maxWidth: "500px", borderRadius: "10px", width: "500px", height: "auto", objectFit: "cover" }} />
         </div>
       </div>
 
       <div style={{ padding: "60px 10%", textAlign: "left" }}>
         <div style={{ display: "inline-block" }}>
-          <Title style={{ color: "#666", fontSize: "16px", textTransform: "uppercase", marginBottom: "-20px" }}>The Process</Title>
+          <Title style={{ color: "#0082C8", fontSize: "16px", textTransform: "uppercase", marginBottom: "-20px" }}>The Process</Title>
           <Title style={{ fontSize: "25px", fontWeight: "bold", color: "#00274E", marginBottom: "10px" }}>
             How Child Growth Tracking Works
           </Title>
@@ -190,15 +193,17 @@ const Home = () => {
             <div style={{ position: "absolute", width: "300px", height: "300px", backgroundColor: "#d6eaff", borderRadius: "50%", zIndex: -1 }}></div>
 
             <img
-              src="https://nigrowth.com/assets/img/mobile-app-mockup.png"
+              src="https://img.freepik.com/premium-vector/happy-mothers-day-cartoon-vector_504403-670.jpg?w=740"
               alt="Mobile App"
               style={{
                 marginTop: "25px",
+                padding: "20px",
                 width: "120%",
                 position: "absolute",
                 left: "-60px",
                 zIndex: 2,
                 borderRadius: "10px",
+                boxShadow: "rgba(0, 0, 0, 0.1) 0px 4px 10px",
                 outline: "none"
               }}
             />
@@ -214,7 +219,7 @@ const Home = () => {
           </Text>
 
           <div style={{ display: "flex", gap: "20px" }}>
-            <Card style={{ borderRadius: 0, flex: 1, textAlign: "center", boxShadow: "0 4px 10px rgba(0,0,0,0.1)" }}>
+            <Card style={{ borderRadius: 0, flex: 1, textAlign: "center", boxShadow: "0 4px 10px rgba(0,0,0,0.1)", borderRadius: "10px", }}>
               <Avatar src="https://randomuser.me/api/portraits/men/32.jpg" size={60} style={{ margin: "auto" }} />
               <div style={{ marginTop: "10px" }}>
                 <Title level={5} style={{ fontWeight: "bold", color: "#00274E", display: "flex", alignItems: "center", justifyContent: "center", gap: "5px" }}>
@@ -226,7 +231,7 @@ const Home = () => {
               </div>
             </Card>
 
-            <Card style={{ borderRadius: 0, flex: 1, textAlign: "center", boxShadow: "0 4px 10px rgba(0,0,0,0.1)" }}>
+            <Card style={{ borderRadius: 0, flex: 1, textAlign: "center", boxShadow: "0 4px 10px rgba(0,0,0,0.1)", borderRadius: "10px", }}>
               <Avatar src="https://randomuser.me/api/portraits/women/44.jpg" size={60} style={{ margin: "auto" }} />
               <div style={{ marginTop: "10px" }}>
                 <Title level={5} style={{ fontWeight: "bold", color: "#00274E", display: "flex", alignItems: "center", justifyContent: "center", gap: "5px" }}>

@@ -54,7 +54,10 @@ const HeaderComponent = () => {
       key: "health",
       label: "Health & Nutrition",
       children: [
-        { key: "growth-chart", label: <a href="/growth-chart">Growth Chart</a> },
+        {
+          key: "growth-chart",
+          label: <a href="/growth-chart">Growth Chart</a>,
+        },
         {
           key: "milestones",
           label: <a href="/development-milestones">Development Milestones</a>,
@@ -97,7 +100,10 @@ const HeaderComponent = () => {
       key: "health",
       label: "Health & Nutrition",
       children: [
-        { key: "growth-chart", label: <a href="/growth-chart">Growth Chart</a> },
+        {
+          key: "growth-chart",
+          label: <a href="/growth-chart">Growth Chart</a>,
+        },
         {
           key: "milestones",
           label: <a href="/development-milestones">Development Milestones</a>,
@@ -143,7 +149,10 @@ const HeaderComponent = () => {
       key: "health",
       label: "Health & Nutrition",
       children: [
-        { key: "growth-chart", label: <a href="/growth-chart">Growth Chart</a> },
+        {
+          key: "growth-chart",
+          label: <a href="/growth-chart">Growth Chart</a>,
+        },
         {
           key: "milestones",
           label: <a href="/development-milestones">Development Milestones</a>,
@@ -160,21 +169,21 @@ const HeaderComponent = () => {
     role === "admin"
       ? adminMenuItems
       : role === "doctor"
-        ? doctorMenuItems
-        : memberMenuItems;
+      ? doctorMenuItems
+      : memberMenuItems;
 
   const dropdownItems =
     role === "admin"
       ? adminDropdownMenuItems
       : role === "doctor"
-        ? doctorDropdownMenuItems
-        : memberDropdownMenuItems;
+      ? doctorDropdownMenuItems
+      : memberDropdownMenuItems;
 
   return (
     <div>
       <div
         style={{
-          background: "linear-gradient(to right, #0082C8, #0056A1)",
+          background: "#0082C8",
           color: "white",
           textAlign: "center",
           padding: "8px",
@@ -185,8 +194,7 @@ const HeaderComponent = () => {
           marginRight: "-8px",
           paddingTop: "10px",
           marginBottom: "5px",
-        }}
-      >
+        }}>
         Welcome to Child Growth Tracking
       </div>
 
@@ -206,8 +214,7 @@ const HeaderComponent = () => {
           position: "sticky",
           top: "10px",
           zIndex: 50,
-        }}
-      >
+        }}>
         <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
           <a href="/" title="Logo">
             <div style={{ display: "flex", alignItems: "center" }}>
@@ -251,18 +258,16 @@ const HeaderComponent = () => {
             alignItems: "center",
             gap: "15px",
             marginRight: "10px",
-          }}
-        >
+          }}>
           {user ? (
             <Dropdown menu={{ items: dropdownItems }} placement="bottomRight">
               <a
                 style={{
-                  color: "#1890ff",
+                  color: "#0082C8",
                   fontWeight: "500",
                   display: "flex",
                   alignItems: "center",
-                }}
-              >
+                }}>
                 <UserOutlined
                   style={{ marginRight: "5px", marginTop: "4px", fontSize: 24 }}
                 />
@@ -274,7 +279,7 @@ const HeaderComponent = () => {
             </Dropdown>
           ) : (
             <>
-              <a href="/login" style={{ color: "#1890ff", fontWeight: "500" }}>
+              <a href="/login" style={{ color: "#0082C8", fontWeight: "500" }}>
                 Sign in
               </a>
               <Button

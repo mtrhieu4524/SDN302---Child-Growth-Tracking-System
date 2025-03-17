@@ -1,53 +1,103 @@
 import { useState, useEffect } from "react";
-import { Layout, Card, Form, Select, Input, Button, Typography, message, Row, Col } from "antd";
-import { Line } from "react-chartjs-2";
+import { Card, Form, Select, Input, Button, Typography, message, Row, Col, Spin } from "antd";
 import HeaderComponent from "../../components/Header";
 import FooterComponent from "../../components/Footer";
 import ScrollToTop from "../../components/ScrollToTop";
+import api from "../../configs/api";
 
 const { Title, Text } = Typography;
 const { TextArea } = Input;
 
 const Consultation = () => {
     const [selectedChild, setSelectedChild] = useState(null);
-    const [messageText, setMessageText] = useState("");
     const [selectedDoctor, setSelectedDoctor] = useState(null);
+    const [messageText, setMessageText] = useState("");
+    const [childrenData, setChildrenData] = useState([]);
+    const [doctors, setDoctors] = useState([]);
+    const [loadingChildren, setLoadingChildren] = useState(true);
+    const [loadingDoctors, setLoadingDoctors] = useState(true);
+    const [loadingSubmit, setLoadingSubmit] = useState(false);
 
-    const childrenData = [
-        { id: 1, name: "John Doe", weight: 13, height: 90, bmi: 16.05 },
-        { id: 2, name: "Jane Doe", weight: 12, height: 85, bmi: 16.60 },
-    ];
+    useEffect(() => {
+        const fetchChildren = async () => {
+            try {
+                const response = await api.get("/children", {
+                    params: { page: 1, size: 10, sortBy: "date", order: "descending" },
+                });
+                if (response.data?.children?.length) {
+                    setChildrenData(response.data.children);
+                }
+            } catch (error) {
+                message.error("Failed to load children list");
+            } finally {
+                setLoadingChildren(false);
+            }
+        };
 
-    const doctors = [
-        { id: 1, name: "Dr. Smith - Pediatrics" },
-        { id: 2, name: "Dr. Johnson - Nutritionist" },
-    ];
+        fetchChildren();
+    }, []);
 
-    const sampleChartData = {
-        labels: ["2023-01", "2023-06", "2024-01", "2024-06", "2025-01"],
-        datasets: [
-            {
-                label: "Weight (kg)",
-                data: [3.5, 6, 9, 11, 13],
-                borderColor: "rgb(255, 99, 132)",
-                backgroundColor: "rgba(255, 99, 132, 0.2)",
-                tension: 0.4,
-            },
-        ],
-    };
+    useEffect(() => {
+        const fetchDoctors = async () => {
+            try {
+                const response = await api.get("/users");
+                if (response.data?.users?.length) {
+                    const uniqueDoctors = [];
+                    const doctorIds = new Set();
 
-    const handleSubmit = () => {
-        if (!selectedChild || !selectedDoctor || !messageText.trim()) {
-            message.error("Please complete all fields before submitting.");
-            return;
-        }
-        message.success("Consultation request submitted successfully!");
-        setMessageText("");
-    };
+                    response.data.users.forEach(doctor => {
+                        if (doctor.role === 2) {
+                            const doctorId = doctor._id;
+                            if (!doctorIds.has(doctorId)) {
+                                doctorIds.add(doctorId);
+                                uniqueDoctors.push(doctor);
+                            }
+                        }
+                    });
+
+                    setDoctors(uniqueDoctors);
+                }
+            } catch (error) {
+                message.error("Failed to load doctors list");
+            } finally {
+                setLoadingDoctors(false);
+            }
+        };
+
+        fetchDoctors();
+    }, []);
+
 
     useEffect(() => {
         document.title = "Child Growth Tracking - Doctor Consultation";
     }, []);
+
+    const handleSubmit = async () => {
+        if (!selectedChild || !selectedDoctor || !messageText.trim()) {
+            message.error("Please select a child, doctor, and enter a consultation title.");
+            return;
+        }
+
+        const requestData = {
+            childIds: [String(selectedChild)],
+            doctorId: String(selectedDoctor),
+            title: messageText.trim(),
+        };
+
+        try {
+            setLoadingSubmit(true);
+            const response = await api.post("/requests", requestData);
+            message.success("Consultation request submitted successfully!");
+            setSelectedChild(null);
+            setSelectedDoctor(null);
+            setMessageText("");
+        } catch (error) {
+            message.error("Failed to submit consultation request.");
+        } finally {
+            setLoadingSubmit(false);
+        }
+    };
+
     return (
         <div style={{ minHeight: "100vh" }}>
             <HeaderComponent />
@@ -59,8 +109,7 @@ const Consultation = () => {
                                 <Title level={2} style={{ color: "#0056A1", marginBottom: 0 }}>
                                     Request Consultation
                                 </Title>
-                                <Text type="secondary"> Get expert advice on your child's health and growth from trusted professionals.
-                                </Text>
+                                <Text type="secondary"> Get expert advice on your child's health and growth from trusted professionals.</Text>
                             </div>
                         </div>
                     }
@@ -70,52 +119,47 @@ const Consultation = () => {
                     <Form layout="vertical">
                         <Row gutter={16}>
                             <Col span={12}>
-                                <Form.Item label="Select Child">
-                                    <Select
-                                        placeholder="Choose a child"
-                                        onChange={(value) => setSelectedChild(childrenData.find(child => child.id === value))}
-                                    >
-                                        {childrenData.map((child) => (
-                                            <Select.Option key={child.id} value={child.id}>
-                                                {child.name}
-                                            </Select.Option>
-                                        ))}
-                                    </Select>
+                                <Form.Item label="Select Child" required>
+                                    {loadingChildren ? (
+                                        <Spin />
+                                    ) : (
+                                        <Select
+                                            placeholder="Choose a child"
+                                            value={selectedChild}
+                                            onChange={(value) => setSelectedChild(value)}
+                                        >
+                                            {childrenData.map((child) => (
+                                                <Select.Option key={child.id ?? child._id} value={child.id ?? child._id}>
+                                                    {child.name}
+                                                </Select.Option>
+                                            ))}
+                                        </Select>
+                                    )}
                                 </Form.Item>
                             </Col>
 
                             <Col span={12}>
-                                <Form.Item label="Select Doctor">
-                                    <Select
-                                        placeholder="Choose a doctor"
-                                        onChange={(value) => setSelectedDoctor(doctors.find(doctor => doctor.id === value))}
-                                    >
-                                        {doctors.map((doctor) => (
-                                            <Select.Option key={doctor.id} value={doctor.id}>
-                                                {doctor.name}
-                                            </Select.Option>
-                                        ))}
-                                    </Select>
+                                <Form.Item label="Select Doctor" required>
+                                    {loadingDoctors ? (
+                                        <Spin />
+                                    ) : (
+                                        <Select
+                                            placeholder="Choose a doctor"
+                                            value={selectedDoctor}
+                                            onChange={(value) => setSelectedDoctor(value)}
+                                        >
+                                            {doctors.map((doctor) => (
+                                                <Select.Option key={doctor.id ?? doctor._id} value={doctor.id ?? doctor._id}>
+                                                    {doctor.name}
+                                                </Select.Option>
+                                            ))}
+                                        </Select>
+                                    )}
                                 </Form.Item>
                             </Col>
                         </Row>
 
-                        {selectedChild && (
-                            <Card style={{ marginBottom: 20 }}>
-                                <Text strong>Latest Health Data</Text>
-                                <p>Weight: {selectedChild.weight} kg</p>
-                                <p>Height: {selectedChild.height} cm</p>
-                                <p>BMI: {selectedChild.bmi}</p>
-                            </Card>
-                        )}
-
-                        <Form.Item label="Growth Chart Preview">
-                            <div style={{ height: "200px" }}>
-                                <Line data={sampleChartData} />
-                            </div>
-                        </Form.Item>
-
-                        <Form.Item label="Message to Doctor">
+                        <Form.Item label="Consultation Title" required>
                             <TextArea
                                 rows={4}
                                 placeholder="Describe your concerns..."
@@ -127,16 +171,18 @@ const Consultation = () => {
                         <Form.Item>
                             <Button
                                 type="primary"
-                                htmlType="submit"
                                 size="large"
+                                onClick={handleSubmit}
+                                disabled={loadingSubmit}
                                 style={{
                                     width: "100%",
                                     borderRadius: 4,
                                     background: "linear-gradient(to right, #0082C8, #0056A1)",
                                     border: "none",
                                     height: 40,
-                                }}>
-                                Submit Consultation Request
+                                }}
+                            >
+                                {loadingSubmit ? <Spin /> : "Submit Consultation Request"}
                             </Button>
                         </Form.Item>
                     </Form>

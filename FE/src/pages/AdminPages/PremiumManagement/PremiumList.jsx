@@ -41,6 +41,8 @@ const PremiumList = () => {
         },
       });
 
+      console.log("response", response);
+
       if (response.data && response.data.packages) {
         const formattedPackages = response.data.packages.map((pkg) => ({
           key: pkg._id,
@@ -95,19 +97,23 @@ const PremiumList = () => {
       },
       onOk: async () => {
         try {
-          const response = await api.delete(`/membership-packages/${packageId}`);
-          
+          const response = await api.delete(
+            `/membership-packages/${packageId}`
+          );
+
           if (response.status === 200) {
-            message.success('Premium package deleted successfully');
-            setPackages(packages.filter(pkg => pkg.key !== packageId));
-            setPagination(prev => ({
+            message.success("Premium package deleted successfully");
+            setPackages(packages.filter((pkg) => pkg.key !== packageId));
+            setPagination((prev) => ({
               ...prev,
-              total: prev.total - 1
+              total: prev.total - 1,
             }));
           }
         } catch (error) {
-          console.error('Error deleting package:', error);
-          message.error(error.response?.data?.message || 'Failed to delete package');
+          console.error("Error deleting package:", error);
+          message.error(
+            error.response?.data?.message || "Failed to delete package"
+          );
         }
       },
     });
@@ -157,11 +163,7 @@ const PremiumList = () => {
       dataIndex: "status",
       key: "status",
       align: "center",
-      render: (status) => (
-        <Tag color={status === "active" ? "#52c41a" : "#ff4d4f"}>
-          {status === "active" ? "Active" : "Inactive"}
-        </Tag>
-      ),
+      render: (status) => <Tag color="#52c41a">Active</Tag>,
     },
     {
       title: "Date created",
@@ -197,7 +199,7 @@ const PremiumList = () => {
           alignItems: "center",
           marginBottom: "24px",
         }}>
-        <Title level={2} style={{ color: "#0056A1", margin: 0 }}>
+        <Title level={2} style={{ color: "#0082C8", margin: 0 }}>
           Premium Package Management
         </Title>
         <Button
@@ -205,7 +207,7 @@ const PremiumList = () => {
           icon={<PlusOutlined />}
           onClick={() => navigate("/admin/add-premium")}
           style={{
-            background: "linear-gradient(to right, #0056A1, #0082C8)",
+            background: "#0082C8",
             border: "none",
           }}>
           Add New Package

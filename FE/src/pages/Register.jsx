@@ -95,7 +95,7 @@ const Register = () => {
           }}
         >
           <div style={{ textAlign: "center", marginBottom: "30px" }}>
-            <Title level={2} style={{ color: "#0056A1", marginBottom: "8px" }}>
+            <Title level={2} style={{ color: "#0082C8", marginBottom: "8px" }}>
               Sign up
             </Title>
             <Text type="secondary">
@@ -183,7 +183,7 @@ const Register = () => {
                 style={{
                   width: "100%",
                   height: "40px",
-                  background: "linear-gradient(to right, #0056A1, #0082C8)",
+                  background: "#0082C8",
                   border: "none",
                 }}
               >

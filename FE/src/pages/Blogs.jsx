@@ -12,6 +12,7 @@ import {
   Avatar,
   Tag,
   message,
+  Image,
 } from "antd";
 import {
   RightOutlined,
@@ -115,14 +116,12 @@ const Blogs = () => {
     setSearchQuery(cleanedValue);
   };
 
-  // Function to extract text content from HTML string
   const extractTextFromHtml = (html) => {
     const tempDiv = document.createElement("div");
     tempDiv.innerHTML = html;
     return tempDiv.textContent || tempDiv.innerText || "";
   };
 
-  // Function to get a short description from content
   const getShortDescription = (html) => {
     const plainText = extractTextFromHtml(html);
     return plainText.length > 100
@@ -130,14 +129,14 @@ const Blogs = () => {
       : plainText;
   };
 
-  // Function to format date
   const formatDate = (dateString) => {
     return moment(dateString).format("MMM DD, YYYY");
   };
 
   return (
     <div
-      style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
+      style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}
+    >
       <Header />
       <div style={{ background: "#f0f2f5", padding: "80px 24px 40px" }}>
         <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
@@ -147,7 +146,8 @@ const Blogs = () => {
               marginBottom: "40px",
               display: "flex",
               justifyContent: "center",
-            }}>
+            }}
+          >
             <Search
               placeholder="Search blog posts by title"
               allowClear
@@ -171,17 +171,22 @@ const Blogs = () => {
                 <Col xs={24} md={12}>
                   <div
                     style={{
-                      height: "300px",
-                      overflow: "hidden",
-                      borderRadius: "12px",
-                    }}>
-                    <img
+                      width: "100%",
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                    }}
+                  >
+                    <Image
                       src={featuredPost.thumbnailUrl}
                       alt={featuredPost.title}
+                      fallback="https://watchdiana.fail/blog/wp-content/themes/koji/assets/images/default-fallback-image.png"
                       style={{
                         width: "100%",
-                        height: "100%",
+                        maxWidth: "100%",
+                        height: "300px",
                         objectFit: "cover",
+                        borderRadius: "12px 12px 0 0",
                       }}
                     />
                   </div>
@@ -190,7 +195,8 @@ const Blogs = () => {
                   <div style={{ padding: "24px" }}>
                     <Tag
                       color="#0082C8"
-                      style={{ marginBottom: "12px", fontWeight: "500" }}>
+                      style={{ marginBottom: "12px", fontWeight: "500" }}
+                    >
                       Featured
                     </Tag>
                     <Title
@@ -199,7 +205,8 @@ const Blogs = () => {
                         color: "#00274E",
                         fontWeight: "bold",
                         marginBottom: "16px",
-                      }}>
+                      }}
+                    >
                       {featuredPost.title}
                     </Title>
                     <Paragraph
@@ -207,7 +214,8 @@ const Blogs = () => {
                         color: "#4B5563",
                         fontSize: "16px",
                         marginBottom: "24px",
-                      }}>
+                      }}
+                    >
                       {getShortDescription(featuredPost.content)}
                     </Paragraph>
                     <div
@@ -215,10 +223,17 @@ const Blogs = () => {
                         display: "flex",
                         alignItems: "center",
                         marginBottom: "24px",
-                      }}>
+                      }}
+                    >
                       <Avatar
                         src={featuredPost.user?.avatar}
-                        icon={!featuredPost.user?.avatar && <UserOutlined />}
+                        icon={
+                          featuredPost.user?.avatar ? (
+                            featuredPost.user?.avatar
+                          ) : (
+                            <UserOutlined />
+                          )
+                        }
                         size={40}
                       />
                       <div style={{ marginLeft: "12px" }}>
@@ -230,7 +245,8 @@ const Blogs = () => {
                             display: "block",
                             fontSize: "12px",
                             color: "#6B7280",
-                          }}>
+                          }}
+                        >
                           <CalendarOutlined style={{ marginRight: "4px" }} />
                           {formatDate(featuredPost.createdAt)}
                         </Text>
@@ -247,7 +263,8 @@ const Blogs = () => {
                         borderRadius: "6px",
                         padding: "0 24px",
                         height: "48px",
-                      }}>
+                      }}
+                    >
                       Read Article
                     </Button>
                   </div>
@@ -265,7 +282,8 @@ const Blogs = () => {
                 color: "#00274E",
                 fontWeight: "bold",
                 marginBottom: "16px",
-              }}>
+              }}
+            >
               Latest Blog Posts
             </Title>
             <hr
@@ -287,14 +305,24 @@ const Blogs = () => {
                     <Card
                       hoverable
                       cover={
-                        <div style={{ height: "200px", overflow: "hidden" }}>
-                          <img
-                            src={post.thumbnailUrl}
-                            alt={post.title}
+                        <div
+                          style={{
+                            width: "100%",
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                          }}
+                        >
+                          <Image
+                            src={featuredPost.thumbnailUrl}
+                            alt={featuredPost.title}
+                            fallback="https://watchdiana.fail/blog/wp-content/themes/koji/assets/images/default-fallback-image.png"
                             style={{
                               width: "100%",
-                              height: "100%",
+                              maxWidth: "100%",
+                              height: "300px",
                               objectFit: "cover",
+                              borderRadius: "12px 12px 0 0",
                             }}
                           />
                         </div>
@@ -313,20 +341,17 @@ const Blogs = () => {
                         flexDirection: "column",
                         height: "100%",
                         border: "none",
-                      }}>
+                      }}
+                    >
                       <div style={{ flex: 1 }}>
-                        <Tag
-                          color="#0082C8"
-                          style={{ marginBottom: "12px", fontWeight: "500" }}>
-                          {post.status}
-                        </Tag>
                         <Title
                           level={4}
                           style={{
                             color: "#00274E",
                             marginBottom: "12px",
                             fontWeight: "600",
-                          }}>
+                          }}
+                        >
                           {post.title}
                         </Title>
                         <Paragraph
@@ -335,7 +360,8 @@ const Blogs = () => {
                             fontSize: "14px",
                             marginBottom: "16px",
                           }}
-                          ellipsis={{ rows: 2 }}>
+                          ellipsis={{ rows: 2 }}
+                        >
                           {getShortDescription(post.content)}
                         </Paragraph>
                       </div>
@@ -344,7 +370,8 @@ const Blogs = () => {
                           display: "flex",
                           alignItems: "center",
                           marginBottom: "16px",
-                        }}>
+                        }}
+                      >
                         <Avatar
                           src={post.user?.avatar}
                           icon={!post.user?.avatar && <UserOutlined />}
@@ -356,7 +383,8 @@ const Blogs = () => {
                               fontSize: "12px",
                               color: "#00274E",
                               fontWeight: "500",
-                            }}>
+                            }}
+                          >
                             {post.user?.name || "Anonymous"}
                           </Text>
                           <Text
@@ -364,7 +392,8 @@ const Blogs = () => {
                               display: "block",
                               fontSize: "12px",
                               color: "#6B7280",
-                            }}>
+                            }}
+                          >
                             {formatDate(post.createdAt)}
                           </Text>
                         </div>
@@ -378,7 +407,8 @@ const Blogs = () => {
                           fontWeight: "600",
                           padding: 0,
                           justifyContent: "flex-start",
-                        }}>
+                        }}
+                      >
                         Read More
                       </Button>
                     </Card>
@@ -400,12 +430,23 @@ const Blogs = () => {
                 display: "flex",
                 justifyContent: "center",
                 marginTop: "40px",
-              }}>
+              }}
+            >
               <Pagination
                 current={pagination.current}
                 pageSize={pagination.pageSize}
                 total={pagination.total}
                 onChange={handlePageChange}
+                itemRender={(current, type, originalElement) => {
+                  if (type === "page") {
+                    return (
+                      <span style={{ color: "#0082C8", fontWeight: "bold" }}>
+                        {current}
+                      </span>
+                    );
+                  }
+                  return originalElement;
+                }}
                 style={{ marginBottom: "40px" }}
               />
             </div>
