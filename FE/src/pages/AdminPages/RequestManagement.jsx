@@ -10,6 +10,7 @@ import {
   Tag,
   Typography,
   Avatar,
+  Select,
 } from "antd";
 import moment from "moment";
 import React, { useEffect, useState } from "react";
@@ -17,64 +18,42 @@ import api from "../../configs/api";
 import AdminLayout from "../../layouts/AdminLayout";
 
 const { Title } = Typography;
+const { Option } = Select;
 
 const RequestManagement = () => {
   const [loading, setLoading] = useState(true);
   const [requests, setRequests] = useState([]);
   const [requestDetail, setRequestDetail] = useState(null);
   const [detailLoading, setDetailLoading] = useState(false);
+  const [sortBy, setSortBy] = useState("date");
+  const [sortOrder, setSortOrder] = useState("descending");
   const [pagination, setPagination] = useState({
     current: 1,
     pageSize: 10,
     total: 0,
   });
+  const [statusFilter, setStatusFilter] = useState("");
 
-  const fetchRequests = async (page = 1, size = pagination.pageSize) => {
+  const fetchRequests = async (page = 1, size = pagination.pageSize, status = "", sortBy = "date", sortOrder = "descending") => {
     setLoading(true);
     try {
       const response = await api.get("/requests", {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${
-            JSON.parse(localStorage.getItem("access_token") || "{}")?.token ||
-            ""
-          }`,
-        },
-        params: {
-          page,
-          size,
-          search: "",
-          order: "descending",
-          sortBy: "date",
-        },
+        params: { page, size, search: "", sortBy, order: sortOrder, status },
       });
-
-      console.log("Fetched requests:", response.data.requests);
-
+  
       if (response.data && response.data.requests) {
         const formattedRequests = response.data.requests.map((request) => ({
           key: request._id,
           username: request.member.name,
-          childName: request.children[0]?.name || "Không có thông tin",
+          childName: request.children[0]?.name || "N/A",
           status: request.status.toLowerCase(),
-          createdAt: moment(request.createdAt).format(
-            "DD/MM/YYYY | hh:mm:ss A"
-          ),
-          updatedAt: moment(request.updatedAt).format(
-            "DD/MM/YYYY | hh:mm:ss A"
-          ),
+          createdAt: moment(request.createdAt).format("DD/MM/YYYY | hh:mm:ss A"),
+          updatedAt: moment(request.updatedAt).format("DD/MM/YYYY | hh:mm:ss A"),
           doctorName: request.doctor.name,
         }));
-        console.log("Formatted requests:", formattedRequests);
-
+  
         setRequests(formattedRequests);
-        console.log("Total requests:", response.data.total);
-
-        setPagination({
-          current: page,
-          pageSize: size,
-          total: response.data.total || response.data.requests.length, // Sửa total
-        });
+        setPagination({ current: page, pageSize: size, total: response.data.total || response.data.requests.length });
       } else {
         message.error("No requests found");
         setRequests([]);
@@ -83,19 +62,17 @@ const RequestManagement = () => {
       console.error("Error fetching requests:", error);
       message.error("Failed to load requests");
       setRequests([]);
-      setPagination({
-        ...pagination,
-        total: 0,
-      });
+      setPagination({ ...pagination, total: 0 });
     } finally {
       setLoading(false);
     }
   };
+  
 
   useEffect(() => {
     document.title = "Admin - Request Management";
-    fetchRequests(pagination.current, pagination.pageSize);
-  }, []);
+    fetchRequests(pagination.current, pagination.pageSize, statusFilter);
+  }, [statusFilter]);
 
   const handlePageChange = (page, pageSize) => {
     setPagination({
@@ -103,8 +80,20 @@ const RequestManagement = () => {
       current: page,
       pageSize: pageSize,
     });
-    fetchRequests(page, pageSize);
+    fetchRequests(page, pageSize, statusFilter);
   };
+
+  const handleStatusFilterChange = (value) => {
+    setStatusFilter(value);
+    setPagination({ ...pagination, current: 1 });
+  };
+  
+  const handleSortOrderChange = () => {
+    const newOrder = sortOrder === "ascending" ? "descending" : "ascending";
+    setSortOrder(newOrder);
+    fetchRequests(1, pagination.pageSize, statusFilter, sortBy, newOrder);
+  };
+  
 
   const handleViewDetails = async (requestId) => {
     setDetailLoading(true);
@@ -120,12 +109,14 @@ const RequestManagement = () => {
         closeIcon: <CloseOutlined style={{ color: "#666666" }} />,
         content: (
           <div style={{ padding: "0" }}>
-            <div style={{ 
-              display: 'grid', 
-              gridTemplateColumns: '150px 1fr',
-              rowGap: '24px',
-              marginBottom: '20px'
-            }}>
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "150px 1fr",
+                rowGap: "24px",
+                marginBottom: "20px",
+              }}
+            >
               <div>Request ID</div>
               <div>{detail._id}</div>
 
@@ -133,39 +124,71 @@ const RequestManagement = () => {
               <div>{detail.title}</div>
 
               <div>Status</div>
-              <div style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
-                <Tag color={
-                  detail.status.toLowerCase() === "pending" ? "#faad14" :
-                  detail.status.toLowerCase() === "approved" ? "#52c41a" :
-                  "#ff4d4f"
-                }>
-                  {detail.status === "Pending" ? "Pending" : 
-                   detail.status === "Approved" ? "Approved" :
-                   detail.status === "Canceled" ? "Canceled" : "Rejected"}
+              <div
+                style={{ display: "flex", gap: "20px", alignItems: "center" }}
+              >
+                <Tag
+                  color={
+                    detail.status.toLowerCase() === "pending"
+                      ? "#faad14"
+                      : detail.status.toLowerCase() === "accepted"
+                      ? "#52c41a"
+                      : "#ff4d4f"
+                  }
+                >
+                  {detail.status === "Pending"
+                    ? "Pending"
+                    : detail.status === "Accepted"
+                    ? "Accepted"
+                    : detail.status === "Canceled"
+                    ? "Canceled"
+                    : "Rejected"}
                 </Tag>
                 <span>Created Date</span>
-                <span>{moment(detail.createdAt).format("DD/MM/YYYY HH:mm")}</span>
+                <span>
+                  {moment(detail.createdAt).format("DD/MM/YYYY | hh:mm:ss A")}
+                </span>
               </div>
 
               <div>Requestor Information</div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <Avatar src={detail.member.avatar} size={40} style={{ backgroundColor: '#f0f0f0' }}>
+              <div
+                style={{ display: "flex", alignItems: "center", gap: "12px" }}
+              >
+                <Avatar
+                  src={detail.member.avatar}
+                  size={40}
+                  style={{ backgroundColor: "#f0f0f0" }}
+                >
                   {!detail.member.avatar && detail.member.name.charAt(0)}
                 </Avatar>
                 <div>
-                  <div><strong>Name:</strong> {detail.member.name}</div>
-                  <div><strong>ID:</strong> {detail.member._id}</div>
+                  <div>
+                    <strong>Name:</strong> {detail.member.name}
+                  </div>
+                  <div>
+                    <strong>ID:</strong> {detail.member._id}
+                  </div>
                 </div>
               </div>
 
               <div>Doctor Information</div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <Avatar src={detail.doctor.avatar} size={40} style={{ backgroundColor: '#f0f0f0' }}>
+              <div
+                style={{ display: "flex", alignItems: "center", gap: "12px" }}
+              >
+                <Avatar
+                  src={detail.doctor.avatar}
+                  size={40}
+                  style={{ backgroundColor: "#f0f0f0" }}
+                >
                   {!detail.doctor.avatar && detail.doctor.name.charAt(0)}
                 </Avatar>
                 <div>
-                  <div><strong>Name:</strong> {detail.doctor.name}</div>
-                  <div><strong>ID:</strong> {detail.doctor._id}</div>
+                  <div>
+                    <strong>Name:</strong> {detail.doctor.name}
+                  </div>
+                  <div>
+                    <strong>ID:</strong> {detail.doctor._id}
+                  </div>
                 </div>
               </div>
 
@@ -173,20 +196,31 @@ const RequestManagement = () => {
               <div>
                 {detail.children.map((child) => (
                   <div key={child._id}>
-                    <div><strong>Name:</strong> {child.name}</div>
-                    <div><strong>Birth Date:</strong> {moment(child.birthDate).format("DD/MM/YYYY")}</div>
-                    <div><strong>Gender:</strong> {child.gender === 1 ? "Male" : "Female"}</div>
                     <div>
-                      <strong>Relationship:</strong> {
-                        child.relationships?.find(r => r.memberId === detail.member._id)?.type || "Other"
-                      }
+                      <strong>Name:</strong> {child.name}
+                    </div>
+                    <div>
+                      <strong>Birth Date:</strong>{" "}
+                      {moment(child.birthDate).format("DD/MM/YYYY")}
+                    </div>
+                    <div>
+                      <strong>Gender:</strong>{" "}
+                      {child.gender === 1 ? "Male" : "Female"}
+                    </div>
+                    <div>
+                      <strong>Relationship:</strong>{" "}
+                      {child.relationships?.find(
+                        (r) => r.memberId === detail.member._id
+                      )?.type || "Other"}
                     </div>
                   </div>
                 ))}
               </div>
 
               <div>Last Updated</div>
-              <div>{moment(detail.updatedAt).format("DD/MM/YYYY HH:mm")}</div>
+              <div>
+                {moment(detail.updatedAt).format("DD/MM/YYYY | hh:mm:ss A")}
+              </div>
             </div>
           </div>
         ),
@@ -232,14 +266,15 @@ const RequestManagement = () => {
           color={
             status === "pending"
               ? "#faad14"
-              : status === "approved"
+              : status === "accepted"
               ? "#52c41a"
               : "#ff4d4f"
-          }>
+          }
+        >
           {status === "pending"
             ? "Pending"
-            : status === "approved"
-            ? "Approved"
+            : status === "accepted"
+            ? "Accepted"
             : status === "canceled"
             ? "Canceled"
             : "Rejected"}
@@ -270,7 +305,8 @@ const RequestManagement = () => {
             style={{
               color: "#0056A1",
               borderColor: "#0056A1",
-            }}>
+            }}
+          >
             View Details
           </Button>
         </Space>
@@ -283,6 +319,19 @@ const RequestManagement = () => {
       <Title level={2} style={{ color: "#0056A1", marginBottom: "24px" }}>
         Consultation Request Management
       </Title>
+      <div style={{ marginBottom: "16px", display: "flex", gap: "16px", alignItems: "center" }}>
+        <Select placeholder="Filter by status" style={{ width: 200 }} onChange={handleStatusFilterChange} allowClear>
+          <Option value="">All</Option>
+          <Option value="pending">Pending</Option>
+          <Option value="accepted">Accepted</Option>
+          <Option value="canceled">Canceled</Option>
+          <Option value="rejected">Rejected</Option>
+        </Select>
+
+        <Button onClick={handleSortOrderChange}>
+          {sortOrder === "ascending" ? "Ascending" : "Descending"}
+        </Button>
+      </div>
       {loading ? (
         <div style={{ textAlign: "center", padding: "50px 0" }}>
           <Spin size="large" />
@@ -303,7 +352,8 @@ const RequestManagement = () => {
               display: "flex",
               justifyContent: "center",
               marginTop: "24px",
-            }}>
+            }}
+          >
             <Pagination
               current={pagination.current}
               pageSize={pagination.pageSize}

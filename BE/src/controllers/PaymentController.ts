@@ -90,12 +90,15 @@ class PaymentController {
       const { status, purchase_units } = response.result;
 
       if (status === "COMPLETED") {
-        const capturedPaymentDetails = purchase_units?.[0].payments?.captures?.[0];
+        const capturedPaymentDetails =
+          purchase_units?.[0].payments?.captures?.[0];
         const transactionId = capturedPaymentDetails?.id;
 
         const data = {
           userId: (capturedPaymentDetails?.custom_id as string).split("|")[0],
-          membershipPackageId: (capturedPaymentDetails?.custom_id as string).split("|")[1],
+          membershipPackageId: (
+            capturedPaymentDetails?.custom_id as string
+          ).split("|")[1],
           totalAmount: {
             value: capturedPaymentDetails?.amount?.value,
             currency: capturedPaymentDetails?.amount?.currency_code,
@@ -164,15 +167,19 @@ class PaymentController {
     }
   };
 
-  vnpayPaymentReturn = async (req: Request, res: Response, next: NextFunction) => {
+  vnpayPaymentReturn = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
     let vnp_Params = req.query;
     const secureHash = vnp_Params["vnp_SecureHash"];
-  
+
     delete vnp_Params["vnp_SecureHash"];
     delete vnp_Params["vnp_SecureHashType"];
-  
+
     vnp_Params = sortObject(vnp_Params);
-  
+
     const secretKey = vnpayConfig.vnp_HashSecret;
     const signData = querystring.stringify(vnp_Params, { encode: false });
     const hmac = crypto.createHmac("sha512", secretKey);
@@ -184,7 +191,9 @@ class PaymentController {
 
         const data = {
           userId: (vnp_Params.vnp_OrderInfo as string).split("%")[0],
-          membershipPackageId: (vnp_Params.vnp_OrderInfo as string).split("%7C")[1],
+          membershipPackageId: (vnp_Params.vnp_OrderInfo as string).split(
+            "%7C"
+          )[1],
           totalAmount: {
             value: amount,
             currency: vnp_Params.vnp_CurrCode || "VND",
@@ -195,9 +204,10 @@ class PaymentController {
           type: "PAYMENT",
           bankCode: vnp_Params.vnp_BankCode,
         };
-  
+
         await this.paymentQueue.sendPaymentData(data);
         const receipt = await this.paymentQueue.consumePaymentData();
+
         // Render EJS page
         return res.render("PaymentReturn", {
           success: true,
@@ -216,6 +226,5 @@ class PaymentController {
       });
     }
   };
-  
 }
 export default PaymentController;

@@ -18,13 +18,13 @@ export const routes = {
   consultation: "/member-consultation",
 
   //Doctor pages
-  doctorConsultaion: "/doctor-consultation",
+  doctorConsultation: "/doctor-consultation",
 
   // Admin pages
   dashboard: "/admin/dashboard",
   userManagement: "/admin/user-management",
   requestManagement: "/admin/request-management",
+  consultationManagement: "/admin/consultation-management",
   premiumList: "/admin/premium-list",
   addPremium: "/admin/add-premium",
-  updatePremium: "/admin/update-premium",
 };

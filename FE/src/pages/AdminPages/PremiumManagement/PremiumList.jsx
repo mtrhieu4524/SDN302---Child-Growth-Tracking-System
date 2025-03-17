@@ -14,6 +14,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../../configs/api";
 import AdminLayout from "../../../layouts/AdminLayout";
+import moment from "moment";
 
 const { Title } = Typography;
 
@@ -31,13 +32,6 @@ const PremiumList = () => {
     setLoading(true);
     try {
       const response = await api.get("/membership-packages", {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${
-            JSON.parse(localStorage.getItem("access_token") || "{}")?.token ||
-            ""
-          }`,
-        },
         params: {
           page,
           size,
@@ -46,8 +40,6 @@ const PremiumList = () => {
           sortBy: "date",
         },
       });
-
-      console.log("Fetched packages:", response.data.packages);
 
       if (response.data && response.data.packages) {
         const formattedPackages = response.data.packages
@@ -62,7 +54,8 @@ const PremiumList = () => {
               `Post limit: ${pkg.postLimit}`,
               `Update child data limit: ${pkg.updateChildDataLimit}`,
             ],
-            status: "active"
+            status: "active",
+            createdAt: moment(pkg.createdAt).format("DD/MM/YYYY | hh:mm:ss A"),
           }));
         setPackages(formattedPackages);
         setPagination({
@@ -166,6 +159,12 @@ const PremiumList = () => {
           Active
         </Tag>
       ),
+    },
+    {
+      title: "Date created",
+      dataIndex: "createdAt",
+      key: "createdAt",
+      align: "center",
     },
     {
       title: "Action",

@@ -17,7 +17,6 @@ import Dashboard from "../pages/AdminPages/Dashboard";
 import RequestManagement from "../pages/AdminPages/RequestManagement";
 import UserManagement from "../pages/AdminPages/UserManagement";
 import AddPremium from "../pages/AdminPages/PremiumManagement/AddPremium";
-import UpdatePremium from "../pages/AdminPages/PremiumManagement/UpdatePremium";
 import PremiumList from "../pages/AdminPages/PremiumManagement/PremiumList";
 import GrowthTracker from "../pages/MemberPages/GrowthTracker";
 import GrowthChartMember from "../pages/MemberPages/GrowthChartMember";
@@ -27,6 +26,7 @@ import { Role } from "../enums/Role";
 import VerificationSent from "../pages/VerificationSent";
 import PublicRoute from "./PublicRoute";
 import PaymentDetails from "../pages/PaymentDetails";
+import ConsultationManagement from "../pages/AdminPages/ConsultationManagement";
 
 export default function AppRoute() {
   return (
@@ -60,7 +60,7 @@ export default function AppRoute() {
       <Route path={routes.consultation} element={<Consultation />} />
 
       {/* Doctor Routes */}
-      <Route path={routes.doctorConsultaion} element={<DoctorConsultation />} />
+      <Route path={routes.doctorConsultation} element={<DoctorConsultation />} />
 
       {/* Admin Routes */}
       <Route
@@ -72,6 +72,10 @@ export default function AppRoute() {
         element={<PrivateRoute element={<RequestManagement />} />}
       />
       <Route
+        path={routes.consultationManagement}
+        element={<PrivateRoute element={<ConsultationManagement />} />}
+      />
+      <Route
         path={routes.userManagement}
         element={<PrivateRoute element={<UserManagement />} />}
       />
@@ -80,10 +84,6 @@ export default function AppRoute() {
         element={
           <PrivateRoute requiredRole={Role.ADMIN} element={<AddPremium />} />
         }
-      />
-      <Route
-        path={routes.updatePremium}
-        element={<PrivateRoute element={<UpdatePremium />} />}
       />
       <Route
         path={routes.premiumList}
