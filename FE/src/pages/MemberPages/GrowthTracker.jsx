@@ -12,18 +12,19 @@ import {
   Spin,
   Tag,
   Popconfirm,
+  Space
 } from "antd";
 import moment from "moment";
 import { useNavigate, useParams } from "react-router-dom";
 import HeaderComponent from "../../components/Header";
 import FooterComponent from "../../components/Footer";
 import ScrollToTop from "../../components/ScrollToTop";
-import { RightOutlined, DownOutlined, DeleteOutlined } from "@ant-design/icons";
+import { RightOutlined, DownOutlined, DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import api from "../../configs/api";
 
 const { Title, Text } = Typography;
 
-const ChildData = () => {
+const GrowthTracker = () => {
   const [form] = Form.useForm();
   const navigate = useNavigate();
   const { childId } = useParams();
@@ -31,6 +32,9 @@ const ChildData = () => {
   const [isGrowthDataVisible, setIsGrowthDataVisible] = useState(false);
   const [growthData, setGrowthData] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [isEditModalVisible, setIsEditModalVisible] = useState(false);
+  const [editingRecord, setEditingRecord] = useState(null);
+  const [editForm] = Form.useForm();
 
   // Fetch child info
   const fetchChildInfo = async () => {
@@ -134,6 +138,45 @@ const ChildData = () => {
     }
   };
 
+  // Hàm xử lý chỉnh sửa
+  const handleEdit = async (values) => {
+    if (!editingRecord || !childId) return;
+
+    try {
+      setLoading(true);
+      const response = await api.put(`/children/${childId}/growth-data/${editingRecord._id}`, {
+        height: values.height,
+        weight: values.weight,
+        date: values.date.toISOString(),
+        headCircumference: values.headCircumference,
+        armCircumference: values.armCircumference
+      });
+
+      if (response.data && response.data.message === "Success") {
+        message.success("Growth data updated successfully");
+        setIsEditModalVisible(false);
+        fetchGrowthData(); // Refresh data
+      }
+    } catch (error) {
+      console.error('Error updating growth data:', error);
+      message.error('Failed to update growth data');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const showEditModal = (record) => {
+    setEditingRecord(record);
+    editForm.setFieldsValue({
+      date: moment(record.inputDate),
+      weight: record.weight,
+      height: record.height,
+      headCircumference: record.headCircumference,
+      armCircumference: record.armCircumference
+    });
+    setIsEditModalVisible(true);
+  };
+
   const columns = [
     {
       title: 'Date',
@@ -171,22 +214,31 @@ const ChildData = () => {
       title: 'Actions',
       key: 'actions',
       render: (_, record) => (
-        <Popconfirm
-          title="Delete Growth Data"
-          description="Are you sure you want to delete this growth data?"
-          onConfirm={() => handleDelete(record._id)}
-          okText="Yes"
-          cancelText="No"
-          okButtonProps={{ danger: true }}
-        >
-          <Button 
-            type="link" 
-            danger
-            icon={<DeleteOutlined />}
+        <Space>
+          <Button
+            type="link"
+            icon={<EditOutlined />}
+            onClick={() => showEditModal(record)}
           >
-            Delete
+            Edit
           </Button>
-        </Popconfirm>
+          <Popconfirm
+            title="Delete Growth Data"
+            description="Are you sure you want to delete this growth data?"
+            onConfirm={() => handleDelete(record._id)}
+            okText="Yes"
+            cancelText="No"
+            okButtonProps={{ danger: true }}
+          >
+            <Button 
+              type="link" 
+              danger
+              icon={<DeleteOutlined />}
+            >
+              Delete
+            </Button>
+          </Popconfirm>
+        </Space>
       ),
     }
   ];
@@ -379,6 +431,64 @@ const ChildData = () => {
             />
           )}
         </Modal>
+
+        {/* Edit Modal */}
+        <Modal
+          title="Edit Growth Data"
+          open={isEditModalVisible}
+          onCancel={() => setIsEditModalVisible(false)}
+          footer={null}
+        >
+          <Form
+            form={editForm}
+            onFinish={handleEdit}
+            layout="vertical"
+          >
+            <Form.Item
+              label="Measurement Date"
+              name="date"
+              rules={[{ required: true, message: 'Please select date' }]}
+            >
+              <DatePicker showTime style={{ width: '100%' }} />
+            </Form.Item>
+
+            <Form.Item
+              label="Weight (kg)"
+              name="weight"
+              rules={[{ required: true, message: 'Please input weight' }]}
+            >
+              <InputNumber min={0} style={{ width: '100%' }} />
+            </Form.Item>
+
+            <Form.Item
+              label="Height (cm)"
+              name="height"
+              rules={[{ required: true, message: 'Please input height' }]}
+            >
+              <InputNumber min={0} style={{ width: '100%' }} />
+            </Form.Item>
+
+            <Form.Item
+              label="Head Circumference (cm)"
+              name="headCircumference"
+            >
+              <InputNumber min={0} style={{ width: '100%' }} />
+            </Form.Item>
+
+            <Form.Item
+              label="Arm Circumference (cm)"
+              name="armCircumference"
+            >
+              <InputNumber min={0} style={{ width: '100%' }} />
+            </Form.Item>
+
+            <Form.Item>
+              <Button type="primary" htmlType="submit" loading={loading} block>
+                Save Changes
+              </Button>
+            </Form.Item>
+          </Form>
+        </Modal>
       </div>
       <FooterComponent />
       <ScrollToTop />
@@ -386,4 +496,4 @@ const ChildData = () => {
   );
 };
 
-export default ChildData;
+export default GrowthTracker;

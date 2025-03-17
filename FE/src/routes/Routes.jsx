@@ -17,8 +17,8 @@ import RequestManagement from "../pages/AdminPages/RequestManagement";
 import UserManagement from "../pages/AdminPages/UserManagement";
 import AddPremium from "../pages/AdminPages/PremiumManagement/AddPremium";
 import PremiumList from "../pages/AdminPages/PremiumManagement/PremiumList";
-import Children from "../pages/MemberPages/Children";
-import ChildData from "../pages/MemberPages/ChildData";
+import GrowthTracker from "../pages/MemberPages/GrowthTracker";
+import GrowthChartMember from "../pages/MemberPages/GrowthChartMember";
 import BlogDetailed from "../pages/BlogDetailed";
 import PrivateRoute from "./PrivateRoute";
 import { Role } from "../enums/Role";
@@ -27,6 +27,8 @@ import PublicRoute from "./PublicRoute";
 import PaymentDetails from "../pages/PaymentDetails";
 import ConsultationManagement from "../pages/AdminPages/ConsultationManagement";
 import DoctorConsultationHistory from "../pages/DoctorPages/DoctorConsultationHistory";
+import ChildList from "../pages/MemberPages/ChildList";
+import { Navigate } from "react-router-dom";
 import DoctorConsultationChat from "../pages/DoctorPages/DoctorConsultationChat";
 import Profile from "../pages/Profile";
 
@@ -54,8 +56,6 @@ export default function AppRoute() {
       <Route path={routes.paymentDetails} element={<PaymentDetails />} />
       <Route path={routes.growthChart} element={<GrowthChart />} />
       <Route path={routes.blogDetail} element={<BlogDetailed />} />
-      <Route path={routes.verificationSent} element={<VerificationSent />} />
-
       
       {/* Authenticated Routes */}
       <Route
@@ -65,12 +65,20 @@ export default function AppRoute() {
 
       {/* Member Routes */}
       <Route
-        path={routes.childData}
-        element={<PrivateRoute requiredRole={Role.MEMBER} element={<ChildData />} />}
+        path={routes.childList}
+        element={<PrivateRoute requiredRole={Role.MEMBER} element={<ChildList />} />}
       />
       <Route
-        path={routes.children}
-        element={<PrivateRoute requiredRole={Role.MEMBER} element={<Children />} />}
+        path={routes.growthTracker}
+        element={<PrivateRoute requiredRole={Role.MEMBER} element={<GrowthTracker />} />}
+      />
+      <Route
+        path="/profile/growth-chart"
+        element={<PrivateRoute requiredRole={Role.MEMBER} element={<Navigate to="/profile/children" replace />} />}
+      />
+      <Route
+        path={routes.growthChartMember}
+        element={<PrivateRoute requiredRole={Role.MEMBER} element={<GrowthChartMember />} />}
       />
       <Route
         path={routes.consultation}
@@ -116,6 +124,8 @@ export default function AppRoute() {
         path={routes.premiumList}
         element={<PrivateRoute requiredRole={Role.ADMIN} element={<PremiumList />} />}
       />
+
+      <Route path={routes.verificationSent} element={<VerificationSent />} />
     </Routes>
   );
 }
