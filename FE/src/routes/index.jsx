@@ -19,6 +19,7 @@ export const routes = {
 
   //Doctor pages
   doctorConsultaion: "/doctor-consultation",
+  doctorConsultaionHistory: "/doctor-consultation-history",
 
   // Admin pages
   dashboard: "/admin/dashboard",

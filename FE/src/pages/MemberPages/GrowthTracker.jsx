@@ -63,7 +63,8 @@ const GrowthTracker = () => {
         weight: values.weight,
         height: values.height,
         bmi: (
-          values.weight / ((values.height / 100) * (values.height / 100))
+          values.weight /
+          ((values.height / 100) * (values.height / 100))
         ).toFixed(2),
       };
       message.success("Measurement saved successfully!");
@@ -78,70 +79,167 @@ const GrowthTracker = () => {
   return (
     <div style={{ minHeight: "100vh" }}>
       <HeaderComponent />
-      <div style={{ minHeight: "calc(100vh - 128px)", padding: "80px 20px 10px 20px", background: "#f0f2f5" }}>
+      <div
+        style={{
+          minHeight: "calc(100vh - 128px)",
+          padding: "80px 20px 10px 20px",
+          background: "#f0f2f5",
+        }}>
         <Card
           title={
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                marginBottom: "20px",
+              }}>
               <div>
                 <Title level={2} style={{ color: "#0056A1", marginBottom: 0 }}>
                   Child Growth Tracker
                 </Title>
-                <Text type="secondary">Record your child's growth measurements</Text>
+                <Text type="secondary">
+                  Record your child's growth measurements
+                </Text>
               </div>
-              <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+              <div
+                style={{ display: "flex", gap: "10px", alignItems: "center" }}>
                 <Select
                   value={selectedChild}
                   onChange={handleChildChange}
                   style={{ width: 200 }}
-                  disabled={isAddingChild}
-                >
+                  disabled={isAddingChild}>
                   {children.map((child) => (
                     <Option key={child.id} value={child.id}>
                       {child.name}
                     </Option>
                   ))}
                 </Select>
-                <Button type="default" icon={isAddingChild ? <FormOutlined /> : <PlusOutlined />} onClick={toggleFormMode} >
+                <Button
+                  type="default"
+                  icon={isAddingChild ? <FormOutlined /> : <PlusOutlined />}
+                  onClick={toggleFormMode}>
                   {isAddingChild ? "Add Data" : "Add Child"}
                 </Button>
                 <Button
                   type="primary"
-                  style={{ backgroundColor: "#0082c8", borderColor: "#0082c8", display: "flex", alignItems: "center", gap: "5px" }}
-                  onClick={() => navigate("/profile/growth-chart")}
-                >
+                  style={{
+                    backgroundColor: "#0082c8",
+                    borderColor: "#0082c8",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "5px",
+                  }}
+                  onClick={() => navigate("/profile/growth-chart")}>
                   Child Growth Chart <RightOutlined />
                 </Button>
               </div>
             </div>
           }
-          style={{ maxWidth: 900, margin: "0 auto", borderRadius: 8, boxShadow: "0 4px 12px rgba(0,0,0,0.1)" }}
-          headStyle={{ background: "#fafafa", borderBottom: "none" }}
-        >
-          <Form form={form} onFinish={onFinish} layout="vertical" initialValues={{ date: moment() }}>
+          style={{
+            maxWidth: 900,
+            margin: "0 auto",
+            borderRadius: 8,
+            boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+          }}
+          headStyle={{ background: "#fafafa", borderBottom: "none" }}>
+          <Form
+            form={form}
+            onFinish={onFinish}
+            layout="vertical"
+            initialValues={{ date: moment() }}>
             {isAddingChild ? (
               <>
-                <Form.Item name="fullName" label="Full Name" rules={[{ required: true, message: "Please enter child's full name" }]}>
+                <Form.Item
+                  name="fullName"
+                  label="Full Name"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Please enter child's full name",
+                    },
+                  ]}>
                   <Input placeholder="Enter child's full name" size="large" />
                 </Form.Item>
-                <Form.Item name="birthday" label="Birthday" rules={[{ required: true, message: "Please select a birthday" }]}>
+                <Form.Item
+                  name="birthday"
+                  label="Birthday"
+                  rules={[
+                    { required: true, message: "Please select a birthday" },
+                  ]}>
                   <DatePicker style={{ width: "100%" }} size="large" />
                 </Form.Item>
               </>
             ) : (
               <>
-                <Form.Item name="date" label="Measurement Date" rules={[{ required: true, message: "Please select a date" }]}>
+                <Form.Item
+                  name="date"
+                  label="Measurement Date"
+                  rules={[{ required: true, message: "Please select a date" }]}>
                   <DatePicker style={{ width: "100%" }} size="large" />
                 </Form.Item>
-                <Form.Item name="weight" label="Weight (kg)" rules={[{ required: true, message: "Please enter weight" }]}>
-                  <InputNumber min={0} step={0.1} style={{ width: "100%" }} placeholder="Enter weight in kg" size="large" />
+                <Form.Item
+                  name="weight"
+                  label="Weight (kg)"
+                  rules={[{ required: true, message: "Please enter weight" }]}>
+                  <InputNumber
+                    min={0}
+                    step={0.1}
+                    style={{ width: "100%" }}
+                    placeholder="Enter weight in kg"
+                    size="large"
+                  />
                 </Form.Item>
-                <Form.Item name="height" label="Height (cm)" rules={[{ required: true, message: "Please enter height" }]}>
-                  <InputNumber min={0} step={0.1} style={{ width: "100%" }} placeholder="Enter height in cm" size="large" />
+                <Form.Item
+                  name="height"
+                  label="Height (cm)"
+                  rules={[{ required: true, message: "Please enter height" }]}>
+                  <InputNumber
+                    min={0}
+                    step={0.1}
+                    style={{ width: "100%" }}
+                    placeholder="Enter height in cm"
+                    size="large"
+                  />
+                </Form.Item>
+                <Form.Item
+                  name="headCircumference"
+                  label="Head Circumference (cm)"
+                  rules={[{ message: "Please enter Head Circumference" }]}>
+                  <InputNumber
+                    min={0}
+                    step={0.1}
+                    style={{ width: "100%" }}
+                    placeholder="Enter Head Circumference"
+                    size="large"
+                  />
+                </Form.Item>
+                <Form.Item
+                  name="armCircumference"
+                  label="Arm Circumference (cm)"
+                  rules={[{ message: "Please enter Arm Circumference" }]}>
+                  <InputNumber
+                    min={0}
+                    step={0.1}
+                    style={{ width: "100%" }}
+                    placeholder="Enter Arm Circumference"
+                    size="large"
+                  />
                 </Form.Item>
               </>
             )}
             <Form.Item>
-              <Button type="primary" htmlType="submit" style={{ width: "100%", borderRadius: 4, background: "#0082C8", border: "none", height: 40 }} size="large">
+              <Button
+                type="primary"
+                htmlType="submit"
+                style={{
+                  width: "100%",
+                  borderRadius: 4,
+                  background: "#0082C8",
+                  border: "none",
+                  height: 40,
+                }}
+                size="large">
                 Save
               </Button>
             </Form.Item>

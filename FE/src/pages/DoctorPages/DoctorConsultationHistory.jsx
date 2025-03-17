@@ -6,9 +6,6 @@ import {
   Typography,
   message,
   Modal,
-  Input,
-  Form,
-  Space,
   Spin,
   Pagination,
 } from "antd";
@@ -16,35 +13,31 @@ import HeaderComponent from "../../components/Header";
 import FooterComponent from "../../components/Footer";
 import ScrollToTop from "../../components/ScrollToTop";
 import { AuthContext } from "../../contexts/AuthContext";
-import axios from "axios";
 import api from "../../configs/api";
 
 const { Title, Text } = Typography;
-const { TextArea } = Input;
-const { confirm } = Modal; // Import confirm from Modal
 
-const DoctorConsultation = () => {
+const DoctorConsultationHistory = () => {
   const { user } = useContext(AuthContext);
   const [consultations, setConsultations] = useState([]);
-  const [selectedConsultation, setSelectedConsultation] = useState(null);
-  const [responseText, setResponseText] = useState("");
-  const [modalVisible, setModalVisible] = useState(false);
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalRequests, setTotalRequests] = useState(0);
+  const [selectedConsultation, setSelectedConsultation] = useState(null);
+  const [modalVisible, setModalVisible] = useState(false);
   const pageSize = 5;
 
   useEffect(() => {
-    document.title = "Child Growth Tracker - Consultation Request";
+    document.title = "Child Growth Tracker - Consultation History";
     if (user && user._id) {
-      fetchConsultations();
+      fetchConsultationHistory();
     }
   }, [user, currentPage]);
 
-  const fetchConsultations = async () => {
+  const fetchConsultationHistory = async () => {
     try {
       setLoading(true);
-      const response = await api.get(`/requests/users/${user._id}`, {
+      const response = await api.get(`/consultations/users/${user._id}`, {
         params: {
           id: user._id,
           page: currentPage,
@@ -59,17 +52,17 @@ const DoctorConsultation = () => {
 
       if (
         response.data &&
-        response.data.requests &&
-        response.data.requests.requests
+        response.data.consultations &&
+        Array.isArray(response.data.consultations)
       ) {
-        setConsultations(response.data.requests.requests);
-        setTotalRequests(response.data.requests.total);
+        setConsultations(response.data.consultations);
+        setTotalRequests(response.data.totalConsultation || 0);
       } else {
-        message.error("Failed to load consultation requests");
+        message.error("Failed to load consultation history");
       }
     } catch (error) {
-      console.error("Error fetching consultations:", error);
-      message.error("Failed to load consultation requests");
+      console.error("Error fetching consultation history:", error);
+      message.error("Failed to load consultation history");
     } finally {
       setLoading(false);
     }
@@ -79,72 +72,10 @@ const DoctorConsultation = () => {
     setCurrentPage(page);
   };
 
-  // Handle review action (show details in modal)
-  const handleReview = (consultation) => {
+  // Handle view details action (show details in modal)
+  const handleViewDetails = (consultation) => {
     setSelectedConsultation(consultation);
     setModalVisible(true);
-  };
-
-  // Handle status update (accept or reject)
-  const handleUpdateStatus = async (consultationId, newStatus) => {
-    try {
-      setLoading(true);
-      await api.put(`/requests/status/${consultationId}`, {
-        doctorId: user._id,
-        status: newStatus,
-      });
-      message.success(`Request ${newStatus} successfully!`);
-      fetchConsultations();
-    } catch (error) {
-      console.error(`Error updating status to ${newStatus}:`, error);
-      message.error(`Failed to ${newStatus.toLowerCase()} the request`);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Show confirmation popup for accept
-  const showAcceptConfirm = (consultationId) => {
-    confirm({
-      title: "Are you sure you want to accept this request?",
-      content: "This action will mark the consultation request as accepted.",
-      okText: "Yes, Accept",
-      okType: "primary",
-      cancelText: "No",
-      onOk() {
-        handleUpdateStatus(consultationId, "Accepted");
-      },
-      onCancel() {
-        console.log("Accept action canceled");
-      },
-    });
-  };
-
-  // Show confirmation popup for reject
-  const showRejectConfirm = (consultationId) => {
-    confirm({
-      title: "Are you sure you want to reject this request?",
-      content: "This action will mark the consultation request as rejected.",
-      okText: "Yes, Reject",
-      okType: "danger",
-      cancelText: "No",
-      onOk() {
-        handleUpdateStatus(consultationId, "Rejected");
-      },
-      onCancel() {
-        console.log("Reject action canceled");
-      },
-    });
-  };
-
-  // Handle accept request
-  const handleAccept = (consultationId) => {
-    showAcceptConfirm(consultationId);
-  };
-
-  // Handle reject request
-  const handleReject = (consultationId) => {
-    showRejectConfirm(consultationId);
   };
 
   // Format date for display
@@ -186,9 +117,7 @@ const DoctorConsultation = () => {
       case "rejected":
         color = "danger";
         break;
-      case "pending":
-        color = "warning";
-        break;
+      case "ongoing":
       case "accepted":
         color = "success";
         break;
@@ -221,10 +150,10 @@ const DoctorConsultation = () => {
               }}>
               <div>
                 <Title level={2} style={{ color: "#0056A1", marginBottom: 0 }}>
-                  Consultation Requests
+                  Consultation History
                 </Title>
                 <Text type="secondary">
-                  Review and respond to parent consultation requests
+                  View the history of your past consultations
                 </Text>
               </div>
             </div>
@@ -242,76 +171,64 @@ const DoctorConsultation = () => {
               <List
                 itemLayout="vertical"
                 dataSource={consultations}
-                locale={{ emptyText: "No consultation requests found" }}
+                locale={{ emptyText: "No consultation history found" }}
                 renderItem={(item) => {
                   const { text: statusText, color: statusColor } =
                     getStatusProps(item.status);
+                  const child = item.requestDetails?.children?.[0] || {};
+                  const member = item.requestDetails?.member || {};
+                  const doctor = item.requestDetails?.doctor || {};
+
                   return (
                     <Card
                       style={{
                         marginBottom: 15,
                         borderRadius: 8,
-                        paddingBottom: 10,
+                        padding: "15px",
+                        background: "#ffffff",
+                        transition: "all 0.3s",
+                        border: "1px solid #e8e8e8",
                       }}
-                      title={item.title || "Consultation Request"}
+                      hoverable
+                      title={
+                        <Title level={4} style={{ margin: 0 }}>
+                          {item.requestDetails?.title ||
+                            "Untitled Consultation"}
+                        </Title>
+                      }
                       extra={<Text type={statusColor}>{statusText}</Text>}>
-                      <div style={{ marginBottom: 15 }}>
-                        <Text strong>Parent:</Text>{" "}
-                        {item.member?.name || "Unknown"}
+                      <div style={{ padding: "10px 0" }}>
+                        <Text strong>Parent:</Text> {member.name || "Unknown"}
                         <br />
-                        <Text strong>Child:</Text>{" "}
-                        {item.children && item.children.length > 0
-                          ? item.children[0].name
-                          : "Unknown"}
+                        <Text strong>Child:</Text> {child.name || "Unknown"}
                         <br />
-                        {item.children &&
-                          item.children.length > 0 &&
-                          item.children[0].birthDate && (
-                            <>
-                              <Text strong>Age:</Text>{" "}
-                              {calculateAge(item.children[0].birthDate)}
-                              <br />
-                            </>
-                          )}
+                        {child.birthDate && (
+                          <>
+                            <Text strong>Age:</Text>{" "}
+                            {calculateAge(child.birthDate)}
+                            <br />
+                          </>
+                        )}
+                        <Text strong>Doctor:</Text> {doctor.name || "Unknown"}
+                        <br />
                         <Text strong>Submitted:</Text>{" "}
                         {formatDate(item.createdAt)}
                         <br />
+                        <Text strong>Updated:</Text>{" "}
+                        {formatDate(item.updatedAt)}
                       </div>
-
                       <div
                         style={{
                           display: "flex",
                           justifyContent: "flex-end",
                           marginTop: 10,
                         }}>
-                        <Space>
-                          {item.status.toLowerCase() === "pending" && (
-                            <>
-                              <Button
-                                danger
-                                onClick={() => handleReject(item._id)}
-                                loading={loading}>
-                                Reject
-                              </Button>
-                              <Button
-                                type="primary"
-                                style={{
-                                  backgroundColor: "#52c41a",
-                                  borderColor: "#52c41a",
-                                }}
-                                onClick={() => handleAccept(item._id)}
-                                loading={loading}>
-                                Accept
-                              </Button>
-                            </>
-                          )}
-                          <Button
-                            type="primary"
-                            onClick={() => handleReview(item)}
-                            loading={loading}>
-                            Review
-                          </Button>
-                        </Space>
+                        <Button
+                          type="primary"
+                          onClick={() => handleViewDetails(item)}
+                          loading={loading}>
+                          View Details
+                        </Button>
                       </div>
                     </Card>
                   );
@@ -325,6 +242,7 @@ const DoctorConsultation = () => {
                     total={totalRequests}
                     onChange={handlePageChange}
                     showSizeChanger={false}
+                    style={{ marginBottom: "20px" }}
                   />
                 </div>
               )}
@@ -335,28 +253,34 @@ const DoctorConsultation = () => {
       <FooterComponent />
       <ScrollToTop />
 
+      {/* Modal for Consultation Details */}
       <Modal
-        title="Consultation Request Details"
+        title="Consultation Details"
         open={modalVisible}
         onCancel={() => setModalVisible(false)}
         footer={[
           <Button key="cancel" onClick={() => setModalVisible(false)}>
-            Cancel
+            Close
           </Button>,
+          <Button type="primary">Start Consultation</Button>,
         ]}
         width={700}>
         {selectedConsultation &&
-          selectedConsultation.children &&
-          selectedConsultation.children.length > 0 && (
+          selectedConsultation.requestDetails?.children?.length > 0 && (
             <>
               <Title level={4}>
-                Child: {selectedConsultation.children[0].name}
+                Child: {selectedConsultation.requestDetails.children[0].name}
               </Title>
               <Text strong>Age:</Text>{" "}
-              {calculateAge(selectedConsultation.children[0].birthDate)}
+              {calculateAge(
+                selectedConsultation.requestDetails.children[0].birthDate
+              )}
               <br />
               <Text strong>Parent:</Text>{" "}
-              {selectedConsultation.member?.name || "Unknown"}
+              {selectedConsultation.requestDetails.member?.name || "Unknown"}
+              <br />
+              <Text strong>Doctor:</Text>{" "}
+              {selectedConsultation.requestDetails.doctor?.name || "Unknown"}
               <br />
               <Text strong>Status:</Text>{" "}
               {(() => {
@@ -366,19 +290,24 @@ const DoctorConsultation = () => {
                 return <Text type={statusColor}>{statusText}</Text>;
               })()}
               <br />
-              <Text strong>Request:</Text>{" "}
-              {selectedConsultation.title || "No title provided"}
+              <Text strong>Request Title:</Text>{" "}
+              {selectedConsultation.requestDetails.title || "No title provided"}
               <br />
               <Text strong>Submitted:</Text>{" "}
               {formatDate(selectedConsultation.createdAt)}
               <br />
-              {selectedConsultation.children[0].growthVelocityResult && (
+              <Text strong>Updated:</Text>{" "}
+              {formatDate(selectedConsultation.updatedAt)}
+              <br />
+              {selectedConsultation.requestDetails.children[0]
+                .growthVelocityResult && (
                 <div style={{ marginTop: 20, marginBottom: 20 }}>
                   <Text strong>Growth Velocity Results:</Text>
                   <List
                     size="small"
                     dataSource={
-                      selectedConsultation.children[0].growthVelocityResult
+                      selectedConsultation.requestDetails.children[0]
+                        .growthVelocityResult
                     }
                     renderItem={(growthData) => (
                       <List.Item>
@@ -387,7 +316,7 @@ const DoctorConsultation = () => {
                           {new Date(growthData.startDate).toLocaleDateString()}{" "}
                           - {new Date(growthData.endDate).toLocaleDateString()}
                           ):
-                        </Text>
+                        </Text>{" "}
                         {growthData.weight.description !==
                         "Insufficient data" ? (
                           <Text>
@@ -406,6 +335,20 @@ const DoctorConsultation = () => {
                             , Insufficient height data
                           </Text>
                         )}
+                        {growthData.headCircumference.description !==
+                        "Insufficient data" ? (
+                          <Text>
+                            , Head:{" "}
+                            {
+                              growthData.headCircumference
+                                .headCircumferenceVelocity
+                            }
+                          </Text>
+                        ) : (
+                          <Text type="secondary">
+                            , Insufficient head circumference data
+                          </Text>
+                        )}
                       </List.Item>
                     )}
                   />
@@ -418,4 +361,4 @@ const DoctorConsultation = () => {
   );
 };
 
-export default DoctorConsultation;
+export default DoctorConsultationHistory;
