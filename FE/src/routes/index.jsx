@@ -13,8 +13,9 @@ export const routes = {
   blogDetail: "/blogs/:id",
 
   // Membership pages
+  childList: "/profile/children",
   growthTracker: "/profile/growth-tracker",
-  growthChartMember: "/profile/growth-chart",
+  growthChartMember: "/profile/growth-chart/:childId",
   consultation: "/member-consultation",
 
   //Doctor pages

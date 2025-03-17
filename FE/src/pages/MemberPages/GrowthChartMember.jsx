@@ -11,11 +11,13 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import HeaderComponent from "../../components/Header";
 import FooterComponent from "../../components/Footer";
 import ScrollToTop from "../../components/ScrollToTop";
 import { RightOutlined } from "@ant-design/icons";
+import api from "../../configs/api";
+import { message } from "antd";
 
 ChartJS.register(
   CategoryScale,
@@ -52,24 +54,58 @@ const fakeChildren = [
 ];
 
 const GrowthChartMember = () => {
+  const { childId } = useParams();
   const navigate = useNavigate();
-  const [selectedChild, setSelectedChild] = useState(fakeChildren[0].id);
+  const [selectedChild, setSelectedChild] = useState(childId);
   const [chartData, setChartData] = useState({});
+  const [children, setChildren] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    updateChartData(selectedChild);
+    document.title = "Growth Chart";
+    fetchChildren();
+  }, []);
+
+  useEffect(() => {
+    if (selectedChild) {
+      updateChartData(selectedChild);
+    }
   }, [selectedChild]);
 
+  const fetchChildren = async () => {
+    try {
+      const response = await api.get('/children');
+      if (response.data.data) {
+        setChildren(response.data.data);
+        // Nếu không có childId từ URL, chọn đứa trẻ đầu tiên
+        if (!childId && response.data.data.length > 0) {
+          setSelectedChild(response.data.data[0].id);
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching children:', error);
+      message.error('Không thể tải danh sách trẻ');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const updateChartData = (childId) => {
-    const child = fakeChildren.find((c) => c.id === childId);
-    if (!child) return;
+    // Sử dụng hardcode data cho biểu đồ
+    const growthData = [
+      { date: "2023-01-01", weight: 3.5, height: 50, bmi: 14.0 },
+      { date: "2023-06-01", weight: 6.0, height: 60, bmi: 16.67 },
+      { date: "2024-01-01", weight: 9.0, height: 70, bmi: 18.37 },
+      { date: "2024-06-01", weight: 11.0, height: 80, bmi: 17.19 },
+      { date: "2025-01-01", weight: 13.0, height: 90, bmi: 16.05 },
+    ];
 
     const formattedData = {
-      labels: child.data.map((item) => item.date),
+      labels: growthData.map((item) => item.date),
       datasets: [
         {
           label: "Weight (kg)",
-          data: child.data.map((item) => item.weight),
+          data: growthData.map((item) => item.weight),
           borderColor: "rgb(255, 99, 132)",
           backgroundColor: "rgba(255, 99, 132, 0.2)",
           tension: 0.4,
@@ -78,7 +114,7 @@ const GrowthChartMember = () => {
         },
         {
           label: "Height (cm)",
-          data: child.data.map((item) => item.height),
+          data: growthData.map((item) => item.height),
           borderColor: "rgb(53, 162, 235)",
           backgroundColor: "rgba(53, 162, 235, 0.2)",
           tension: 0.4,
@@ -87,7 +123,7 @@ const GrowthChartMember = () => {
         },
         {
           label: "BMI",
-          data: child.data.map((item) => item.bmi),
+          data: growthData.map((item) => item.bmi),
           borderColor: "rgb(75, 192, 192)",
           backgroundColor: "rgba(75, 192, 192, 0.2)",
           tension: 0.4,
@@ -134,10 +170,6 @@ const GrowthChartMember = () => {
     background: "#f0f2f5",
   };
 
-  useEffect(() => {
-    document.title = "Child Growth Tracking - Child Growth Chart";
-  }, []);
-
   return (
     <div style={{ minHeight: "100vh" }}>
       <HeaderComponent />
@@ -157,8 +189,9 @@ const GrowthChartMember = () => {
                   value={selectedChild}
                   onChange={(value) => setSelectedChild(value)}
                   style={{ width: 200 }}
+                  loading={loading}
                 >
-                  {fakeChildren.map((child) => (
+                  {children.map((child) => (
                     <Option key={child.id} value={child.id}>
                       {child.name}
                     </Option>

@@ -28,6 +28,8 @@ import VerificationSent from "../pages/VerificationSent";
 import PublicRoute from "./PublicRoute";
 import PaymentDetails from "../pages/PaymentDetails";
 import DoctorConsultationHistory from "../pages/DoctorPages/DoctorConsultationHistory";
+import ChildList from "../pages/MemberPages/ChildList";
+import { Navigate } from "react-router-dom";
 
 export default function AppRoute() {
   return (
@@ -54,13 +56,27 @@ export default function AppRoute() {
       <Route path={routes.growthChart} element={<GrowthChart />} />
       <Route path={routes.blogDetail} element={<BlogDetailed />} />
       {/* Membership pages */}
-      <Route path={routes.growthTracker} element={<GrowthTracker />} />
+      <Route
+        path={routes.childList}
+        element={<PrivateRoute requiredRole={Role.MEMBER} element={<ChildList />} />}
+      />
+      <Route
+        path={routes.growthTracker}
+        element={<PrivateRoute requiredRole={Role.MEMBER} element={<GrowthTracker />} />}
+      />
+      <Route
+        path="/profile/growth-chart"
+        element={<PrivateRoute requiredRole={Role.MEMBER} element={<Navigate to="/profile/children" replace />} />}
+      />
       <Route
         path={routes.growthChartMember}
-        element={<GrowthChartMember />}
-      />{" "}
+        element={<PrivateRoute requiredRole={Role.MEMBER} element={<GrowthChartMember />} />}
+      />
       <Route path={routes.verificationSent} element={<VerificationSent />} />
-      <Route path={routes.consultation} element={<Consultation />} />
+      <Route
+        path={routes.consultation}
+        element={<PrivateRoute requiredRole={Role.MEMBER} element={<Consultation />} />}
+      />
       {/* Doctor Routes */}
       <Route path={routes.doctorConsultaion} element={<DoctorConsultation />} />
       <Route
