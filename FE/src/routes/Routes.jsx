@@ -17,6 +17,7 @@ import RequestManagement from "../pages/AdminPages/RequestManagement";
 import UserManagement from "../pages/AdminPages/UserManagement";
 import AddPremium from "../pages/AdminPages/PremiumManagement/AddPremium";
 import PremiumList from "../pages/AdminPages/PremiumManagement/PremiumList";
+import AdminMembership from "../pages/AdminPages/PremiumManagement/AdminMembership";
 import GrowthTracker from "../pages/MemberPages/GrowthTracker";
 import GrowthChartMember from "../pages/MemberPages/GrowthChartMember";
 import BlogDetailed from "../pages/BlogDetailed";
@@ -73,6 +74,10 @@ export default function AppRoute() {
       <Route
         path={routes.growthTracker}
         element={<PrivateRoute requiredRole={Role.MEMBER} element={<GrowthTracker />} />}
+      />
+      <Route
+        path={routes.growthTrackerBase}
+        element={<PrivateRoute requiredRole={Role.MEMBER} element={<Navigate to="/profile/children" replace />} />}
       />
       <Route
         path="/profile/growth-chart"
@@ -135,6 +140,10 @@ export default function AppRoute() {
       <Route
         path={routes.premiumList}
         element={<PrivateRoute requiredRole={Role.ADMIN} element={<PremiumList />} />}
+      />
+      <Route
+        path={routes.adminMembership}
+        element={<PrivateRoute requiredRole={Role.ADMIN} element={<AdminMembership />} />}
       />
 
       <Route path={routes.verificationSent} element={<VerificationSent />} />

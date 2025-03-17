@@ -107,23 +107,21 @@ const Dashboard = () => {
         premiumResponse,
         consultationsResponse,
       ] = await Promise.all([
-        api.get("/users", { params: { page: 1, size: 1 } }),
+        api.get("/users", { params: { page: 1, size: 1000 } }),
         api.get("/requests", { params: { page: 1, size: 1 } }),
-        api.get("/membership-packages"),
+        api.get("/membership-packages", { params: { page: 1, size: 1000 } }),
         api.get("/consultations"),
       ]);
-
-      console.log(consultationsResponse)
 
       const activePremiumPackages = premiumResponse.data.packages
         ? premiumResponse.data.packages.filter((pkg) => !pkg.isDeleted).length
         : 0;
 
       setStats({
-        totalUsers: usersResponse.data.total || 0,
+        totalUsers: usersResponse.data.users ? usersResponse.data.users.length : 0,
         totalRequests: requestsResponse.data.total || 0,
         totalPremiumUsers: activePremiumPackages,
-        totalConsultations: consultationsResponse.data.totalConsultation || 0, // Store total consultations
+        totalConsultations: consultationsResponse.data.totalConsultation || 0,
       });
 
       const revenueResponse = await api.get("/statistics/revenue", {

@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import moment from 'moment';
 import api from '../../configs/api';
 import MemberLayout from '../../layouts/MemberLayout';
-import { PlusOutlined, DeleteOutlined, ExclamationCircleFilled } from '@ant-design/icons';
+import { PlusOutlined, DeleteOutlined, ExclamationCircleFilled, EditOutlined } from '@ant-design/icons';
 
 const { Title } = Typography;
 const { Option } = Select;
@@ -17,9 +17,13 @@ const ChildList = () => {
   const [loading, setLoading] = useState(true);
   const [children, setChildren] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isEditModalVisible, setIsEditModalVisible] = useState(false);
   const [form] = Form.useForm();
+  const [editForm] = Form.useForm();
+  const [currentChild, setCurrentChild] = useState(null);
   const navigate = useNavigate();
   const [deleteLoading, setDeleteLoading] = useState(false);
+  const [editLoading, setEditLoading] = useState(false);
 
   const fetchChildren = async () => {
     try {
@@ -72,6 +76,47 @@ const ChildList = () => {
     } catch (error) {
       console.error('Error adding child:', error);
       message.error('Không thể thêm trẻ. Vui lòng thử lại');
+    }
+  };
+
+  const handleEditChild = (e, child) => {
+    e.stopPropagation(); // Ngăn chặn sự kiện click lan truyền đến card
+    setCurrentChild(child);
+    
+    // Chuẩn bị dữ liệu cho form
+    editForm.setFieldsValue({
+      name: child.name,
+      gender: child.gender === 1 ? 'male' : 'female',
+      birthDate: moment(child.birthDate),
+      note: child.note || '',
+    });
+    
+    setIsEditModalVisible(true);
+  };
+
+  const handleUpdateChild = async (values) => {
+    if (!currentChild) return;
+    
+    setEditLoading(true);
+    try {
+      const formattedData = {
+        ...values,
+        birthDate: values.birthDate.toISOString(),
+        gender: values.gender === 'male' ? 1 : 0,
+      };
+
+      const response = await api.put(`/children/${currentChild._id}`, formattedData);
+      
+      if (response.data && response.data.message === "Child updated successfully") {
+        message.success('Cập nhật thông tin thành công');
+        setIsEditModalVisible(false);
+        fetchChildren(); // Refresh danh sách
+      }
+    } catch (error) {
+      console.error('Error updating child:', error);
+      message.error('Không thể cập nhật thông tin. Vui lòng thử lại');
+    } finally {
+      setEditLoading(false);
     }
   };
 
@@ -147,9 +192,37 @@ const ChildList = () => {
                       position: 'absolute',
                       top: '10px',
                       right: '10px',
-                      zIndex: 1
+                      zIndex: 1,
+                      display: 'flex',
+                      gap: '8px'
                     }}
                   >
+                    {/* Edit button */}
+                    <Button
+                      type="text"
+                      icon={<EditOutlined />}
+                      onClick={(e) => handleEditChild(e, child)}
+                      style={{
+                        color: '#1890ff',
+                        opacity: 0.7,
+                        transition: 'all 0.3s',
+                        padding: '4px 8px',
+                        height: 'auto',
+                        background: 'rgba(255, 255, 255, 0.9)',
+                        borderRadius: '50%',
+                        boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.opacity = '1';
+                        e.currentTarget.style.transform = 'scale(1.1)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.opacity = '0.7';
+                        e.currentTarget.style.transform = 'scale(1)';
+                      }}
+                    />
+
+                    {/* Delete button */}
                     <Popconfirm
                       title={
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -234,6 +307,7 @@ const ChildList = () => {
           />
         )}
 
+        {/* Add Child Modal */}
         <Modal
           title="Add New Child"
           open={isModalVisible}
@@ -328,6 +402,82 @@ const ChildList = () => {
                 </Button>
                 <Button type="primary" htmlType="submit" style={{ backgroundColor: '#0082c8' }}>
                   Add Child
+                </Button>
+              </div>
+            </Form.Item>
+          </Form>
+        </Modal>
+
+        {/* Edit Child Modal */}
+        <Modal
+          title="Edit Child Information"
+          open={isEditModalVisible}
+          onCancel={() => {
+            setIsEditModalVisible(false);
+            setCurrentChild(null);
+          }}
+          footer={null}
+        >
+          <Form
+            form={editForm}
+            layout="vertical"
+            onFinish={handleUpdateChild}
+            initialValues={{
+              name: '',
+              gender: 'female',
+              birthDate: null,
+              note: ''
+            }}
+          >
+            <Form.Item
+              name="name"
+              label="Name"
+              rules={[{ required: true, message: 'Please input child name!' }]}
+            >
+              <Input />
+            </Form.Item>
+
+            <Form.Item
+              name="gender"
+              label="Gender"
+              rules={[{ required: true, message: 'Please select gender!' }]}
+            >
+              <Select>
+                <Option value="male">Male</Option>
+                <Option value="female">Female</Option>
+              </Select>
+            </Form.Item>
+
+            <Form.Item
+              name="birthDate"
+              label="Birth Date"
+              rules={[{ required: true, message: 'Please select birth date!' }]}
+            >
+              <DatePicker style={{ width: '100%' }} format="DD/MM/YYYY" />
+            </Form.Item>
+
+            <Form.Item
+              name="note"
+              label="Note"
+            >
+              <Input.TextArea />
+            </Form.Item>
+
+            <Form.Item>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
+                <Button onClick={() => {
+                  setIsEditModalVisible(false);
+                  setCurrentChild(null);
+                }}>
+                  Cancel
+                </Button>
+                <Button 
+                  type="primary" 
+                  htmlType="submit" 
+                  loading={editLoading}
+                  style={{ backgroundColor: '#0082c8' }}
+                >
+                  Save Changes
                 </Button>
               </div>
             </Form.Item>

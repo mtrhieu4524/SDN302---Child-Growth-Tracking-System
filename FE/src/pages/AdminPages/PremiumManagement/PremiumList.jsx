@@ -42,26 +42,25 @@ const PremiumList = () => {
       });
 
       if (response.data && response.data.packages) {
-        const formattedPackages = response.data.packages
-          .filter(pkg => !pkg.isDeleted)
-          .map((pkg) => ({
-            key: pkg._id,
-            name: pkg.name,
-            price: pkg.price.value,
-            duration: pkg.duration.value,
-            features: [
-              pkg.description,
-              `Post limit: ${pkg.postLimit}`,
-              `Update child data limit: ${pkg.updateChildDataLimit}`,
-            ],
-            status: "active",
-            createdAt: moment(pkg.createdAt).format("DD/MM/YYYY | hh:mm:ss A"),
-          }));
+        const formattedPackages = response.data.packages.map((pkg) => ({
+          key: pkg._id,
+          name: pkg.name,
+          price: pkg.price.value,
+          duration: pkg.duration.value,
+          features: [
+            pkg.description,
+            `Post limit: ${pkg.postLimit}`,
+            `Update child data limit: ${pkg.updateChildDataLimit}`,
+          ],
+          status: pkg.isDeleted ? "inactive" : "active",
+          createdAt: moment(pkg.createdAt).format("DD/MM/YYYY | hh:mm:ss A"),
+          isDeleted: pkg.isDeleted
+        }));
         setPackages(formattedPackages);
         setPagination({
           current: page,
           pageSize: size,
-          total: formattedPackages.length,
+          total: response.data.totalPackages || formattedPackages.length,
         });
       } else {
         message.error("No packages found");
@@ -114,6 +113,10 @@ const PremiumList = () => {
     });
   };
 
+  const handlePageChange = (page, pageSize) => {
+    fetchPackages(page, pageSize);
+  };
+
   const columns = [
     {
       title: "Package Name",
@@ -155,8 +158,8 @@ const PremiumList = () => {
       key: "status",
       align: "center",
       render: (status) => (
-        <Tag color="#52c41a">
-          Active
+        <Tag color={status === "active" ? "#52c41a" : "#ff4d4f"}>
+          {status === "active" ? "Active" : "Inactive"}
         </Tag>
       ),
     },
@@ -172,12 +175,14 @@ const PremiumList = () => {
       align: "center",
       render: (_, record) => (
         <Space size="middle">
-          <Button
-            danger
-            icon={<DeleteOutlined />}
-            onClick={() => handleDelete(record.key)}>
-            Delete
-          </Button>
+          {record.status === "active" && (
+            <Button
+              danger
+              icon={<DeleteOutlined />}
+              onClick={() => handleDelete(record.key)}>
+              Delete
+            </Button>
+          )}
         </Space>
       ),
     },
@@ -231,6 +236,8 @@ const PremiumList = () => {
               current={pagination.current}
               pageSize={pagination.pageSize}
               total={pagination.total}
+              onChange={handlePageChange}
+              showSizeChanger={false}
             />
           </div>
         </>

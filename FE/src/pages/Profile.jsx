@@ -160,7 +160,7 @@ const Profile = () => {
                 <Title level={3} style={{ marginTop: "16px", marginBottom: 0 }}>
                   {user?.name}
                 </Title>
-                <Text type="secondary">Doctor</Text>
+                <Text type="secondary">{user?.role === 1 ? "Admin" : user?.role === 2 ? "Doctor" : "Member"}</Text>
               </div>
 
               <Divider style={{ margin: "24px 0" }} />

@@ -15,6 +15,7 @@ export const routes = {
   // Membership pages
   childList: "/profile/children",
   growthTracker: "/profile/growth-tracker/:childId",
+  growthTrackerBase: "/profile/growth-tracker",
   growthChartMember: "/profile/growth-chart/:childId",
   consultation: "/member-consultation",
   consultationHistory: "/member-consultation-history",
@@ -32,4 +33,5 @@ export const routes = {
   consultationManagement: "/admin/consultation-management",
   premiumList: "/admin/premium-list",
   addPremium: "/admin/add-premium",
+  adminMembership: "/admin/membership",
 };

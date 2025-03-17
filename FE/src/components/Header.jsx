@@ -32,6 +32,11 @@ const HeaderComponent = () => {
 
   const adminDropdownMenuItems = [
     {
+      key: "profile",
+      label: <a href="/profile">Profile</a>,
+      icon: <UserOutlined />,
+    },
+    {
       key: "dashboard",
       label: <a href="/admin/dashboard">Dashboard</a>,
       icon: <DashboardOutlined />,
@@ -56,7 +61,9 @@ const HeaderComponent = () => {
         },
       ],
     },
+
     { key: "blogs", label: <a href="/blogs">Blogs</a> },
+    { key: "membership", label: <a href="/membership">Membership</a> },
     { key: "faqs", label: <a href="/faqs">FAQs</a> },
     { key: "about-us", label: <a href="/about-us">About Us</a> },
   ];
@@ -103,11 +110,11 @@ const HeaderComponent = () => {
   ];
 
   const memberDropdownMenuItems = [
-    // {
-    //   key: "profile",
-    //   label: <a href="/profile">Profile</a>,
-    //   icon: <UserOutlined />,
-    // },
+    {
+      key: "profile",
+      label: <a href="/profile">Profile</a>,
+      icon: <UserOutlined />,
+    },
     {
       key: "child-tracker",
       label: <a href="/profile/growth-chart">Child Tracker</a>,
@@ -203,15 +210,25 @@ const HeaderComponent = () => {
       >
         <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
           <a href="/" title="Logo">
-            <h3
-              style={{
-                marginTop: "25px",
-                marginLeft: "30px",
-                marginRight: "25px",
-              }}
-            >
-              CHILD GROWTH TRACKING
-            </h3>
+            <div style={{ display: "flex", alignItems: "center" }}>
+              <img 
+                src="/tabIcon.png" 
+                alt="Child Growth Tracking Logo" 
+                style={{ 
+                  height: "40px", 
+                  marginRight: "10px",
+                  marginLeft: "30px" 
+                }}
+              />
+              <h3
+                style={{
+                  marginTop: "25px",
+                  marginRight: "25px",
+                }}
+              >
+                CHILD GROWTH TRACKING
+              </h3>
+            </div>
           </a>
         </div>
 

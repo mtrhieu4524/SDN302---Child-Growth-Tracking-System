@@ -39,21 +39,20 @@ const Membership = () => {
       const response = await api.get("/membership-packages", {
         params: {
           page,
-          size,
+          size: 1000,
           search: "",
           order: "descending",
           sortBy: "date",
         },
       });
 
-      console.log("Fetched membership packages:", response.data);
-
       if (response.data && response.data.packages) {
-        setMembershipPackages(response.data.packages);
+        const activePackages = response.data.packages.filter(pkg => !pkg.isDeleted);
+        setMembershipPackages(activePackages);
         setPagination({
           current: page,
           pageSize: size,
-          total: response.data.total || response.data.packages.length,
+          total: activePackages.length,
         });
       } else {
         message.error("No membership packages found");
