@@ -15,6 +15,7 @@ import ScrollToTop from "../../components/ScrollToTop";
 import { AuthContext } from "../../contexts/AuthContext";
 import api from "../../configs/api";
 import { useNavigate } from "react-router-dom";
+import { ManOutlined, WomanOutlined } from "@ant-design/icons";
 
 const { Title, Text } = Typography;
 
@@ -231,6 +232,8 @@ const ConsultationHistory = () => {
                         <br />
                         <Text strong>Child:</Text> {child.name || "Unknown"}
                         <br />
+                        <Text strong>Gender:</Text> {child.gender === 0 ? "Boy" : "Girl"}
+                        <br />
                         {child.birthDate && (
                           <>
                             <Text strong>Age:</Text>{" "}
@@ -331,7 +334,7 @@ const ConsultationHistory = () => {
           selectedConsultation.requestDetails?.children?.length > 0 && (
             <div style={{ padding: "0 10px" }}>
               <Title level={4}>
-                Child: {selectedConsultation.requestDetails.children[0].name}
+                Child: {selectedConsultation.requestDetails.children[0].name} {selectedConsultation.requestDetails.children[0].gender === 0 ? <ManOutlined /> : <WomanOutlined />}
               </Title>
               <Text strong>Age:</Text>{" "}
               {calculateAge(

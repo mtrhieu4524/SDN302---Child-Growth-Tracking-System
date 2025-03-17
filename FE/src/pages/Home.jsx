@@ -219,7 +219,7 @@ const Home = () => {
           </Text>
 
           <div style={{ display: "flex", gap: "20px" }}>
-            <Card style={{ borderRadius: 0, flex: 1, textAlign: "center", boxShadow: "0 4px 10px rgba(0,0,0,0.1)", borderRadius: "10px", }}>
+            <Card style={{ flex: 1, textAlign: "center", boxShadow: "0 4px 10px rgba(0,0,0,0.1)", borderRadius: "10px", }}>
               <Avatar src="https://randomuser.me/api/portraits/men/32.jpg" size={60} style={{ margin: "auto" }} />
               <div style={{ marginTop: "10px" }}>
                 <Title level={5} style={{ fontWeight: "bold", color: "#00274E", display: "flex", alignItems: "center", justifyContent: "center", gap: "5px" }}>
@@ -231,7 +231,7 @@ const Home = () => {
               </div>
             </Card>
 
-            <Card style={{ borderRadius: 0, flex: 1, textAlign: "center", boxShadow: "0 4px 10px rgba(0,0,0,0.1)", borderRadius: "10px", }}>
+            <Card style={{ flex: 1, textAlign: "center", boxShadow: "0 4px 10px rgba(0,0,0,0.1)", borderRadius: "10px", }}>
               <Avatar src="https://randomuser.me/api/portraits/women/44.jpg" size={60} style={{ margin: "auto" }} />
               <div style={{ marginTop: "10px" }}>
                 <Title level={5} style={{ fontWeight: "bold", color: "#00274E", display: "flex", alignItems: "center", justifyContent: "center", gap: "5px" }}>

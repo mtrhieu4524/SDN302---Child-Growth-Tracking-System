@@ -163,7 +163,11 @@ const PremiumList = () => {
       dataIndex: "status",
       key: "status",
       align: "center",
-      render: (status) => <Tag color="#52c41a">Active</Tag>,
+      render: (status) => (
+        <Tag color={status === "active" ? "#52c41a" : "#ff4d4f"}>
+          {status === "active" ? "Active" : "Inactive"}
+        </Tag>
+      ),
     },
     {
       title: "Date created",

@@ -183,7 +183,7 @@ const HeaderComponent = () => {
     <div>
       <div
         style={{
-          background: "#0082C8",
+          background: "linear-gradient(to right, #0082C8, #0056A1)",
           color: "white",
           textAlign: "center",
           padding: "8px",
@@ -279,7 +279,7 @@ const HeaderComponent = () => {
             </Dropdown>
           ) : (
             <>
-              <a href="/login" style={{ color: "#0082C8", fontWeight: "500" }}>
+              <a href="/login" style={{ color: "#1890ff", fontWeight: "500" }}>
                 Sign in
               </a>
               <Button

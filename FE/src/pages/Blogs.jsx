@@ -226,16 +226,10 @@ const Blogs = () => {
                       }}
                     >
                       <Avatar
-                        src={featuredPost.user?.avatar}
-                        icon={
-                          featuredPost.user?.avatar ? (
-                            featuredPost.user?.avatar
-                          ) : (
-                            <UserOutlined />
-                          )
-                        }
-                        size={40}
-                      />
+                          src={featuredPost.user?.avatar || undefined}
+                          icon={!featuredPost.user?.avatar && <UserOutlined />}
+                          size={40}
+                        />
                       <div style={{ marginLeft: "12px" }}>
                         <Text style={{ fontWeight: "600", color: "#00274E" }}>
                           {featuredPost.user?.name || "Anonymous"}
