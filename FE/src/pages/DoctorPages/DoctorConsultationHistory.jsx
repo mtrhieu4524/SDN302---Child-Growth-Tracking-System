@@ -14,6 +14,7 @@ import FooterComponent from "../../components/Footer";
 import ScrollToTop from "../../components/ScrollToTop";
 import { AuthContext } from "../../contexts/AuthContext";
 import api from "../../configs/api";
+import { useNavigate } from "react-router-dom";
 
 const { Title, Text } = Typography;
 
@@ -26,6 +27,7 @@ const DoctorConsultationHistory = () => {
   const [selectedConsultation, setSelectedConsultation] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const pageSize = 5;
+  const navigate = useNavigate();
 
   useEffect(() => {
     document.title = "Child Growth Tracker - Consultation History";
@@ -55,8 +57,40 @@ const DoctorConsultationHistory = () => {
         response.data.consultations &&
         Array.isArray(response.data.consultations)
       ) {
-        setConsultations(response.data.consultations);
-        setTotalRequests(response.data.totalConsultation || 0);
+        // Filter consultations to only show ones where requestDetails.status is "Accepted"
+        const acceptedConsultations = response.data.consultations.filter(
+          (consultation) =>
+            consultation.requestDetails &&
+            consultation.requestDetails.status === "Accepted"
+        );
+
+        // Deduplicate consultations based on requestId
+        // Use a Map to keep track of the most recent consultation for each requestId
+        const requestIdMap = new Map();
+
+        acceptedConsultations.forEach((consultation) => {
+          const requestId = consultation.requestId;
+
+          // If this requestId is not in the map yet, or if this consultation is newer
+          if (
+            !requestIdMap.has(requestId) ||
+            new Date(consultation.updatedAt) >
+              new Date(requestIdMap.get(requestId).updatedAt)
+          ) {
+            requestIdMap.set(requestId, consultation);
+          }
+        });
+
+        // Convert the Map values back to an array
+        const uniqueConsultations = Array.from(requestIdMap.values());
+
+        // Sort by updatedAt date (most recent first)
+        uniqueConsultations.sort(
+          (a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)
+        );
+
+        setConsultations(uniqueConsultations);
+        setTotalRequests(uniqueConsultations.length || 0);
       } else {
         message.error("Failed to load consultation history");
       }
@@ -128,6 +162,11 @@ const DoctorConsultationHistory = () => {
     return { text: capitalizedStatus, color };
   };
 
+  // Handle start consultation action
+  const handleStartConsultation = (consultationId) => {
+    navigate(`/doctor-consultation-history/chat/${consultationId}`);
+  };
+
   // Render loading spinner
   const renderLoading = () => (
     <div style={{ textAlign: "center", padding: "50px 0" }}>
@@ -153,7 +192,7 @@ const DoctorConsultationHistory = () => {
                   Consultation History
                 </Title>
                 <Text type="secondary">
-                  View the history of your past consultations
+                  View the history of your accepted consultations
                 </Text>
               </div>
             </div>
@@ -171,7 +210,7 @@ const DoctorConsultationHistory = () => {
               <List
                 itemLayout="vertical"
                 dataSource={consultations}
-                locale={{ emptyText: "No consultation history found" }}
+                locale={{ emptyText: "No accepted consultation history found" }}
                 renderItem={(item) => {
                   const { text: statusText, color: statusColor } =
                     getStatusProps(item.status);
@@ -262,7 +301,11 @@ const DoctorConsultationHistory = () => {
           <Button key="cancel" onClick={() => setModalVisible(false)}>
             Close
           </Button>,
-          <Button type="primary">Start Consultation</Button>,
+          <Button
+            type="primary"
+            onClick={() => handleStartConsultation(selectedConsultation._id)}>
+            Start Consultation
+          </Button>,
         ]}
         width={700}>
         {selectedConsultation &&

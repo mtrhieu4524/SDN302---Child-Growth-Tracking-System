@@ -1,5 +1,14 @@
 import { CrownOutlined, FileOutlined, UserOutlined } from "@ant-design/icons";
-import { Card, Col, Row, Spin, Statistic, Typography, Select, InputNumber } from "antd";
+import {
+  Card,
+  Col,
+  Row,
+  Spin,
+  Statistic,
+  Typography,
+  Select,
+  InputNumber,
+} from "antd";
 import message from "antd/es/message";
 import React, { useEffect, useState } from "react";
 import {
@@ -25,31 +34,30 @@ const Dashboard = () => {
     totalUsers: 0,
     totalRequests: 0,
     totalPremiumUsers: 0,
+    totalConsultations: 0,
   });
   const [revenueData, setRevenueData] = useState([]);
-  
-  // Thêm state cho các tham số revenue
+
   const [revenueParams, setRevenueParams] = useState({
     time: "DAY",
     unit: "VND",
-    value: undefined
+    value: undefined,
   });
 
-  // Thêm state cho đơn vị tiền tệ hiện tại
   const [currentUnit, setCurrentUnit] = useState("VND");
 
   const formatCurrency = (value) => {
     if (currentUnit === "VND") {
-      return new Intl.NumberFormat('vi-VN', { 
-        style: 'currency', 
-        currency: 'VND',
-        maximumFractionDigits: 0
+      return new Intl.NumberFormat("vi-VN", {
+        style: "currency",
+        currency: "VND",
+        maximumFractionDigits: 0,
       }).format(value);
     } else {
-      return new Intl.NumberFormat('en-US', { 
-        style: 'currency', 
-        currency: 'USD',
-        minimumFractionDigits: 2
+      return new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "USD",
+        minimumFractionDigits: 2,
       }).format(value);
     }
   };
@@ -72,14 +80,16 @@ const Dashboard = () => {
   const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
       return (
-        <div style={{ 
-          backgroundColor: 'white', 
-          padding: '10px', 
-          border: '1px solid #ccc',
-          borderRadius: '4px'
-        }}>
+        <div
+          style={{
+            backgroundColor: "white",
+            padding: "10px",
+            border: "1px solid #ccc",
+            borderRadius: "4px",
+          }}
+        >
           <p style={{ margin: 0 }}>{`Date: ${formatXAxis(label)}`}</p>
-          <p style={{ margin: 0, color: '#0082C8' }}>
+          <p style={{ margin: 0, color: "#0082C8" }}>
             {`Revenue: ${formatCurrency(payload[0].value)}`}
           </p>
         </div>
@@ -91,45 +101,38 @@ const Dashboard = () => {
   const fetchAllStats = async () => {
     setLoading(true);
     try {
-      // Fetch users, requests, premium data như cũ
-      const [usersResponse, requestsResponse, premiumResponse] = await Promise.all([
-        api.get("/users", {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${JSON.parse(localStorage.getItem("access_token") || "{}")?.token || ""}`,
-          },
-          params: { page: 1, size: 1 },
-        }),
-        api.get("/requests", {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${JSON.parse(localStorage.getItem("access_token") || "{}")?.token || ""}`,
-          },
-          params: { page: 1, size: 1 },
-        }),
-        api.get("/membership-packages", {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${JSON.parse(localStorage.getItem("access_token") || "{}")?.token || ""}`,
-          },
-        }),
+      const [
+        usersResponse,
+        requestsResponse,
+        premiumResponse,
+        consultationsResponse,
+      ] = await Promise.all([
+        api.get("/users", { params: { page: 1, size: 1 } }),
+        api.get("/requests", { params: { page: 1, size: 1 } }),
+        api.get("/membership-packages"),
+        api.get("/consultations"),
       ]);
 
+      console.log(consultationsResponse)
+
       const activePremiumPackages = premiumResponse.data.packages
-        ? premiumResponse.data.packages.filter(pkg => !pkg.isDeleted).length
+        ? premiumResponse.data.packages.filter((pkg) => !pkg.isDeleted).length
         : 0;
 
       setStats({
         totalUsers: usersResponse.data.total || 0,
         totalRequests: requestsResponse.data.total || 0,
         totalPremiumUsers: activePremiumPackages,
+        totalConsultations: consultationsResponse.data.totalConsultation || 0, // Store total consultations
       });
 
-      // Fetch revenue data với tham số mới
       const revenueResponse = await api.get("/statistics/revenue", {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${JSON.parse(localStorage.getItem("access_token") || "{}")?.token || ""}`,
+          Authorization: `Bearer ${
+            JSON.parse(localStorage.getItem("access_token") || "{}")?.token ||
+            ""
+          }`,
         },
         params: {
           time: revenueParams.time,
@@ -138,54 +141,38 @@ const Dashboard = () => {
         },
       });
 
-      console.log("Revenue Response:", revenueResponse.data);
-      console.log("Revenue Params:", revenueParams);
-
-      if (revenueResponse.data && revenueResponse.data.Revenue) {
-        console.log("Setting Revenue Data:", revenueResponse.data.Revenue);
+      if (revenueResponse.data?.Revenue) {
         setRevenueData(revenueResponse.data.Revenue);
         setCurrentUnit(revenueResponse.data.Unit);
       } else {
-        console.error("No revenue data in response:", revenueResponse.data);
         message.error("No revenue data found");
         setRevenueData([]);
       }
     } catch (error) {
       console.error("Error fetching statistics:", error);
-      if (error.response) {
-        console.error("Error response:", error.response.data);
-        message.error(error.response.data.message || "Failed to load dashboard statistics");
-      } else if (error.request) {
-        console.error("No response received:", error.request);
-        message.error("Network error. Please check your connection.");
-      } else {
-        console.error("Error setting up request:", error.message);
-        message.error("An error occurred while loading statistics");
-      }
+      message.error("Failed to load dashboard statistics");
       setRevenueData([]);
     } finally {
       setLoading(false);
     }
   };
 
-  // Xử lý thay đổi tham số
   const handleTimeChange = (value) => {
-    setRevenueParams(prev => ({ 
-      ...prev, 
+    setRevenueParams((prev) => ({
+      ...prev,
       time: value,
-      value: undefined // Reset value khi đổi time
+      value: undefined,
     }));
   };
 
   const handleUnitChange = (value) => {
-    setRevenueParams(prev => ({ ...prev, unit: value }));
+    setRevenueParams((prev) => ({ ...prev, unit: value }));
   };
 
   const handleValueChange = (value) => {
-    setRevenueParams(prev => ({ ...prev, value: value }));
+    setRevenueParams((prev) => ({ ...prev, value: value }));
   };
 
-  // Validation cho input value
   const getValueValidation = () => {
     switch (revenueParams.time) {
       case "MONTH":
@@ -200,7 +187,7 @@ const Dashboard = () => {
   useEffect(() => {
     document.title = "Admin - Dashboard";
     fetchAllStats();
-  }, [revenueParams]); // Gọi lại API khi tham số thay đổi
+  }, [revenueParams]);
 
   const cardStyle = {
     boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
@@ -220,7 +207,7 @@ const Dashboard = () => {
       ) : (
         <>
           <Row gutter={[24, 24]}>
-            <Col xs={24} sm={8}>
+            <Col xs={24} sm={6}>
               <Card style={cardStyle}>
                 <Statistic
                   title={<span style={{ color: "#0056A1" }}>Total Users</span>}
@@ -230,17 +217,33 @@ const Dashboard = () => {
                 />
               </Card>
             </Col>
-            <Col xs={24} sm={8}>
+            <Col xs={24} sm={6}>
               <Card style={cardStyle}>
                 <Statistic
-                  title={<span style={{ color: "#0056A1" }}>Total Requests</span>}
+                  title={
+                    <span style={{ color: "#0056A1" }}>Total Requests</span>
+                  }
                   value={stats.totalRequests}
                   prefix={<FileOutlined style={{ color: "#0082C8" }} />}
                   valueStyle={{ color: "#0056A1" }}
                 />
               </Card>
             </Col>
-            <Col xs={24} sm={8}>
+            <Col xs={24} sm={6}>
+              <Card style={cardStyle}>
+                <Statistic
+                  title={
+                    <span style={{ color: "#0056A1" }}>
+                      Total Consultations
+                    </span>
+                  }
+                  value={stats.totalConsultations}
+                  prefix={<FileOutlined style={{ color: "#0082C8" }} />}
+                  valueStyle={{ color: "#0056A1" }}
+                />
+              </Card>
+            </Col>
+            <Col xs={24} sm={6}>
               <Card style={cardStyle}>
                 <Statistic
                   title={
@@ -256,19 +259,30 @@ const Dashboard = () => {
             </Col>
           </Row>
           <div style={{ marginTop: "24px" }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                marginBottom: "16px",
+              }}
+            >
               <Title level={4} style={{ color: "#0056A1", margin: 0 }}>
-                Revenue by {
-                  revenueParams.time === "DAY" ? "Day" :
-                  revenueParams.time === "WEEK" ? "Week" :
-                  revenueParams.time === "MONTH" ? "Month" : "Year"
-                }
+                Revenue by{" "}
+                {revenueParams.time === "DAY"
+                  ? "Day"
+                  : revenueParams.time === "WEEK"
+                  ? "Week"
+                  : revenueParams.time === "MONTH"
+                  ? "Month"
+                  : "Year"}
               </Title>
-              <div style={{ display: 'flex', gap: '16px' }}>
+              <div style={{ display: "flex", gap: "16px" }}>
                 <Select
                   value={revenueParams.time}
                   onChange={handleTimeChange}
-                  style={{ width: 120 }}>
+                  style={{ width: 120 }}
+                >
                   <Option value="DAY">Day</Option>
                   <Option value="WEEK">Week</Option>
                   <Option value="MONTH">Month</Option>
@@ -277,13 +291,16 @@ const Dashboard = () => {
                 <Select
                   value={revenueParams.unit}
                   onChange={handleUnitChange}
-                  style={{ width: 120 }}>
+                  style={{ width: 120 }}
+                >
                   <Option value="VND">VND</Option>
                   <Option value="USD">USD</Option>
                 </Select>
                 {["MONTH", "YEAR"].includes(revenueParams.time) && (
                   <InputNumber
-                    placeholder={revenueParams.time === "MONTH" ? "Month (1-12)" : "Year"}
+                    placeholder={
+                      revenueParams.time === "MONTH" ? "Month (1-12)" : "Year"
+                    }
                     value={revenueParams.value}
                     onChange={handleValueChange}
                     style={{ width: 150 }}
@@ -298,17 +315,16 @@ const Dashboard = () => {
                 <ResponsiveContainer width="100%" height={350}>
                   <LineChart
                     data={revenueData}
-                    margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                    margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                  >
                     <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis 
-                      dataKey="Date" 
+                    <XAxis
+                      dataKey="Date"
                       tickFormatter={formatXAxis}
                       height={60}
                       tick={{ angle: -45 }}
                     />
-                    <YAxis 
-                      tickFormatter={(value) => formatCurrency(value)}
-                    />
+                    <YAxis tickFormatter={(value) => formatCurrency(value)} />
                     <Tooltip content={<CustomTooltip />} />
                     <Legend />
                     <Line
@@ -322,13 +338,15 @@ const Dashboard = () => {
                   </LineChart>
                 </ResponsiveContainer>
               ) : (
-                <div style={{ 
-                  height: '100%', 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  justifyContent: 'center',
-                  color: '#999' 
-                }}>
+                <div
+                  style={{
+                    height: "100%",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    color: "#999",
+                  }}
+                >
                   No revenue data available
                 </div>
               )}

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Card, Button, Typography, Select } from "antd";
+import { Card, Button, Typography } from "antd";
 import { Line } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -30,67 +30,40 @@ ChartJS.register(
 );
 
 const { Title, Text } = Typography;
-const { Option } = Select;
-
-const fakeChildren = [
-  {
-    id: 1, name: "Emma Johnson", data: [
-      { date: "2023-01-01", weight: 3.5, height: 50, bmi: 14.0 },
-      { date: "2023-06-01", weight: 6.0, height: 60, bmi: 16.67 },
-      { date: "2024-01-01", weight: 9.0, height: 70, bmi: 18.37 },
-      { date: "2024-06-01", weight: 11.0, height: 80, bmi: 17.19 },
-      { date: "2025-01-01", weight: 13.0, height: 90, bmi: 16.05 },
-    ],
-  },
-  {
-    id: 2, name: "Liam Smith", data: [
-      { date: "2023-01-01", weight: 4.0, height: 52, bmi: 14.8 },
-      { date: "2023-06-01", weight: 7.2, height: 62, bmi: 18.76 },
-      { date: "2024-01-01", weight: 10.5, height: 72, bmi: 20.21 },
-      { date: "2024-06-01", weight: 12.8, height: 82, bmi: 19.06 },
-      { date: "2025-01-01", weight: 15.0, height: 92, bmi: 17.72 },
-    ],
-  },
-];
 
 const GrowthChartMember = () => {
   const { childId } = useParams();
   const navigate = useNavigate();
-  const [selectedChild, setSelectedChild] = useState(childId);
   const [chartData, setChartData] = useState({});
-  const [children, setChildren] = useState([]);
+  const [childName, setChildName] = useState("");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     document.title = "Growth Chart";
-    fetchChildren();
-  }, []);
-
-  useEffect(() => {
-    if (selectedChild) {
-      updateChartData(selectedChild);
+    if (childId) {
+      fetchChildData();
+    } else {
+      updateChartData();
     }
-  }, [selectedChild]);
+  }, [childId]);
 
-  const fetchChildren = async () => {
+  const fetchChildData = async () => {
     try {
-      const response = await api.get('/children');
-      if (response.data.data) {
-        setChildren(response.data.data);
-        // Nếu không có childId từ URL, chọn đứa trẻ đầu tiên
-        if (!childId && response.data.data.length > 0) {
-          setSelectedChild(response.data.data[0].id);
-        }
+      const response = await api.get(`/children/${childId}`);
+      console.log('Child data:', response.data); // Để debug response
+      if (response.data) {
+        setChildName(response.data.name || "");
       }
+      updateChartData();
     } catch (error) {
-      console.error('Error fetching children:', error);
-      message.error('Không thể tải danh sách trẻ');
+      console.error('Error fetching child data:', error);
+      message.error('Không thể tải thông tin của trẻ');
     } finally {
       setLoading(false);
     }
   };
 
-  const updateChartData = (childId) => {
+  const updateChartData = () => {
     // Sử dụng hardcode data cho biểu đồ
     const growthData = [
       { date: "2023-01-01", weight: 3.5, height: 50, bmi: 14.0 },
@@ -180,26 +153,14 @@ const GrowthChartMember = () => {
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
               <div>
                 <Title level={2} style={{ color: "#0056A1", marginBottom: 0 }}>
-                  Child Growth Chart
+                  {childName ? `${childName}'s Growth Chart` : 'Growth Chart'}
                 </Title>
                 <Text type="secondary">Track your child's development over time</Text>
               </div>
-              <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                <Select
-                  value={selectedChild}
-                  onChange={(value) => setSelectedChild(value)}
-                  style={{ width: 200 }}
-                  loading={loading}
-                >
-                  {children.map((child) => (
-                    <Option key={child.id} value={child.id}>
-                      {child.name}
-                    </Option>
-                  ))}
-                </Select>
+              <div>
                 <Button
                   type="primary"
-                  onClick={() => navigate("/profile/growth-tracker")}
+                  onClick={() => navigate(`/profile/growth-tracker/${childId}`)}
                   style={{ backgroundColor: "#0082c8", borderColor: "#0082c8" }}
                 >
                   Import Data <RightOutlined />

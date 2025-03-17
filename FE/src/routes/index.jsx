@@ -14,19 +14,20 @@ export const routes = {
 
   // Membership pages
   childList: "/profile/children",
-  growthTracker: "/profile/growth-tracker",
+  growthTracker: "/profile/growth-tracker/:childId",
   growthChartMember: "/profile/growth-chart/:childId",
   consultation: "/member-consultation",
 
   //Doctor pages
-  doctorConsultaion: "/doctor-consultation",
-  doctorConsultaionHistory: "/doctor-consultation-history",
+  doctorConsultation: "/doctor-consultation",
+  doctorConsultationHistory: "/doctor-consultation-history",
+  doctorConsultationChat: "/doctor-consultation-history/chat/:id",
 
   // Admin pages
   dashboard: "/admin/dashboard",
   userManagement: "/admin/user-management",
   requestManagement: "/admin/request-management",
+  consultationManagement: "/admin/consultation-management",
   premiumList: "/admin/premium-list",
   addPremium: "/admin/add-premium",
-  updatePremium: "/admin/update-premium",
 };

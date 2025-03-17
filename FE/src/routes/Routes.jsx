@@ -10,14 +10,13 @@ import Blogs from "../pages/Blogs";
 import Membership from "../pages/Membership";
 import GrowthChart from "../pages/GrowthChart";
 import DevelopmentMilestones from "../pages/DevelopmentMilestones";
-import Consultation from "../pages/MemberPages/Consultaion";
+import Consultation from "../pages/MemberPages/Consultation";
 import DoctorConsultation from "../pages/DoctorPages/DoctorConsultation";
 
 import Dashboard from "../pages/AdminPages/Dashboard";
 import RequestManagement from "../pages/AdminPages/RequestManagement";
 import UserManagement from "../pages/AdminPages/UserManagement";
 import AddPremium from "../pages/AdminPages/PremiumManagement/AddPremium";
-import UpdatePremium from "../pages/AdminPages/PremiumManagement/UpdatePremium";
 import PremiumList from "../pages/AdminPages/PremiumManagement/PremiumList";
 import GrowthTracker from "../pages/MemberPages/GrowthTracker";
 import GrowthChartMember from "../pages/MemberPages/GrowthChartMember";
@@ -27,9 +26,11 @@ import { Role } from "../enums/Role";
 import VerificationSent from "../pages/VerificationSent";
 import PublicRoute from "./PublicRoute";
 import PaymentDetails from "../pages/PaymentDetails";
+import ConsultationManagement from "../pages/AdminPages/ConsultationManagement";
 import DoctorConsultationHistory from "../pages/DoctorPages/DoctorConsultationHistory";
 import ChildList from "../pages/MemberPages/ChildList";
 import { Navigate } from "react-router-dom";
+import DoctorConsultationChat from "../pages/DoctorPages/DoctorConsultationChat";
 
 export default function AppRoute() {
   return (
@@ -78,10 +79,14 @@ export default function AppRoute() {
         element={<PrivateRoute requiredRole={Role.MEMBER} element={<Consultation />} />}
       />
       {/* Doctor Routes */}
-      <Route path={routes.doctorConsultaion} element={<DoctorConsultation />} />
+      <Route path={routes.doctorConsultation} element={<DoctorConsultation />} />
       <Route
-        path={routes.doctorConsultaionHistory}
+        path={routes.doctorConsultationHistory}
         element={<DoctorConsultationHistory />}
+      />
+      <Route
+        path={routes.doctorConsultationChat}
+        element={<DoctorConsultationChat />}
       />
       {/* Admin Routes */}
       <Route
@@ -93,6 +98,10 @@ export default function AppRoute() {
         element={<PrivateRoute element={<RequestManagement />} />}
       />
       <Route
+        path={routes.consultationManagement}
+        element={<PrivateRoute element={<ConsultationManagement />} />}
+      />
+      <Route
         path={routes.userManagement}
         element={<PrivateRoute element={<UserManagement />} />}
       />
@@ -101,10 +110,6 @@ export default function AppRoute() {
         element={
           <PrivateRoute requiredRole={Role.ADMIN} element={<AddPremium />} />
         }
-      />
-      <Route
-        path={routes.updatePremium}
-        element={<PrivateRoute element={<UpdatePremium />} />}
       />
       <Route
         path={routes.premiumList}
