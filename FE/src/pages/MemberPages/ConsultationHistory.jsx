@@ -221,7 +221,7 @@ const ConsultationHistory = () => {
                                                 <Title
                                                     level={4}
                                                     style={{ margin: 0, color: "#0056A1" }}>
-                                                    Parent: {member.name || "Unknown"}
+                                                    Doctor: {doctor.name || "Unknown"}
                                                 </Title>
                                             }
                                             extra={<Text type={statusColor}>{statusText}</Text>}>
@@ -238,7 +238,7 @@ const ConsultationHistory = () => {
                                                         <br />
                                                     </>
                                                 )}
-                                                <Text strong>Doctor:</Text> {doctor.name || "Unknown"}
+                                                <Text strong>Parent:</Text> {member.name || "Unknown"}
                                                 <br />
                                                 <Text strong>Submitted:</Text>{" "}
                                                 {formatDate(item.createdAt)}
