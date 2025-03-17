@@ -36,6 +36,11 @@ const AdminLayout = ({ children }) => {
       label: "Request Management",
     },
     {
+      key: "/admin/consultation-management",
+      icon: <FileOutlined />,
+      label: "Consultation Management",
+    },
+    {
       key: "/admin/premium-list",
       icon: <CrownOutlined />,
       label: "Premium Management",

@@ -103,19 +103,19 @@ const HeaderComponent = () => {
   ];
 
   const memberDropdownMenuItems = [
-    // {
-    //   key: "profile",
-    //   label: <a href="/profile">Profile</a>,
-    //   icon: <UserOutlined />,
-    // },
+    {
+      key: "profile",
+      label: <a href="/profile">Profile</a>,
+      icon: <UserOutlined />,
+    },
     {
       key: "child-tracker",
-      label: <a href="/profile/growth-chart">Child Tracker</a>,
+      label: <a href="/profile/children">My children</a>,
       icon: <SolutionOutlined />,
     },
     {
       key: "member-consultation",
-      label: <a href="/member-consultation">Doctor Consultation</a>,
+      label: <a href="/member-consultation">Consultation Request</a>,
       icon: <HeartOutlined />,
     },
     {

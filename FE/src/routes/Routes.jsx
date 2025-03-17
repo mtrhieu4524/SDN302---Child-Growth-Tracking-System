@@ -10,25 +10,25 @@ import Blogs from "../pages/Blogs";
 import Membership from "../pages/Membership";
 import GrowthChart from "../pages/GrowthChart";
 import DevelopmentMilestones from "../pages/DevelopmentMilestones";
-import Consultation from "../pages/MemberPages/Consultaion";
+import Consultation from "../pages/MemberPages/Consultation";
 import DoctorConsultation from "../pages/DoctorPages/DoctorConsultation";
-
 import Dashboard from "../pages/AdminPages/Dashboard";
 import RequestManagement from "../pages/AdminPages/RequestManagement";
 import UserManagement from "../pages/AdminPages/UserManagement";
 import AddPremium from "../pages/AdminPages/PremiumManagement/AddPremium";
-import UpdatePremium from "../pages/AdminPages/PremiumManagement/UpdatePremium";
 import PremiumList from "../pages/AdminPages/PremiumManagement/PremiumList";
-import GrowthTracker from "../pages/MemberPages/GrowthTracker";
-import GrowthChartMember from "../pages/MemberPages/GrowthChartMember";
+import Children from "../pages/MemberPages/Children";
+import ChildData from "../pages/MemberPages/ChildData";
 import BlogDetailed from "../pages/BlogDetailed";
 import PrivateRoute from "./PrivateRoute";
 import { Role } from "../enums/Role";
 import VerificationSent from "../pages/VerificationSent";
 import PublicRoute from "./PublicRoute";
 import PaymentDetails from "../pages/PaymentDetails";
+import ConsultationManagement from "../pages/AdminPages/ConsultationManagement";
 import DoctorConsultationHistory from "../pages/DoctorPages/DoctorConsultationHistory";
 import DoctorConsultationChat from "../pages/DoctorPages/DoctorConsultationChat";
+import Profile from "../pages/Profile";
 
 export default function AppRoute() {
   return (
@@ -54,52 +54,67 @@ export default function AppRoute() {
       <Route path={routes.paymentDetails} element={<PaymentDetails />} />
       <Route path={routes.growthChart} element={<GrowthChart />} />
       <Route path={routes.blogDetail} element={<BlogDetailed />} />
-      {/* Membership pages */}
-      <Route path={routes.growthTracker} element={<GrowthTracker />} />
-      <Route
-        path={routes.growthChartMember}
-        element={<GrowthChartMember />}
-      />{" "}
       <Route path={routes.verificationSent} element={<VerificationSent />} />
-      <Route path={routes.consultation} element={<Consultation />} />
+
+      
+      {/* Authenticated Routes */}
+      <Route
+        path="/profile"
+        element={<PrivateRoute element={<Profile />} />}
+      />
+
+      {/* Member Routes */}
+      <Route
+        path={routes.childData}
+        element={<PrivateRoute requiredRole={Role.MEMBER} element={<ChildData />} />}
+      />
+      <Route
+        path={routes.children}
+        element={<PrivateRoute requiredRole={Role.MEMBER} element={<Children />} />}
+      />
+      <Route
+        path={routes.consultation}
+        element={<PrivateRoute requiredRole={Role.MEMBER} element={<Consultation />} />}
+      />
+
       {/* Doctor Routes */}
-      <Route path={routes.doctorConsultaion} element={<DoctorConsultation />} />
       <Route
-        path={routes.doctorConsultaionHistory}
-        element={<DoctorConsultationHistory />}
+        path={routes.doctorConsultation}
+        element={<PrivateRoute requiredRole={Role.DOCTOR} element={<DoctorConsultation />} />}
       />
       <Route
-        path={routes.doctorConsultaionChat}
-        element={<DoctorConsultationChat />}
+        path={routes.doctorConsultationHistory}
+        element={<PrivateRoute requiredRole={Role.DOCTOR} element={<DoctorConsultationHistory />} />}
       />
+      <Route
+        path={routes.doctorConsultationChat}
+        element={<PrivateRoute requiredRole={Role.DOCTOR} element={<DoctorConsultationChat />} />}
+      />
+
       {/* Admin Routes */}
       <Route
         path={routes.dashboard}
-        element={<PrivateRoute element={<Dashboard />} />}
+        element={<PrivateRoute requiredRole={Role.ADMIN} element={<Dashboard />} />}
       />
       <Route
         path={routes.requestManagement}
-        element={<PrivateRoute element={<RequestManagement />} />}
+        element={<PrivateRoute requiredRole={Role.ADMIN} element={<RequestManagement />} />}
+      />
+      <Route
+        path={routes.consultationManagement}
+        element={<PrivateRoute requiredRole={Role.ADMIN} element={<ConsultationManagement />} />}
       />
       <Route
         path={routes.userManagement}
-        element={<PrivateRoute element={<UserManagement />} />}
+        element={<PrivateRoute requiredRole={Role.ADMIN} element={<UserManagement />} />}
       />
       <Route
         path={routes.addPremium}
-        element={
-          <PrivateRoute requiredRole={Role.ADMIN} element={<AddPremium />} />
-        }
-      />
-      <Route
-        path={routes.updatePremium}
-        element={<PrivateRoute element={<UpdatePremium />} />}
+        element={<PrivateRoute requiredRole={Role.ADMIN} element={<AddPremium />} />}
       />
       <Route
         path={routes.premiumList}
-        element={
-          <PrivateRoute requiredRole={Role.ADMIN} element={<PremiumList />} />
-        }
+        element={<PrivateRoute requiredRole={Role.ADMIN} element={<PremiumList />} />}
       />
     </Routes>
   );

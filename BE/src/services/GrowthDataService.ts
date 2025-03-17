@@ -369,6 +369,15 @@ class GrowthDataService implements IGrowthDataService {
         }
 
         case "HCFA": {
+          if (typeof headCircumference !== "number" || !Number.isFinite(headCircumference)) {
+              growthResult.headCircumference = {
+                  percentile: -1,
+                  description: "N/A",
+                  level: "N/A",
+              };
+              break;
+          }
+          
           const percentile = this.getPercentile(
             headCircumference!,
             data.percentiles.values
@@ -395,6 +404,15 @@ class GrowthDataService implements IGrowthDataService {
         }
 
         case "ACFA": {
+          if (typeof armCircumference !== "number" || !Number.isFinite(armCircumference)) {
+              growthResult.armCircumference = {
+                  percentile: -1,
+                  description: "N/A",
+                  level: "N/A",
+              };
+              break;
+          }
+          
           const percentile = this.getPercentile(
             armCircumference!,
             data.percentiles.values
@@ -1380,9 +1398,9 @@ class GrowthDataService implements IGrowthDataService {
 
       childGrowthData.forEach((data) => {
         if (
-          growthData.inputDate &&
+          updateData.inputDate &&
           data.inputDate &&
-          new Date(growthData.inputDate).getTime() ===
+          new Date(updateData.inputDate).getTime() ===
             new Date(data.inputDate).getTime()
         ) {
           throw new CustomException(

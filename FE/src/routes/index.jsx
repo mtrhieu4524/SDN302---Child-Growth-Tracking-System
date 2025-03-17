@@ -11,22 +11,23 @@ export const routes = {
   developmentMilestones: "/development-milestones",
   verificationSent: "/verification-sent",
   blogDetail: "/blogs/:id",
+  profile: "/profile",
 
-  // Membership pages
-  growthTracker: "/profile/growth-tracker",
-  growthChartMember: "/profile/growth-chart",
+  // Member pages
+  childData: "/profile/child-data",
+  children: "/profile/children",
   consultation: "/member-consultation",
 
-  //Doctor pages
-  doctorConsultaion: "/doctor-consultation",
-  doctorConsultaionHistory: "/doctor-consultation-history",
-  doctorConsultaionChat: "/doctor-consultation-history/chat/:id",
+  // Doctor pages
+  doctorConsultation: "/doctor-consultation",
+  doctorConsultationHistory: "/doctor-consultation-history",
+  doctorConsultationChat: "/doctor-consultation-history/chat/:id",
 
   // Admin pages
   dashboard: "/admin/dashboard",
   userManagement: "/admin/user-management",
   requestManagement: "/admin/request-management",
+  consultationManagement: "/admin/consultation-management",
   premiumList: "/admin/premium-list",
   addPremium: "/admin/add-premium",
-  updatePremium: "/admin/update-premium",
 };

@@ -1,154 +1,197 @@
 import React, { useEffect } from 'react';
-import { Form, Input, Button, InputNumber, Select, Typography, message } from 'antd';
+import { Form, Input, Button, InputNumber, Typography, message } from 'antd';
 import { useNavigate } from 'react-router-dom';
+import { Formik, Field, ErrorMessage } from 'formik';
+import * as Yup from 'yup';
 import AdminLayout from '../../../layouts/AdminLayout';
 import api from '../../../configs/api';
 
 const { Title } = Typography;
 const { TextArea } = Input;
-const { Option } = Select;
+
+// Yup validation schema
+const validationSchema = Yup.object().shape({
+  name: Yup.string()
+    .min(6, 'Name must be at least 6 characters')
+    .max(100, 'Name must be at most 100 characters')
+    .required('Name is required'),
+  description: Yup.string().required('Description is required'),
+  price: Yup.number()
+    .positive('Price must be a positive number')
+    .required('Price is required'),
+  duration: Yup.number()
+    .positive('Duration must be a positive number')
+    .integer('Duration must be an integer')
+    .required('Duration is required'),
+  postLimit: Yup.number()
+    .positive('Post limit must be a positive number')
+    .integer('Post limit must be an integer')
+    .required('Post limit is required'),
+  updateChildDataLimit: Yup.number()
+    .positive('Update child data limit must be a positive number')
+    .integer('Update child data limit must be an integer')
+    .required('Update child data limit is required'),
+});
 
 const AddPremium = () => {
-    const navigate = useNavigate();
-    const [form] = Form.useForm();
+  const navigate = useNavigate();
 
-    useEffect(() => {
-        document.title = "Admin - Add Premium Package";
-    }, []);
+  useEffect(() => {
+    document.title = "Admin - Add Premium Package";
+  }, []);
 
-    const onFinish = async (values) => {
-        try {
-            const formattedData = {
-                name: values.name,
-                description: values.description,
-                price: values.price,
-                unit: "VND",
-                duration: values.duration,
-                postLimit: values.postLimit,
-                updateChildDataLimit: values.updateChildDataLimit
-            };
+  const handleSubmit = async (values, { setSubmitting }) => {
+    try {
+      const formattedData = {
+        name: values.name,
+        description: values.description,
+        price: values.price,
+        unit: "VND",
+        duration: values.duration,
+        postLimit: values.postLimit,
+        updateChildDataLimit: values.updateChildDataLimit,
+      };
 
-            console.log('Data being sent:', formattedData);
+      const response = await api.post('/membership-packages', formattedData);
 
-            const response = await api.post('/membership-packages', formattedData);
+      if (response.status === 201) {
+        message.success('Premium package added successfully!');
+        navigate('/admin/premium-list');
+      }
+    } catch (error) {
+      console.error('Error details:', error.response || error);
 
-            if (response.status === 201) {
-                message.success('Premium package added successfully!');
-                navigate('/admin/premium-list');
-            }
-        } catch (error) {
-            console.error('Error details:', error.response || error);
-            if (error.response?.status === 401) {
-                message.error('Your session has expired. Please login again.');
-                navigate('/login');
-            } else {
-                message.error(error.response?.data?.message || 'Failed to add premium package');
-            }
-        }
-    };
+      if (error.response?.status === 401) {
+        message.error('Your session has expired. Please login again.');
+        navigate('/login');
+      } else if (
+        error.response?.status === 400 &&
+        error.response?.data?.validationErrors
+      ) {
+        // Display each validation error
+        error.response.data.validationErrors.forEach((err) => {
+          message.error(`${err.field}: ${err.error}`);
+        });
+      } else {
+        message.error(error.response?.data?.message || 'Failed to add premium package');
+      }
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
-    return (
-        <AdminLayout>
-            <Title level={2} style={{ color: "#0056A1", marginBottom: "24px" }}>
-                Add New Premium Package
-            </Title>
-            
-            <Form
-                form={form}
-                layout="vertical"
-                onFinish={onFinish}
-                style={{ maxWidth: 600 }}
-            >
-                <Form.Item
-                    name="name"
-                    label="Package Name"
-                    rules={[{ required: true, message: 'Please enter package name!' }]}
+  return (
+    <AdminLayout>
+      <Title level={2} style={{ color: "#0056A1", marginBottom: "24px" }}>
+        Add New Premium Package
+      </Title>
+
+      <Formik
+        initialValues={{
+          name: '',
+          description: '',
+          price: 0,
+          duration: 1,
+          postLimit: 1,
+          updateChildDataLimit: 1,
+        }}
+        validationSchema={validationSchema}
+        onSubmit={handleSubmit}
+      >
+        {({ handleSubmit, isSubmitting }) => (
+          <Form layout="vertical" onFinish={handleSubmit} style={{ maxWidth: 600 }}>
+            <Form.Item label="Package Name" required>
+              <Field name="name" as={Input} placeholder="Enter premium package name" />
+              <ErrorMessage name="name" component="div" className="ant-form-item-explain ant-form-item-explain-error" />
+            </Form.Item>
+
+            <Form.Item label="Description" required>
+              <Field name="description" as={TextArea} rows={4} placeholder="Enter detailed description of premium package" />
+              <ErrorMessage name="description" component="div" className="ant-form-item-explain ant-form-item-explain-error" />
+            </Form.Item>
+
+            <Form.Item label="Price (VND)" required>
+              <Field name="price">
+                {({ field }) => (
+                  <InputNumber
+                    {...field}
+                    style={{ width: '100%' }}
+                    min={0}
+                    step={1000}
+                    formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                    parser={value => value.replace(/\$\s?|(,*)/g, '')}
+                    placeholder="Enter package price"
+                  />
+                )}
+              </Field>
+              <ErrorMessage name="price" component="div" className="ant-form-item-explain ant-form-item-explain-error" />
+            </Form.Item>
+
+            <Form.Item label="Duration (days)" required>
+              <Field name="duration">
+                {({ field }) => (
+                  <InputNumber
+                    {...field}
+                    style={{ width: '100%' }}
+                    min={1}
+                    placeholder="Enter number of days"
+                  />
+                )}
+              </Field>
+              <ErrorMessage name="duration" component="div" className="ant-form-item-explain ant-form-item-explain-error" />
+            </Form.Item>
+
+            <Form.Item label="Post Limit" required>
+              <Field name="postLimit">
+                {({ field }) => (
+                  <InputNumber
+                    {...field}
+                    style={{ width: '100%' }}
+                    min={1}
+                    placeholder="Enter post limit"
+                  />
+                )}
+              </Field>
+              <ErrorMessage name="postLimit" component="div" className="ant-form-item-explain ant-form-item-explain-error" />
+            </Form.Item>
+
+            <Form.Item label="Update Child Data Limit" required>
+              <Field name="updateChildDataLimit">
+                {({ field }) => (
+                  <InputNumber
+                    {...field}
+                    style={{ width: '100%' }}
+                    min={1}
+                    placeholder="Enter update child data limit"
+                  />
+                )}
+              </Field>
+              <ErrorMessage name="updateChildDataLimit" component="div" className="ant-form-item-explain ant-form-item-explain-error" />
+            </Form.Item>
+
+            <Form.Item>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
+                <Button onClick={() => navigate('/admin/premium-list')}>
+                  Cancel
+                </Button>
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  loading={isSubmitting}
+                  style={{
+                    background: "linear-gradient(to right, #0056A1, #0082C8)",
+                    border: "none"
+                  }}
                 >
-                    <Input placeholder="Enter premium package name" />
-                </Form.Item>
-
-                <Form.Item
-                    name="description"
-                    label="Description"
-                    rules={[{ required: true, message: 'Please enter package description!' }]}
-                >
-                    <TextArea
-                        rows={4}
-                        placeholder="Enter detailed description of premium package"
-                    />
-                </Form.Item>
-
-                <Form.Item
-                    name="price"
-                    label="Price (VND)"
-                    rules={[{ required: true, message: 'Please enter package price!' }]}
-                >
-                    <InputNumber
-                        style={{ width: '100%' }}
-                        min={0}
-                        step={1000}
-                        formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-                        parser={value => value.replace(/\$\s?|(,*)/g, '')}
-                        placeholder="Enter package price"
-                    />
-                </Form.Item>
-
-                <Form.Item
-                    name="duration"
-                    label="Duration (days)"
-                    rules={[{ required: true, message: 'Please enter duration!' }]}
-                >
-                    <InputNumber
-                        style={{ width: '100%' }}
-                        min={1}
-                        placeholder="Enter number of days"
-                    />
-                </Form.Item>
-
-                <Form.Item
-                    name="postLimit"
-                    label="Post Limit"
-                    rules={[{ required: true, message: 'Please enter post limit!' }]}
-                >
-                    <InputNumber
-                        style={{ width: '100%' }}
-                        min={1}
-                        placeholder="Enter post limit"
-                    />
-                </Form.Item>
-
-                <Form.Item
-                    name="updateChildDataLimit"
-                    label="Update Child Data Limit"
-                    rules={[{ required: true, message: 'Please enter update child data limit!' }]}
-                >
-                    <InputNumber
-                        style={{ width: '100%' }}
-                        min={1}
-                        placeholder="Enter update child data limit"
-                    />
-                </Form.Item>
-
-                <Form.Item>
-                    <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
-                        <Button onClick={() => navigate('/admin/premium-list')}>
-                            Cancel
-                        </Button>
-                        <Button
-                            type="primary"
-                            htmlType="submit"
-                            style={{
-                                background: "linear-gradient(to right, #0056A1, #0082C8)",
-                                border: "none"
-                            }}
-                        >
-                            Add Package
-                        </Button>
-                    </div>
-                </Form.Item>
-            </Form>
-        </AdminLayout>
-    );
+                  Add Package
+                </Button>
+              </div>
+            </Form.Item>
+          </Form>
+        )}
+      </Formik>
+    </AdminLayout>
+  );
 };
 
 export default AddPremium;

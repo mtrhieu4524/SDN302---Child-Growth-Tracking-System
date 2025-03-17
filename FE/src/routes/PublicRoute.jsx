@@ -2,7 +2,6 @@ import { useContext } from "react";
 import { Navigate } from "react-router-dom";
 import { AuthContext } from "../contexts/AuthContext";
 import { Role } from "../enums/Role";
-import AdminLayout from "../layouts/AdminLayout";
 
 const LoadingSpinner = () => {
   return (

@@ -20,7 +20,7 @@ import { RightOutlined, PlusOutlined, FormOutlined } from "@ant-design/icons";
 const { Title, Text } = Typography;
 const { Option } = Select;
 
-const GrowthTracker = () => {
+const ChildData = () => {
   const [form] = Form.useForm();
   const navigate = useNavigate();
   const [selectedChild, setSelectedChild] = useState(null);
@@ -252,4 +252,4 @@ const GrowthTracker = () => {
   );
 };
 
-export default GrowthTracker;
+export default ChildData;
