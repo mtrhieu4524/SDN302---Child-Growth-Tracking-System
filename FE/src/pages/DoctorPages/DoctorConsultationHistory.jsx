@@ -71,7 +71,7 @@ const DoctorConsultationHistory = () => {
           if (
             !requestIdMap.has(requestId) ||
             new Date(consultation.updatedAt) >
-              new Date(requestIdMap.get(requestId).updatedAt)
+            new Date(requestIdMap.get(requestId).updatedAt)
           ) {
             requestIdMap.set(requestId, consultation);
           }
@@ -290,7 +290,7 @@ const DoctorConsultationHistory = () => {
       {/* Modal for Consultation Details */}
       <Modal
         title={
-          <span style={{ color: "blue", fontSize: "30px", fontWeight: "bold" }}>
+          <span style={{ color: "#0056a1", fontSize: "30px", fontWeight: "bold" }}>
             Consultation Details
           </span>
         }
@@ -363,341 +363,341 @@ const DoctorConsultationHistory = () => {
               {/* Growth Velocity Results */}
               {selectedConsultation.requestDetails.children[0]
                 .growthVelocityResult && (
-                <div style={{ marginTop: 30, marginBottom: 30 }}>
-                  <Title
-                    level={4}
-                    style={{ marginBottom: 20, color: "#0056A1" }}>
-                    Growth Velocity Results
-                  </Title>
+                  <div style={{ marginTop: 30, marginBottom: 30 }}>
+                    <Title
+                      level={4}
+                      style={{ marginBottom: 20, color: "#0056A1" }}>
+                      Growth Velocity Results
+                    </Title>
 
-                  <div
-                    style={{
-                      border: "1px solid #d9d9d9",
-                      borderRadius: 8,
-                      boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-                      overflow: "hidden",
-                    }}>
-                    {selectedConsultation.requestDetails.children[0].growthVelocityResult.map(
-                      (result, index) => (
-                        <div
-                          key={index}
-                          style={{
-                            padding: 20,
-                            borderBottom:
-                              index <
-                              selectedConsultation.requestDetails.children[0]
-                                .growthVelocityResult.length -
-                                1
-                                ? "1px solid #e8e8e8"
-                                : "none",
-                            backgroundColor:
-                              index % 2 === 0 ? "#f9f9f9" : "white",
-                          }}>
-                          <div style={{ marginBottom: 15 }}>
-                            <Title
-                              level={5}
-                              style={{
-                                marginBottom: 8,
-                                fontSize: 18,
-                                backgroundColor: "#0056A1",
-                                color: "white",
-                                padding: "8px 16px",
-                                borderRadius: 4,
-                                display: "inline-block",
-                              }}>
-                              {result.period}
-                            </Title>
-                            <div
-                              style={{
-                                fontSize: 14,
-                                color: "#666",
-                                marginLeft: 5,
-                              }}>
-                              {formatDate(result.startDate)} -{" "}
-                              {formatDate(result.endDate)}
-                            </div>
-                          </div>
-
+                    <div
+                      style={{
+                        border: "1px solid #d9d9d9",
+                        borderRadius: 8,
+                        boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+                        overflow: "hidden",
+                      }}>
+                      {selectedConsultation.requestDetails.children[0].growthVelocityResult.map(
+                        (result, index) => (
                           <div
+                            key={index}
                             style={{
-                              display: "flex",
-                              flexDirection: "row",
-                              gap: 15,
-                              flexWrap: "wrap",
+                              padding: 20,
+                              borderBottom:
+                                index <
+                                  selectedConsultation.requestDetails.children[0]
+                                    .growthVelocityResult.length -
+                                  1
+                                  ? "1px solid #e8e8e8"
+                                  : "none",
+                              backgroundColor:
+                                index % 2 === 0 ? "#f9f9f9" : "white",
                             }}>
-                            {/* Weight Column */}
-                            <div style={{ flex: 1, minWidth: "30%" }}>
-                              <Card
-                                title={
-                                  <div
-                                    style={{
-                                      display: "flex",
-                                      alignItems: "center",
-                                    }}>
-                                    <div
-                                      style={{
-                                        backgroundColor: "#f5a623",
-                                        width: 16,
-                                        height: 16,
-                                        borderRadius: 8,
-                                        marginRight: 8,
-                                      }}></div>
-                                    <span>Weight</span>
-                                  </div>
-                                }
-                                style={{ height: "fit-content" }}
-                                headStyle={{
-                                  backgroundColor: "#fffbf2",
-                                  borderBottom: "1px solid #ffebb7",
+                            <div style={{ marginBottom: 15 }}>
+                              <Title
+                                level={5}
+                                style={{
+                                  marginBottom: 8,
+                                  fontSize: 18,
+                                  backgroundColor: "#0056A1",
+                                  color: "white",
+                                  padding: "8px 16px",
+                                  borderRadius: 4,
+                                  display: "inline-block",
                                 }}>
-                                <div
-                                  style={{
-                                    padding: 10,
-                                    fontSize: 16,
-                                    minHeight: 80,
-                                    display: "flex",
-                                    alignItems: "center",
-                                  }}>
-                                  {result.weight.description ? (
-                                    <div>
-                                      <label>Weight Velocity:</label>
-                                      <div
-                                        style={{
-                                          fontSize: 24,
-                                          fontWeight: "bold",
-                                          marginBottom: 20,
-                                        }}>
-                                        {result.weight?.weightVelocity?.toFixed(
-                                          2
-                                        ) || "N/A"}
-                                      </div>
-                                      <label>Weight Percentile:</label>
-                                      <div
-                                        style={{
-                                          fontSize: 24,
-                                          fontWeight: "bold",
-                                          marginBottom: 5,
-                                        }}>
-                                        {result.weight?.percentile || "N/A"}
-                                      </div>
-                                    </div>
-                                  ) : (
-                                    <Text
-                                      type="secondary"
-                                      style={{ fontSize: 16 }}>
-                                      Insufficient data to determine weight
-                                      percentile.
-                                    </Text>
-                                  )}
-                                </div>
-                              </Card>
+                                {result.period}
+                              </Title>
+                              <div
+                                style={{
+                                  fontSize: 14,
+                                  color: "#666",
+                                  marginLeft: 5,
+                                }}>
+                                {formatDate(result.startDate)} -{" "}
+                                {formatDate(result.endDate)}
+                              </div>
                             </div>
 
-                            {/* Height Column */}
-                            <div style={{ flex: 1, minWidth: "30%" }}>
-                              <Card
-                                title={
-                                  <div
-                                    style={{
-                                      display: "flex",
-                                      alignItems: "center",
-                                    }}>
-                                    <div
-                                      style={{
-                                        backgroundColor: "#4CAF50",
-                                        width: 16,
-                                        height: 16,
-                                        borderRadius: 8,
-                                        marginRight: 8,
-                                      }}></div>
-                                    <span>Height</span>
-                                  </div>
-                                }
-                                style={{ height: "fit-content" }}
-                                headStyle={{
-                                  backgroundColor: "#f2fff3",
-                                  borderBottom: "1px solid #d4edda",
-                                }}>
-                                <div
-                                  style={{
-                                    padding: 10,
-                                    fontSize: 16,
-                                    minHeight: 80,
-                                    display: "flex",
-                                    alignItems: "center",
-                                  }}>
-                                  {result.height.description !==
-                                  "Insufficient data" ? (
-                                    <div>
-                                      <label>Height Velocity:</label>
-                                      <div
-                                        style={{
-                                          fontSize: 24,
-                                          fontWeight: "bold",
-                                          marginBottom: 20,
-                                        }}>
-                                        {result.height?.heightVelocity?.toFixed(
-                                          2
-                                        ) || "N/A"}
-                                      </div>
-                                      <label>Height Percentile:</label>
-                                      <div
-                                        style={{
-                                          fontSize: 24,
-                                          fontWeight: "bold",
-                                          marginBottom: 5,
-                                        }}>
-                                        {result.height?.percentile || "N/A"}
-                                      </div>
-                                    </div>
-                                  ) : (
-                                    <Text
-                                      type="secondary"
-                                      style={{ fontSize: 16 }}>
-                                      Insufficient data to determine height
-                                      percentile.
-                                    </Text>
-                                  )}
-                                </div>
-                              </Card>
-                            </div>
-
-                            {/* Head Circumference Column */}
-                            <div style={{ flex: 1, minWidth: "30%" }}>
-                              <Card
-                                title={
-                                  <div
-                                    style={{
-                                      display: "flex",
-                                      alignItems: "center",
-                                    }}>
-                                    <div
-                                      style={{
-                                        backgroundColor: "#9C27B0",
-                                        width: 16,
-                                        height: 16,
-                                        borderRadius: 8,
-                                        marginRight: 8,
-                                      }}></div>
-                                    <span>Head Circumference</span>
-                                  </div>
-                                }
-                                style={{ height: "fit-content" }}
-                                headStyle={{
-                                  backgroundColor: "#f9f0ff",
-                                  borderBottom: "1px solid #e3c8f0",
-                                }}>
-                                <div
-                                  style={{
-                                    padding: 10,
-                                    fontSize: 16,
-                                    minHeight: 80,
-                                    display: "flex",
-                                    alignItems: "center",
-                                  }}>
-                                  {result.headCircumference &&
-                                  result.headCircumference.description !==
-                                    "Insufficient data" ? (
-                                    <div>
-                                      <label>
-                                        Head Circumference Velocity:
-                                      </label>
-                                      <div
-                                        style={{
-                                          fontSize: 24,
-                                          fontWeight: "bold",
-                                          marginBottom: 20,
-                                        }}>
-                                        {result.headCircumference?.headCircumferenceVelocity?.toFixed(
-                                          2
-                                        ) || "N/A"}
-                                      </div>
-                                      <label>
-                                        Head Circumference Percentile:
-                                      </label>
-                                      <div
-                                        style={{
-                                          fontSize: 24,
-                                          fontWeight: "bold",
-                                          marginBottom: 5,
-                                        }}>
-                                        {result.headCircumference?.percentile ||
-                                          "N/A"}
-                                      </div>
-                                    </div>
-                                  ) : (
-                                    <Text
-                                      type="secondary"
-                                      style={{ fontSize: 16 }}>
-                                      Insufficient data to determine head
-                                      circumference percentile.
-                                    </Text>
-                                  )}
-                                </div>
-                              </Card>
-                            </div>
-                          </div>
-
-                          {/* Percentile Information (if available) */}
-                          {(result.weight.description &&
-                            result.weight.description.includes("percentile")) ||
-                          (result.height.description &&
-                            result.height.description.includes("percentile")) ||
-                          (result.headCircumference &&
-                            result.headCircumference.description &&
-                            result.headCircumference.description.includes(
-                              "percentile"
-                            )) ? (
                             <div
                               style={{
-                                marginTop: 15,
-                                padding: 15,
-                                backgroundColor: "#f0f7ff",
-                                borderRadius: 8,
-                                border: "1px solid #d0e3ff",
+                                display: "flex",
+                                flexDirection: "row",
+                                gap: 15,
+                                flexWrap: "wrap",
                               }}>
-                              <Text strong style={{ color: "#0056A1" }}>
-                                Percentile Information:
-                              </Text>
-                              {result.weight.description &&
-                                result.weight.description.includes(
-                                  "percentile"
-                                ) && (
-                                  <div style={{ marginTop: 8 }}>
-                                    <Text style={{ display: "block" }}>
-                                      {result.weight.description}
-                                    </Text>
+                              {/* Weight Column */}
+                              <div style={{ flex: 1, minWidth: "30%" }}>
+                                <Card
+                                  title={
+                                    <div
+                                      style={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                      }}>
+                                      <div
+                                        style={{
+                                          backgroundColor: "#f5a623",
+                                          width: 16,
+                                          height: 16,
+                                          borderRadius: 8,
+                                          marginRight: 8,
+                                        }}></div>
+                                      <span>Weight</span>
+                                    </div>
+                                  }
+                                  style={{ height: "fit-content" }}
+                                  headStyle={{
+                                    backgroundColor: "#fffbf2",
+                                    borderBottom: "1px solid #ffebb7",
+                                  }}>
+                                  <div
+                                    style={{
+                                      padding: 10,
+                                      fontSize: 16,
+                                      minHeight: 80,
+                                      display: "flex",
+                                      alignItems: "center",
+                                    }}>
+                                    {result.weight.description ? (
+                                      <div>
+                                        <label>Weight Velocity:</label>
+                                        <div
+                                          style={{
+                                            fontSize: 24,
+                                            fontWeight: "bold",
+                                            marginBottom: 20,
+                                          }}>
+                                          {result.weight?.weightVelocity?.toFixed(
+                                            2
+                                          ) || "N/A"}
+                                        </div>
+                                        <label>Weight Percentile:</label>
+                                        <div
+                                          style={{
+                                            fontSize: 24,
+                                            fontWeight: "bold",
+                                            marginBottom: 5,
+                                          }}>
+                                          {result.weight?.percentile || "N/A"}
+                                        </div>
+                                      </div>
+                                    ) : (
+                                      <Text
+                                        type="secondary"
+                                        style={{ fontSize: 16 }}>
+                                        Insufficient data to determine weight
+                                        percentile.
+                                      </Text>
+                                    )}
                                   </div>
-                                )}
-                              {result.height.description &&
-                                result.height.description.includes(
-                                  "percentile"
-                                ) && (
-                                  <div style={{ marginTop: 8 }}>
-                                    <Text style={{ display: "block" }}>
-                                      {result.height.description}
-                                    </Text>
+                                </Card>
+                              </div>
+
+                              {/* Height Column */}
+                              <div style={{ flex: 1, minWidth: "30%" }}>
+                                <Card
+                                  title={
+                                    <div
+                                      style={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                      }}>
+                                      <div
+                                        style={{
+                                          backgroundColor: "#4CAF50",
+                                          width: 16,
+                                          height: 16,
+                                          borderRadius: 8,
+                                          marginRight: 8,
+                                        }}></div>
+                                      <span>Height</span>
+                                    </div>
+                                  }
+                                  style={{ height: "fit-content" }}
+                                  headStyle={{
+                                    backgroundColor: "#f2fff3",
+                                    borderBottom: "1px solid #d4edda",
+                                  }}>
+                                  <div
+                                    style={{
+                                      padding: 10,
+                                      fontSize: 16,
+                                      minHeight: 80,
+                                      display: "flex",
+                                      alignItems: "center",
+                                    }}>
+                                    {result.height.description !==
+                                      "Insufficient data" ? (
+                                      <div>
+                                        <label>Height Velocity:</label>
+                                        <div
+                                          style={{
+                                            fontSize: 24,
+                                            fontWeight: "bold",
+                                            marginBottom: 20,
+                                          }}>
+                                          {result.height?.heightVelocity?.toFixed(
+                                            2
+                                          ) || "N/A"}
+                                        </div>
+                                        <label>Height Percentile:</label>
+                                        <div
+                                          style={{
+                                            fontSize: 24,
+                                            fontWeight: "bold",
+                                            marginBottom: 5,
+                                          }}>
+                                          {result.height?.percentile || "N/A"}
+                                        </div>
+                                      </div>
+                                    ) : (
+                                      <Text
+                                        type="secondary"
+                                        style={{ fontSize: 16 }}>
+                                        Insufficient data to determine height
+                                        percentile.
+                                      </Text>
+                                    )}
                                   </div>
-                                )}
-                              {result.headCircumference &&
+                                </Card>
+                              </div>
+
+                              {/* Head Circumference Column */}
+                              <div style={{ flex: 1, minWidth: "30%" }}>
+                                <Card
+                                  title={
+                                    <div
+                                      style={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                      }}>
+                                      <div
+                                        style={{
+                                          backgroundColor: "#9C27B0",
+                                          width: 16,
+                                          height: 16,
+                                          borderRadius: 8,
+                                          marginRight: 8,
+                                        }}></div>
+                                      <span>Head Circumference</span>
+                                    </div>
+                                  }
+                                  style={{ height: "fit-content" }}
+                                  headStyle={{
+                                    backgroundColor: "#f9f0ff",
+                                    borderBottom: "1px solid #e3c8f0",
+                                  }}>
+                                  <div
+                                    style={{
+                                      padding: 10,
+                                      fontSize: 16,
+                                      minHeight: 80,
+                                      display: "flex",
+                                      alignItems: "center",
+                                    }}>
+                                    {result.headCircumference &&
+                                      result.headCircumference.description !==
+                                      "Insufficient data" ? (
+                                      <div>
+                                        <label>
+                                          Head Circumference Velocity:
+                                        </label>
+                                        <div
+                                          style={{
+                                            fontSize: 24,
+                                            fontWeight: "bold",
+                                            marginBottom: 20,
+                                          }}>
+                                          {result.headCircumference?.headCircumferenceVelocity?.toFixed(
+                                            2
+                                          ) || "N/A"}
+                                        </div>
+                                        <label>
+                                          Head Circumference Percentile:
+                                        </label>
+                                        <div
+                                          style={{
+                                            fontSize: 24,
+                                            fontWeight: "bold",
+                                            marginBottom: 5,
+                                          }}>
+                                          {result.headCircumference?.percentile ||
+                                            "N/A"}
+                                        </div>
+                                      </div>
+                                    ) : (
+                                      <Text
+                                        type="secondary"
+                                        style={{ fontSize: 16 }}>
+                                        Insufficient data to determine head
+                                        circumference percentile.
+                                      </Text>
+                                    )}
+                                  </div>
+                                </Card>
+                              </div>
+                            </div>
+
+                            {/* Percentile Information (if available) */}
+                            {(result.weight.description &&
+                              result.weight.description.includes("percentile")) ||
+                              (result.height.description &&
+                                result.height.description.includes("percentile")) ||
+                              (result.headCircumference &&
                                 result.headCircumference.description &&
                                 result.headCircumference.description.includes(
                                   "percentile"
-                                ) && (
-                                  <div style={{ marginTop: 8 }}>
-                                    <Text style={{ display: "block" }}>
-                                      {result.headCircumference.description}
-                                    </Text>
-                                  </div>
-                                )}
-                            </div>
-                          ) : null}
-                        </div>
-                      )
-                    )}
+                                )) ? (
+                              <div
+                                style={{
+                                  marginTop: 15,
+                                  padding: 15,
+                                  backgroundColor: "#f0f7ff",
+                                  borderRadius: 8,
+                                  border: "1px solid #d0e3ff",
+                                }}>
+                                <Text strong style={{ color: "#0056A1" }}>
+                                  Percentile Information:
+                                </Text>
+                                {result.weight.description &&
+                                  result.weight.description.includes(
+                                    "percentile"
+                                  ) && (
+                                    <div style={{ marginTop: 8 }}>
+                                      <Text style={{ display: "block" }}>
+                                        {result.weight.description}
+                                      </Text>
+                                    </div>
+                                  )}
+                                {result.height.description &&
+                                  result.height.description.includes(
+                                    "percentile"
+                                  ) && (
+                                    <div style={{ marginTop: 8 }}>
+                                      <Text style={{ display: "block" }}>
+                                        {result.height.description}
+                                      </Text>
+                                    </div>
+                                  )}
+                                {result.headCircumference &&
+                                  result.headCircumference.description &&
+                                  result.headCircumference.description.includes(
+                                    "percentile"
+                                  ) && (
+                                    <div style={{ marginTop: 8 }}>
+                                      <Text style={{ display: "block" }}>
+                                        {result.headCircumference.description}
+                                      </Text>
+                                    </div>
+                                  )}
+                              </div>
+                            ) : null}
+                          </div>
+                        )
+                      )}
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
             </div>
           )}
       </Modal>

@@ -372,7 +372,7 @@ const DoctorConsultation = () => {
 
       <Modal
         title={
-          <span style={{ color: "blue", fontSize: "30px", fontWeight: "bold" }}>
+          <span style={{ color: "#0056a1", fontSize: "30px", fontWeight: "bold" }}>
             Consultation Request Details
           </span>
         }
@@ -449,8 +449,8 @@ const DoctorConsultation = () => {
                             padding: 20,
                             borderBottom:
                               index <
-                              selectedConsultation.children[0]
-                                .growthVelocityResult.length -
+                                selectedConsultation.children[0]
+                                  .growthVelocityResult.length -
                                 1
                                 ? "1px solid #e8e8e8"
                                 : "none",
@@ -591,7 +591,7 @@ const DoctorConsultation = () => {
                                     alignItems: "center",
                                   }}>
                                   {result.height.description !==
-                                  "Insufficient data" ? (
+                                    "Insufficient data" ? (
                                     <div>
                                       <label>Height Velocity:</label>
                                       <div
@@ -660,7 +660,7 @@ const DoctorConsultation = () => {
                                     alignItems: "center",
                                   }}>
                                   {result.headCircumference &&
-                                  result.headCircumference.description !==
+                                    result.headCircumference.description !==
                                     "Insufficient data" ? (
                                     <div>
                                       <label>
@@ -705,13 +705,13 @@ const DoctorConsultation = () => {
                           {/* Percentile Information (if available) */}
                           {(result.weight.description &&
                             result.weight.description.includes("percentile")) ||
-                          (result.height.description &&
-                            result.height.description.includes("percentile")) ||
-                          (result.headCircumference &&
-                            result.headCircumference.description &&
-                            result.headCircumference.description.includes(
-                              "percentile"
-                            )) ? (
+                            (result.height.description &&
+                              result.height.description.includes("percentile")) ||
+                            (result.headCircumference &&
+                              result.headCircumference.description &&
+                              result.headCircumference.description.includes(
+                                "percentile"
+                              )) ? (
                             <div
                               style={{
                                 marginTop: 15,

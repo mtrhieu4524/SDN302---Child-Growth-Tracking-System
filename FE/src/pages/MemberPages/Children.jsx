@@ -63,26 +63,26 @@ const GrowthChartMember = () => {
     }
   };
 
-  const updateChartData = () => {
-    // Sử dụng hardcode data cho biểu đồ
-    const growthData = [
-      { date: "2023-01-01", weight: 3.5, height: 50, bmi: 14.0 },
-      { date: "2023-06-01", weight: 6.0, height: 60, bmi: 16.67 },
-      { date: "2024-01-01", weight: 9.0, height: 70, bmi: 18.37 },
-      { date: "2024-06-01", weight: 11.0, height: 80, bmi: 17.19 },
-      { date: "2025-01-01", weight: 13.0, height: 90, bmi: 16.05 },
-    ],
-  },
-  {
-    id: 2, name: "Liam Smith", data: [
-      { date: "2023-01-01", weight: 4.0, height: 52, bmi: 14.8 },
-      { date: "2023-06-01", weight: 7.2, height: 62, bmi: 18.76 },
-      { date: "2024-01-01", weight: 10.5, height: 72, bmi: 20.21 },
-      { date: "2024-06-01", weight: 12.8, height: 82, bmi: 19.06 },
-      { date: "2025-01-01", weight: 15.0, height: 92, bmi: 17.72 },
-    ],
-  },
-];
+  // const updateChartData = () => {
+  //   // Sử dụng hardcode data cho biểu đồ
+  //   const growthData = [
+  //     { date: "2023-01-01", weight: 3.5, height: 50, bmi: 14.0 },
+  //     { date: "2023-06-01", weight: 6.0, height: 60, bmi: 16.67 },
+  //     { date: "2024-01-01", weight: 9.0, height: 70, bmi: 18.37 },
+  //     { date: "2024-06-01", weight: 11.0, height: 80, bmi: 17.19 },
+  //     { date: "2025-01-01", weight: 13.0, height: 90, bmi: 16.05 },
+  //   ],
+  // },
+  // {
+  //   id: 2, name: "Liam Smith", data: [
+  //     { date: "2023-01-01", weight: 4.0, height: 52, bmi: 14.8 },
+  //     { date: "2023-06-01", weight: 7.2, height: 62, bmi: 18.76 },
+  //     { date: "2024-01-01", weight: 10.5, height: 72, bmi: 20.21 },
+  //     { date: "2024-06-01", weight: 12.8, height: 82, bmi: 19.06 },
+  //     { date: "2025-01-01", weight: 15.0, height: 92, bmi: 17.72 },
+  //   ],
+  // },
+};
 
 const Children = () => {
   const navigate = useNavigate();

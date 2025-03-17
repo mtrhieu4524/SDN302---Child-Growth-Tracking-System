@@ -27,9 +27,11 @@ import PublicRoute from "./PublicRoute";
 import PaymentDetails from "../pages/PaymentDetails";
 import ConsultationManagement from "../pages/AdminPages/ConsultationManagement";
 import DoctorConsultationHistory from "../pages/DoctorPages/DoctorConsultationHistory";
+import ConsultationHistory from "../pages/MemberPages/ConsultationHistory";
 import ChildList from "../pages/MemberPages/ChildList";
 import { Navigate } from "react-router-dom";
 import DoctorConsultationChat from "../pages/DoctorPages/DoctorConsultationChat";
+import ConsultationChat from "../pages/MemberPages/ConsultationChat";
 import Profile from "../pages/Profile";
 
 export default function AppRoute() {
@@ -56,7 +58,7 @@ export default function AppRoute() {
       <Route path={routes.paymentDetails} element={<PaymentDetails />} />
       <Route path={routes.growthChart} element={<GrowthChart />} />
       <Route path={routes.blogDetail} element={<BlogDetailed />} />
-      
+
       {/* Authenticated Routes */}
       <Route
         path="/profile"
@@ -83,6 +85,16 @@ export default function AppRoute() {
       <Route
         path={routes.consultation}
         element={<PrivateRoute requiredRole={Role.MEMBER} element={<Consultation />} />}
+      />
+
+      <Route
+        path={routes.consultationChat}
+        element={<PrivateRoute requiredRole={Role.MEMBER} element={<ConsultationChat />} />}
+      />
+
+      <Route
+        path={routes.consultationHistory}
+        element={<PrivateRoute requiredRole={Role.MEMBER} element={<ConsultationHistory />} />}
       />
 
       {/* Doctor Routes */}

@@ -17,6 +17,7 @@ import { AuthContext } from "../../contexts/AuthContext";
 import api from "../../configs/api";
 import { useParams } from "react-router-dom";
 import { UploadOutlined } from "@ant-design/icons";
+import { useNavigate } from "react-router-dom";
 
 const { Title, Text } = Typography;
 const { TextArea } = Input;
@@ -160,23 +161,42 @@ const DoctorConsultationChat = () => {
       <Spin size="large" />
     </div>
   );
-
+  const navigate = useNavigate();
   return (
     <div style={{ minHeight: "100vh" }}>
       <HeaderComponent />
-      <div style={{ padding: "80px 20px", background: "#f0f2f5" }}>
+      <div style={{ padding: "80px 300px", background: "#f0f2f5" }}>
         <Card
           title={
-            <Title level={2} style={{ color: "#0056A1", marginBottom: 0 }}>
-              Consultation Message
-            </Title>
+            <div style={{ display: "flex", justifyContent: "center", alignItems: "center", position: "relative" }}>
+              <span
+                onClick={() => navigate("/doctor-consultation-history")}
+                style={{
+                  position: "absolute",
+                  left: 0,
+                  cursor: "pointer",
+                  color: "#0056A1",
+                  fontSize: 16,
+                  display: "flex",
+                  alignItems: "center",
+                  marginTop: "5px",
+                }}
+              >
+                {"<"} Back to consultation history
+              </span>
+
+              <Title level={2} style={{ color: "#0056A1", marginTop: "20px", marginBottom: "20px" }}>
+                Consultation Message
+              </Title>
+            </div>
           }
           style={{
             width: "100%",
             margin: "0 auto",
             borderRadius: 8,
             boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-          }}>
+          }}
+        >
           {fetchLoading ? (
             renderLoading()
           ) : (
