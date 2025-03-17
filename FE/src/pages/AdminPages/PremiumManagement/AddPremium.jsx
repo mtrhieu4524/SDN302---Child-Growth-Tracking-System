@@ -84,7 +84,7 @@ const AddPremium = () => {
 
   return (
     <AdminLayout>
-      <Title level={2} style={{ color: "#0056A1", marginBottom: "24px" }}>
+      <Title level={2} style={{ color: "#EF6351", marginBottom: "24px" }}>
         Add New Premium Package
       </Title>
 
@@ -103,7 +103,7 @@ const AddPremium = () => {
           <Form
             layout="vertical"
             onFinish={handleSubmit}
-            style={{ maxWidth: 600 }}>
+            >
             <Form.Item label="Package Name" required>
               <Field
                 name="name"
@@ -233,9 +233,10 @@ const AddPremium = () => {
                   htmlType="submit"
                   loading={isSubmitting}
                   style={{
-                    background: "linear-gradient(to right, #0056A1, #0082C8)",
-                    border: "none",
-                  }}>
+                    background: "#EF6351",
+                    border: "none"
+                  }}
+                >
                   Add Package
                 </Button>
               </div>

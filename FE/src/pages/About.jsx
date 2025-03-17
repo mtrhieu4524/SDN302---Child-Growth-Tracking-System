@@ -44,7 +44,7 @@ const About = () => {
             <Col xs={24} md={8}>
               <Card
                 bordered={false}
-                style={{ background: "#0082C8", color: "white" }}>
+                style={{ background: "#EF6351", color: "white" }}>
                 <Title level={4} style={{ color: "white" }}>
                   Monitor Growth Milestones
                 </Title>
@@ -57,7 +57,7 @@ const About = () => {
             <Col xs={24} md={8}>
               <Card
                 bordered={false}
-                style={{ background: "#0056A1", color: "white" }}>
+                style={{ background: "#EF6351", color: "white" }}>
                 <Title level={4} style={{ color: "white" }}>
                   Personalized Insights
                 </Title>
@@ -70,7 +70,7 @@ const About = () => {
             <Col xs={24} md={8}>
               <Card
                 bordered={false}
-                style={{ background: "#0082C8", color: "white" }}>
+                style={{ background: "#EF6351", color: "white" }}>
                 <Title level={4} style={{ color: "white" }}>
                   Stay Informed
                 </Title>
@@ -84,7 +84,7 @@ const About = () => {
 
           <Divider />
 
-          <Title level={3} style={{ color: "#0056A1" }}>
+          <Title level={3} style={{ color: "#EF6351" }}>
             How It Works
           </Title>
           <Paragraph>
@@ -104,7 +104,7 @@ const About = () => {
 
           <Divider />
 
-          <Title level={3} style={{ color: "#0056A1" }}>
+          <Title level={3} style={{ color: "#EF6351" }}>
             Why It Matters
           </Title>
           <Paragraph>
@@ -123,7 +123,7 @@ const About = () => {
 
           <Divider />
 
-          <Title level={3} style={{ color: "#0056A1" }}>
+          <Title level={3} style={{ color: "#EF6351" }}>
             Privacy and Security
           </Title>
           <Paragraph>
@@ -137,7 +137,7 @@ const About = () => {
 
           <Divider />
 
-          <Title level={3} style={{ color: "#0056A1" }}>
+          <Title level={3} style={{ color: "#EF6351" }}>
             Meet Our Team
           </Title>
           <Row gutter={24}>
@@ -169,7 +169,7 @@ const About = () => {
 
           <Divider />
 
-          <Title level={3} style={{ color: "#0056A1" }}>
+          <Title level={3} style={{ color: "#EF6351" }}>
             Helpful Resources
           </Title>
           <ul style={{ fontSize: "16px", color: "#333" }}>
