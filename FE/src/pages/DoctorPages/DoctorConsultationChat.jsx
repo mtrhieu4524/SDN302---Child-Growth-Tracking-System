@@ -7,8 +7,7 @@ import {
   message,
   Spin,
   Input,
-  Form,
-  Modal,
+  Pagination,
 } from "antd";
 import HeaderComponent from "../../components/Header";
 import FooterComponent from "../../components/Footer";
@@ -32,7 +31,6 @@ const DoctorConsultationChat = () => {
 
   useEffect(() => {
     document.title = "Child Growth Tracker - Consultation Chat";
-
     if (user && user._id && id) {
       fetchMessages();
     }
@@ -81,12 +79,28 @@ const DoctorConsultationChat = () => {
 
     try {
       setLoading(true);
-      await api.post(`/consultation-messages/consultations/${id}`, {
-        doctorId: user._id,
-        message: newMessage,
+
+      // Create a FormData object to handle multipart/form-data
+      const formData = new FormData();
+      formData.append("consultationId", id); // From useParams()
+      formData.append("message", newMessage);
+
+      // If you have file attachments to send, you would append them like this:
+      // if (files && files.length > 0) {
+      //   files.forEach((file) => {
+      //     formData.append("messageAttachment", file);
+      //   });
+      // }
+
+      // Make the API request with the correct headers for multipart/form-data
+      await api.post(`/consultation-messages/consultations/${id}`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
       });
+
       setNewMessage("");
-      fetchMessages(); // Refresh messages after sending
+      fetchMessages();
     } catch (error) {
       console.error("Error sending message:", error);
       message.error("Failed to send message");
@@ -118,20 +132,9 @@ const DoctorConsultationChat = () => {
       <div style={{ padding: "80px 20px", background: "#f0f2f5" }}>
         <Card
           title={
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                marginBottom: "20px",
-              }}>
-              <div>
-                <Title level={2} style={{ color: "#0056A1", marginBottom: 0 }}>
-                  Consultation Chat
-                </Title>
-                <Text type="secondary">Chat with the parent</Text>
-              </div>
-            </div>
+            <Title level={2} style={{ color: "#0056A1", marginBottom: 0 }}>
+              Consultation Message
+            </Title>
           }
           style={{
             maxWidth: 900,
@@ -144,29 +147,42 @@ const DoctorConsultationChat = () => {
           ) : (
             <>
               <List
-                itemLayout="vertical"
                 dataSource={messages}
                 locale={{ emptyText: "No messages found" }}
-                renderItem={(item) => (
-                  <Card
+                renderItem={(item, index) => (
+                  <div
                     style={{
-                      marginBottom: 15,
-                      borderRadius: 8,
+                      borderBottom: "1px solid #e8e8e8",
                       padding: "15px",
-                      background: "#ffffff",
-                      transition: "all 0.3s",
-                      border: "1px solid #e8e8e8",
-                    }}
-                    hoverable>
-                    <div style={{ padding: "10px 0" }}>
-                      <Text strong>
-                        {item.sender === user._id ? "You" : "Parent"}:
-                      </Text>{" "}
-                      {item.message}
-                      <br />
-                      <Text type="secondary">{formatDate(item.createdAt)}</Text>
+                      background: index % 2 === 0 ? "#fafafa" : "#fff",
+                    }}>
+                    {/* Người gửi */}
+                    <div style={{ display: "flex", alignItems: "center" }}>
+                      <Text strong style={{ width: 100 }}>
+                        {item.sender === user._id ? "You" : "Parent"}
+                      </Text>
+                      <Text type="secondary" style={{ fontSize: "12px" }}>
+                        {formatDate(item.createdAt)}
+                      </Text>
                     </div>
-                  </Card>
+                    {/* Nội dung tin nhắn */}
+                    <div
+                      style={{
+                        marginLeft: 100,
+                        marginTop: 5,
+                        maxWidth: "100%",
+                        overflow: "hidden",
+                        wordBreak: "break-word",
+                      }}>
+                      <div
+                        style={{
+                          maxWidth: "100%",
+                        }}
+                        dangerouslySetInnerHTML={{
+                          __html: item.message,
+                        }}></div>
+                    </div>
+                  </div>
                 )}
               />
               {totalMessages > pageSize && (
@@ -177,29 +193,26 @@ const DoctorConsultationChat = () => {
                     total={totalMessages}
                     onChange={handlePageChange}
                     showSizeChanger={false}
-                    style={{ marginBottom: "20px" }}
                   />
                 </div>
               )}
-              <Form style={{ marginTop: 20 }} onFinish={handleSendMessage}>
-                <Form.Item>
-                  <TextArea
-                    value={newMessage}
-                    onChange={(e) => setNewMessage(e.target.value)}
-                    placeholder="Type your message here..."
-                    autoSize={{ minRows: 3, maxRows: 6 }}
-                  />
-                </Form.Item>
-                <Form.Item>
-                  <Button
-                    type="primary"
-                    htmlType="submit"
-                    loading={loading}
-                    style={{ width: "100%" }}>
-                    Send
-                  </Button>
-                </Form.Item>
-              </Form>
+              {/* Form gửi tin nhắn */}
+              <div style={{ marginTop: 20 }}>
+                <TextArea
+                  value={newMessage}
+                  onChange={(e) => setNewMessage(e.target.value)}
+                  placeholder="Type your message here..."
+                  autoSize={{ minRows: 3, maxRows: 6 }}
+                  style={{ marginBottom: 10 }}
+                />
+                <Button
+                  type="primary"
+                  onClick={handleSendMessage}
+                  loading={loading}
+                  style={{ width: "100%" }}>
+                  Send
+                </Button>
+              </div>
             </>
           )}
         </Card>
