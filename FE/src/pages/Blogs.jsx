@@ -194,7 +194,7 @@ const Blogs = () => {
                 <Col xs={24} md={12}>
                   <div style={{ padding: "24px" }}>
                     <Tag
-                      color="#EF6351"
+                      color="#0082C8"
                       style={{ marginBottom: "12px", fontWeight: "500" }}
                     >
                       Featured
@@ -226,16 +226,10 @@ const Blogs = () => {
                       }}
                     >
                       <Avatar
-                        src={featuredPost.user?.avatar}
-                        icon={
-                          featuredPost.user?.avatar ? (
-                            featuredPost.user?.avatar
-                          ) : (
-                            <UserOutlined />
-                          )
-                        }
-                        size={40}
-                      />
+                          src={featuredPost.user?.avatar || undefined}
+                          icon={!featuredPost.user?.avatar && <UserOutlined />}
+                          size={40}
+                        />
                       <div style={{ marginLeft: "12px" }}>
                         <Text style={{ fontWeight: "600", color: "#00274E" }}>
                           {featuredPost.user?.name || "Anonymous"}
@@ -258,8 +252,8 @@ const Blogs = () => {
                       icon={<RightOutlined />}
                       size="large"
                       style={{
-                        backgroundColor: "#EF6351",
-                        borderColor: "#EF6351",
+                        backgroundColor: "#0082C8",
+                        borderColor: "#0082C8",
                         borderRadius: "6px",
                         padding: "0 24px",
                         height: "48px",
@@ -288,7 +282,7 @@ const Blogs = () => {
             </Title>
             <hr
               style={{
-                border: "2px solid #EF6351",
+                border: "2px solid #0082C8",
                 width: "80px",
                 margin: "0 0 32px 0",
               }}
@@ -403,7 +397,7 @@ const Blogs = () => {
                         href={`/blogs/${post._id}`}
                         icon={<RightOutlined />}
                         style={{
-                          color: "#EF6351",
+                          color: "#0082C8",
                           fontWeight: "600",
                           padding: 0,
                           justifyContent: "flex-start",
@@ -440,7 +434,7 @@ const Blogs = () => {
                 itemRender={(current, type, originalElement) => {
                   if (type === "page") {
                     return (
-                      <span style={{ color: "#EF6351", fontWeight: "bold" }}>
+                      <span style={{ color: "#0082C8", fontWeight: "bold" }}>
                         {current}
                       </span>
                     );

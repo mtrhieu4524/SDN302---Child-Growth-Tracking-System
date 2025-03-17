@@ -194,7 +194,7 @@ const PremiumList = () => {
           alignItems: "center",
           marginBottom: "24px",
         }}>
-        <Title level={2} style={{ color: "#EF6351", margin: 0 }}>
+        <Title level={2} style={{ color: "#0082C8", margin: 0 }}>
           Premium Package Management
         </Title>
         <Button
@@ -202,7 +202,7 @@ const PremiumList = () => {
           icon={<PlusOutlined />}
           onClick={() => navigate("/admin/add-premium")}
           style={{
-            background: "#EF6351",
+            background: "#0082C8",
             border: "none",
           }}>
           Add New Package

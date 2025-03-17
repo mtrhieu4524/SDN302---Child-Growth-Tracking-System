@@ -177,7 +177,7 @@ const HeaderComponent = () => {
     <div>
       <div
         style={{
-          background: "#EF6351",
+          background: "linear-gradient(to right, #0082C8, #0056A1)",
           color: "white",
           textAlign: "center",
           padding: "8px",
@@ -216,7 +216,7 @@ const HeaderComponent = () => {
                 marginTop: "25px",
                 marginLeft: "30px",
                 marginRight: "25px",
-                color: "#EF6351"
+                color: "#0082C8"
               }}
             >
               CHILD GROWTH TRACKER
@@ -248,7 +248,7 @@ const HeaderComponent = () => {
             <Dropdown menu={{ items: dropdownItems }} placement="bottomRight">
               <a
                 style={{
-                  color: "#EF6351",
+                  color: "#0082C8",
                   fontWeight: "500",
                   display: "flex",
                   alignItems: "center",
@@ -264,13 +264,13 @@ const HeaderComponent = () => {
             </Dropdown>
           ) : (
             <>
-              <a href="/login" style={{ color: "#EF6351", fontWeight: "500" }}>
+              <a href="/login" style={{ color: "#1890ff", fontWeight: "500" }}>
                 Sign in
               </a>
               <Button
                 type="primary"
                 href="/register"
-                style={{ background: "#EF6351", borderColor: "#EF6351" }}
+                style={{ background: "#0082C8", borderColor: "#0082C8" }}
               >
                 Create account
               </Button>

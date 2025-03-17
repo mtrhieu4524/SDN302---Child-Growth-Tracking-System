@@ -95,12 +95,12 @@ const Register = () => {
           }}
         >
           <div style={{ textAlign: "center", marginBottom: "30px" }}>
-            <Title level={2} style={{ color: "#EF6351", marginBottom: "8px" }}>
+            <Title level={2} style={{ color: "#0082C8", marginBottom: "8px" }}>
               Sign up
             </Title>
             <Text type="secondary">
               Already have an account?{" "}
-              <Link to="/login" style={{ color: "#EF6351" }}>
+              <Link to="/login" style={{ color: "#0082C8" }}>
                 Sign in
               </Link>
             </Text>
@@ -183,7 +183,7 @@ const Register = () => {
                 style={{
                   width: "100%",
                   height: "40px",
-                  background: "#EF6351",
+                  background: "#0082C8",
                   border: "none",
                 }}
               >

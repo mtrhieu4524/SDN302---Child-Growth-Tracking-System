@@ -103,7 +103,7 @@ const AdminLayout = ({ children }) => {
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              background: "#EF6351",
+              background: "#0082C8",
               position: "sticky",
               top: 0,
               zIndex: 1,

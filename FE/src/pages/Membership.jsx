@@ -87,7 +87,7 @@ const Membership = () => {
       {/* Membership Header */}
       <div
         style={{
-          background: "#EF6351",
+          background: "#0082C8",
           color: "white",
           textAlign: "center",
           padding: "30px 20px",
@@ -131,7 +131,7 @@ const Membership = () => {
                       height: "100%",
                     }}
                     headStyle={{
-                      backgroundColor: "#EF6351",
+                      backgroundColor: "#0082C8",
                       color: "white",
                       fontWeight: "bold",
                     }}
@@ -148,7 +148,7 @@ const Membership = () => {
                       <Paragraph>{pkg.description}</Paragraph>
                       <Title
                         level={4}
-                        style={{ color: "#EF6351", marginTop: "10px" }}
+                        style={{ color: "#0082C8", marginTop: "10px" }}
                       >
                         {formatPrice(pkg.price)}
                         <span style={{ fontSize: "16px", color: "#666" }}>
@@ -160,15 +160,15 @@ const Membership = () => {
                         </span>
                       </Title>
                       <Paragraph>
-                        <CheckCircleOutlined style={{ color: "#EF6351" }} />{" "}
+                        <CheckCircleOutlined style={{ color: "#0082C8" }} />{" "}
                         Duration: {pkg.duration.value} {pkg.duration.unit}
                       </Paragraph>
                       <Paragraph>
-                        <CheckCircleOutlined style={{ color: "#EF6351" }} />{" "}
+                        <CheckCircleOutlined style={{ color: "#0082C8" }} />{" "}
                         Post Limit: {pkg.postLimit}
                       </Paragraph>
                       <Paragraph>
-                        <CheckCircleOutlined style={{ color: "#EF6351" }} />{" "}
+                        <CheckCircleOutlined style={{ color: "#0082C8" }} />{" "}
                         Update Child Data: {pkg.updateChildDataLimit} times
                       </Paragraph>
                     </div>
@@ -176,8 +176,8 @@ const Membership = () => {
                     <Button
                       type="primary"
                       style={{
-                        background: "#EF6351",
-                        borderColor: "#EF6351",
+                        background: "#0082C8",
+                        borderColor: "#0082C8",
                         width: "100%",
                         marginTop: "15px",
                       }}

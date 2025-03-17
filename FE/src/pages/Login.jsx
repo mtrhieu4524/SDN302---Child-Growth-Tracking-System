@@ -70,12 +70,12 @@ const Login = () => {
             borderRadius: "8px",
           }}>
           <div style={{ textAlign: "center", marginBottom: "30px" }}>
-            <Title level={2} style={{ color: "#EF6351", marginBottom: "8px" }}>
+            <Title level={2} style={{ color: "#0082C8", marginBottom: "8px" }}>
               Sign in
             </Title>
             <Text type="secondary">
               Do not have an account?{" "}
-              <Link to="/register" style={{ color: "#EF6351" }}>
+              <Link to="/register" style={{ color: "#0082C8" }}>
                 Sign up
               </Link>
             </Text>
@@ -116,7 +116,7 @@ const Login = () => {
                 style={{
                   width: "100%",
                   height: "40px",
-                  background: "#EF6351",
+                  background: "#0082C8",
                   border: "none",
                 }}>
                 {formik.isSubmitting ? "Signing in..." : "Sign in"}

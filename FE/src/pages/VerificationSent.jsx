@@ -31,7 +31,7 @@ const VerificationSent = () => {
             textAlign: "center",
           }}
         >
-          <Title level={2} style={{ color: "#EF6351", marginBottom: "16px" }}>
+          <Title level={2} style={{ color: "#0082C8", marginBottom: "16px" }}>
             Verification Email Sent
           </Title>
           <Text type="secondary">
@@ -44,7 +44,7 @@ const VerificationSent = () => {
               marginTop: "24px",
               width: "100%",
               height: "40px",
-              background: "#EF6351",
+              background: "#0082C8",
               border: "none",
             }}
             onClick={() => navigate("/login")}

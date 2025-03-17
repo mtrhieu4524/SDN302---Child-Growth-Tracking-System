@@ -128,7 +128,7 @@ const UserManagement = () => {
       key: "role",
       align: "center",
       render: (role) => (
-        <Tag color={role === "admin" ? "#EF6351" : role === "doctor" ? "#52c41a" : "#0082C8"}>
+        <Tag color={role === "admin" ? "#0082C8" : role === "doctor" ? "#52c41a" : "#0082C8"}>
           {role.toUpperCase()}
         </Tag>
       ),
@@ -154,7 +154,7 @@ const UserManagement = () => {
 
   return (
     <AdminLayout>
-      <Title level={2} style={{ color: "#EF6351", marginBottom: "24px" }}>
+      <Title level={2} style={{ color: "#0082C8", marginBottom: "24px" }}>
         User Management
       </Title>
 
@@ -187,7 +187,7 @@ const UserManagement = () => {
           onClick={applyFilters}
           style={{
             padding: "6px 12px",
-            background: "#EF6351",
+            background: "#0082C8",
             color: "white",
             border: "none",
             borderRadius: "4px",

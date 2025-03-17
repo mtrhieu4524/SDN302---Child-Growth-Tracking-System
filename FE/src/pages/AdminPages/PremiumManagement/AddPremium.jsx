@@ -84,7 +84,7 @@ const AddPremium = () => {
 
   return (
     <AdminLayout>
-      <Title level={2} style={{ color: "#EF6351", marginBottom: "24px" }}>
+      <Title level={2} style={{ color: "#0082C8", marginBottom: "24px" }}>
         Add New Premium Package
       </Title>
 
@@ -233,7 +233,7 @@ const AddPremium = () => {
                   htmlType="submit"
                   loading={isSubmitting}
                   style={{
-                    background: "#EF6351",
+                    background: "#0082C8",
                     border: "none"
                   }}
                 >

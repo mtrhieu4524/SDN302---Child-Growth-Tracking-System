@@ -44,7 +44,7 @@ const Home = () => {
             <Title style={{
               fontSize: "42px",
               fontWeight: "bold",
-              color: "#EF6351",
+              color: "#0082C8",
               marginBottom: "20px",
             }}>
               Take Charge of Your Child/Ward’s Growth and Development.
@@ -52,7 +52,7 @@ const Home = () => {
             <hr style={{
               width: "130px",
               height: "3px",
-              backgroundColor: "#EF6351",
+              backgroundColor: "#0082C8",
               border: "none",
               margin: "0",
             }} />
@@ -68,7 +68,7 @@ const Home = () => {
             <Button
               type="primary"
               style={{
-                backgroundColor: "#EF6351",
+                backgroundColor: "#0082C8",
                 borderColor: "white",
                 padding: "12px 24px",
                 fontSize: "15px",
@@ -91,14 +91,14 @@ const Home = () => {
 
       <div style={{ padding: "60px 10%", textAlign: "left" }}>
         <div style={{ display: "inline-block" }}>
-          <Title style={{ color: "#EF6351", fontSize: "16px", textTransform: "uppercase", marginBottom: "-20px" }}>The Process</Title>
+          <Title style={{ color: "#0082C8", fontSize: "16px", textTransform: "uppercase", marginBottom: "-20px" }}>The Process</Title>
           <Title style={{ fontSize: "25px", fontWeight: "bold", color: "#00274E", marginBottom: "10px" }}>
             How Child Growth Tracking Works
           </Title>
           <hr style={{
             width: "130px",
             height: "3px",
-            backgroundColor: "#EF6351",
+            backgroundColor: "#0082C8",
             border: "none",
             margin: "0",
           }} />
@@ -113,7 +113,7 @@ const Home = () => {
             boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
             textAlign: "left"
           }}>
-            <UserAddOutlined style={{ fontSize: "40px", color: "#EF6351", marginBottom: "5px" }} />
+            <UserAddOutlined style={{ fontSize: "40px", color: "#0082C8", marginBottom: "5px" }} />
             <Title style={{ fontSize: "18px", fontWeight: "bold", color: "#00274E" }}>Add a Child to Track</Title>
             <Text style={{ fontSize: "14px", color: "#666" }}>Get started by adding a child to track and entering basic details.</Text>
           </div>
@@ -126,7 +126,7 @@ const Home = () => {
             boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
             textAlign: "left"
           }}>
-            <LineChartOutlined style={{ fontSize: "40px", color: "#EF6351", marginBottom: "5px" }} />
+            <LineChartOutlined style={{ fontSize: "40px", color: "#0082C8", marginBottom: "5px" }} />
             <Title style={{ fontSize: "18px", fontWeight: "bold", color: "#00274E" }}>Enter Child’s Measurement</Title>
             <Text style={{ fontSize: "14px", color: "#666" }}>Record all necessary measurements with the corresponding date.</Text>
           </div>
@@ -139,7 +139,7 @@ const Home = () => {
             boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
             textAlign: "left"
           }}>
-            <SearchOutlined style={{ fontSize: "40px", color: "#EF6351", marginBottom: "5px" }} />
+            <SearchOutlined style={{ fontSize: "40px", color: "#0082C8", marginBottom: "5px" }} />
             <Title style={{ fontSize: "18px", fontWeight: "bold", color: "#00274E" }}>See How Child Compares</Title>
             <Text style={{ fontSize: "14px", color: "#666" }}>Check standard charts and graphs to compare growth progress.</Text>
           </div>
@@ -153,8 +153,8 @@ const Home = () => {
             <Button
               type="primary"
               style={{
-                backgroundColor: "#EF6351",
-                borderColor: "#EF6351",
+                backgroundColor: "#0082C8",
+                borderColor: "#0082C8",
                 padding: "12px 24px",
                 fontSize: "15px",
                 borderRadius: "50px"
@@ -219,11 +219,11 @@ const Home = () => {
           </Text>
 
           <div style={{ display: "flex", gap: "20px" }}>
-            <Card style={{ borderRadius: 0, flex: 1, textAlign: "center", boxShadow: "0 4px 10px rgba(0,0,0,0.1)", borderRadius: "10px", }}>
+            <Card style={{ flex: 1, textAlign: "center", boxShadow: "0 4px 10px rgba(0,0,0,0.1)", borderRadius: "10px", }}>
               <Avatar src="https://randomuser.me/api/portraits/men/32.jpg" size={60} style={{ margin: "auto" }} />
               <div style={{ marginTop: "10px" }}>
                 <Title level={5} style={{ fontWeight: "bold", color: "#00274E", display: "flex", alignItems: "center", justifyContent: "center", gap: "5px" }}>
-                  Darren Elder <CheckCircleOutlined style={{ fontSize: "18px", color: "#EF6351" }} />
+                  Darren Elder <CheckCircleOutlined style={{ fontSize: "18px", color: "#0082C8" }} />
                 </Title>
                 <Text style={{ color: "#666", display: "block", marginTop: "10px" }}>
                   Child Growth Tracking is indeed very helpful and easy to use. I used it to track my child’s growth to make sure my child is growing well without any issues.
@@ -231,11 +231,11 @@ const Home = () => {
               </div>
             </Card>
 
-            <Card style={{ borderRadius: 0, flex: 1, textAlign: "center", boxShadow: "0 4px 10px rgba(0,0,0,0.1)", borderRadius: "10px", }}>
+            <Card style={{ flex: 1, textAlign: "center", boxShadow: "0 4px 10px rgba(0,0,0,0.1)", borderRadius: "10px", }}>
               <Avatar src="https://randomuser.me/api/portraits/women/44.jpg" size={60} style={{ margin: "auto" }} />
               <div style={{ marginTop: "10px" }}>
                 <Title level={5} style={{ fontWeight: "bold", color: "#00274E", display: "flex", alignItems: "center", justifyContent: "center", gap: "5px" }}>
-                  Deborah Angel <CheckCircleOutlined style={{ fontSize: "18px", color: "#EF6351" }} />
+                  Deborah Angel <CheckCircleOutlined style={{ fontSize: "18px", color: "#0082C8" }} />
                 </Title>
                 <Text style={{ color: "#666", display: "block", marginTop: "10px" }}>
                   Child Growth Tracking is indeed very helpful and easy to use. I used it to track my child’s growth to make sure my child is growing well without any issues.
