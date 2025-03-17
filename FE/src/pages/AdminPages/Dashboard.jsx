@@ -89,7 +89,7 @@ const Dashboard = () => {
           }}
         >
           <p style={{ margin: 0 }}>{`Date: ${formatXAxis(label)}`}</p>
-          <p style={{ margin: 0, color: "#0082C8" }}>
+          <p style={{ margin: 0, color: "#EF6351" }}>
             {`Revenue: ${formatCurrency(payload[0].value)}`}
           </p>
         </div>
@@ -197,7 +197,7 @@ const Dashboard = () => {
 
   return (
     <AdminLayout>
-      <Title level={2} style={{ color: "#0056A1", marginBottom: "24px" }}>
+      <Title level={2} style={{ color: "#EF6351", marginBottom: "24px" }}>
         Dashboard
       </Title>
       {loading ? (
@@ -210,10 +210,10 @@ const Dashboard = () => {
             <Col xs={24} sm={6}>
               <Card style={cardStyle}>
                 <Statistic
-                  title={<span style={{ color: "#0056A1" }}>Total Users</span>}
+                  title={<span style={{ color: "#EF6351" }}>Total Users</span>}
                   value={stats.totalUsers}
-                  prefix={<UserOutlined style={{ color: "#0082C8" }} />}
-                  valueStyle={{ color: "#0056A1" }}
+                  prefix={<UserOutlined style={{ color: "#EF6351" }} />}
+                  valueStyle={{ color: "#EF6351" }}
                 />
               </Card>
             </Col>
@@ -221,11 +221,11 @@ const Dashboard = () => {
               <Card style={cardStyle}>
                 <Statistic
                   title={
-                    <span style={{ color: "#0056A1" }}>Total Requests</span>
+                    <span style={{ color: "#EF6351" }}>Total Requests</span>
                   }
                   value={stats.totalRequests}
-                  prefix={<FileOutlined style={{ color: "#0082C8" }} />}
-                  valueStyle={{ color: "#0056A1" }}
+                  prefix={<FileOutlined style={{ color: "#EF6351" }} />}
+                  valueStyle={{ color: "#EF6351" }}
                 />
               </Card>
             </Col>
@@ -233,13 +233,13 @@ const Dashboard = () => {
               <Card style={cardStyle}>
                 <Statistic
                   title={
-                    <span style={{ color: "#0056A1" }}>
+                    <span style={{ color: "#EF6351" }}>
                       Total Consultations
                     </span>
                   }
                   value={stats.totalConsultations}
-                  prefix={<FileOutlined style={{ color: "#0082C8" }} />}
-                  valueStyle={{ color: "#0056A1" }}
+                  prefix={<FileOutlined style={{ color: "#EF6351" }} />}
+                  valueStyle={{ color: "#EF6351" }}
                 />
               </Card>
             </Col>
@@ -247,13 +247,13 @@ const Dashboard = () => {
               <Card style={cardStyle}>
                 <Statistic
                   title={
-                    <span style={{ color: "#0056A1" }}>
+                    <span style={{ color: "#EF6351" }}>
                       Total Active Premium Packages
                     </span>
                   }
                   value={stats.totalPremiumUsers}
-                  prefix={<CrownOutlined style={{ color: "#0082C8" }} />}
-                  valueStyle={{ color: "#0056A1" }}
+                  prefix={<CrownOutlined style={{ color: "#EF6351" }} />}
+                  valueStyle={{ color: "#EF6351" }}
                 />
               </Card>
             </Col>
@@ -267,7 +267,7 @@ const Dashboard = () => {
                 marginBottom: "16px",
               }}
             >
-              <Title level={4} style={{ color: "#0056A1", margin: 0 }}>
+              <Title level={4} style={{ color: "#EF6351", margin: 0 }}>
                 Revenue by{" "}
                 {revenueParams.time === "DAY"
                   ? "Day"
@@ -331,7 +331,7 @@ const Dashboard = () => {
                       type="monotone"
                       name="Revenue"
                       dataKey="Revenue"
-                      stroke="#0082C8"
+                      stroke="#EF6351"
                       activeDot={{ r: 8 }}
                       dot={{ r: 4 }}
                     />

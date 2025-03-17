@@ -37,7 +37,7 @@ const DevelopmentMilestones = () => {
             <Header />
 
             <div style={{ maxWidth: "1200px", margin: "50px auto", padding: "0 20px" }}>
-                <Title level={2} style={{ textAlign: "center", color: "#0056A1" }}>
+                <Title level={2} style={{ textAlign: "center", color: "#00274E" }}>
                     Development Milestones
                 </Title>
                 <p style={{ textAlign: "center", color: "#666", fontSize: "16px" }}>

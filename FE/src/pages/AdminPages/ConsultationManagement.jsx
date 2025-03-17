@@ -156,7 +156,7 @@ const ConsultationManagement = () => {
 
   return (
     <AdminLayout>
-      <Title level={2} style={{ color: "#0056A1", marginBottom: "24px" }}>
+      <Title level={2} style={{ color: "#EF6351", marginBottom: "24px" }}>
         Consultation Management
       </Title>
       <div style={{ marginBottom: "16px", display: "flex", gap: "16px", alignItems: "center" }}>

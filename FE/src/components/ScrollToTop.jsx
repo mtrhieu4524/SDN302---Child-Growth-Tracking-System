@@ -32,8 +32,8 @@ const ScrollToTop = () => {
                     position: "fixed",
                     bottom: "20px",
                     right: "20px",
-                    background: "#0056A1",
-                    borderColor: "#0056A1",
+                    background: "#EF6351",
+                    borderColor: "#EF6351",
                     boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.2)"
                 }}
             >

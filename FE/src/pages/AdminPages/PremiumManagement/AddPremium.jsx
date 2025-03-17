@@ -82,7 +82,7 @@ const AddPremium = () => {
 
   return (
     <AdminLayout>
-      <Title level={2} style={{ color: "#0056A1", marginBottom: "24px" }}>
+      <Title level={2} style={{ color: "#EF6351", marginBottom: "24px" }}>
         Add New Premium Package
       </Title>
 
@@ -99,7 +99,7 @@ const AddPremium = () => {
         onSubmit={handleSubmit}
       >
         {({ handleSubmit, isSubmitting }) => (
-          <Form layout="vertical" onFinish={handleSubmit} style={{ maxWidth: 600 }}>
+          <Form layout="vertical" onFinish={handleSubmit}>
             <Form.Item label="Package Name" required>
               <Field name="name" as={Input} placeholder="Enter premium package name" />
               <ErrorMessage name="name" component="div" className="ant-form-item-explain ant-form-item-explain-error" />
@@ -179,7 +179,7 @@ const AddPremium = () => {
                   htmlType="submit"
                   loading={isSubmitting}
                   style={{
-                    background: "linear-gradient(to right, #0056A1, #0082C8)",
+                    background: "#EF6351",
                     border: "none"
                   }}
                 >
