@@ -18,8 +18,8 @@ import RequestManagement from "../pages/AdminPages/RequestManagement";
 import UserManagement from "../pages/AdminPages/UserManagement";
 import AddPremium from "../pages/AdminPages/PremiumManagement/AddPremium";
 import PremiumList from "../pages/AdminPages/PremiumManagement/PremiumList";
-import GrowthTracker from "../pages/MemberPages/GrowthTracker";
-import GrowthChartMember from "../pages/MemberPages/GrowthChartMember";
+import Children from "../pages/MemberPages/Children";
+import ChildData from "../pages/MemberPages/ChildData";
 import BlogDetailed from "../pages/BlogDetailed";
 import PrivateRoute from "./PrivateRoute";
 import { Role } from "../enums/Role";
@@ -29,6 +29,7 @@ import PaymentDetails from "../pages/PaymentDetails";
 import ConsultationManagement from "../pages/AdminPages/ConsultationManagement";
 import DoctorConsultationHistory from "../pages/DoctorPages/DoctorConsultationHistory";
 import DoctorConsultationChat from "../pages/DoctorPages/DoctorConsultationChat";
+import Profile from "../pages/Profile";
 
 export default function AppRoute() {
   return (
@@ -54,14 +55,14 @@ export default function AppRoute() {
       <Route path={routes.paymentDetails} element={<PaymentDetails />} />
       <Route path={routes.growthChart} element={<GrowthChart />} />
       <Route path={routes.blogDetail} element={<BlogDetailed />} />
-      {/* Membership pages */}
-      <Route path={routes.growthTracker} element={<GrowthTracker />} />
-      <Route
-        path={routes.growthChartMember}
-        element={<GrowthChartMember />}
-      />{" "}
       <Route path={routes.verificationSent} element={<VerificationSent />} />
+
+      {/* Member Routes */}
+      <Route path="/profile" element={<Profile />} />
+      <Route path={routes.childData} element={<ChildData />} />
+      <Route path={routes.children} element={<Children />} />
       <Route path={routes.consultation} element={<Consultation />} />
+
       {/* Doctor Routes */}
       <Route path={routes.doctorConsultation} element={<DoctorConsultation />} />
       <Route
@@ -72,6 +73,7 @@ export default function AppRoute() {
         path={routes.doctorConsultationChat}
         element={<DoctorConsultationChat />}
       />
+
       {/* Admin Routes */}
       <Route
         path={routes.dashboard}

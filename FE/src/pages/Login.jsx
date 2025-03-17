@@ -1,7 +1,7 @@
 import { useContext, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Form, Input, Button, Card, Typography, message } from "antd";
-import { UserOutlined, LockOutlined } from "@ant-design/icons";
+import { UserOutlined, LockOutlined, GoogleOutlined } from "@ant-design/icons";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import Header from "./../components/Header";
@@ -12,7 +12,7 @@ import { AuthContext } from "../contexts/AuthContext";
 const { Title, Text } = Typography;
 
 const Login = () => {
-  const { login } = useContext(AuthContext);
+  const { login, loginWithGoogle } = useContext(AuthContext);
 
   useEffect(() => {
     document.title = "Child Growth Tracking - Sign In";
@@ -22,12 +22,9 @@ const Login = () => {
     initialValues: {
       email: "",
       password: "",
-      remember: false,
     },
     validationSchema: Yup.object({
-      email: Yup.string()
-        .email("Invalid email address")
-        .required("Email is required"),
+      email: Yup.string().email("Invalid email address").required("Email is required"),
       password: Yup.string().required("Password is required"),
     }),
     onSubmit: async (values) => {
@@ -47,16 +44,14 @@ const Login = () => {
         }
       } catch (error) {
         message.error(
-          error.response.data.message ||
-            "An unexpected error occurred. Please try again."
+          error.response?.data?.message || "An unexpected error occurred. Please try again."
         );
       }
     },
   });
 
   return (
-    <div
-      style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
+    <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
       <Header />
       <div
         style={{
@@ -89,9 +84,7 @@ const Login = () => {
           <Form onFinish={formik.handleSubmit}>
             <Form.Item
               help={formik.touched.email && formik.errors.email}
-              validateStatus={
-                formik.touched.email && formik.errors.email ? "error" : ""
-              }>
+              validateStatus={formik.touched.email && formik.errors.email ? "error" : ""}>
               <Input
                 prefix={<UserOutlined style={{ color: "rgba(0,0,0,.25)" }} />}
                 name="email"
@@ -104,9 +97,7 @@ const Login = () => {
 
             <Form.Item
               help={formik.touched.password && formik.errors.password}
-              validateStatus={
-                formik.touched.password && formik.errors.password ? "error" : ""
-              }>
+              validateStatus={formik.touched.password && formik.errors.password ? "error" : ""}>
               <Input.Password
                 prefix={<LockOutlined style={{ color: "rgba(0,0,0,.25)" }} />}
                 name="password"
@@ -132,6 +123,23 @@ const Login = () => {
               </Button>
             </Form.Item>
           </Form>
+
+          <div style={{ textAlign: "center", marginBottom: "16px" }}>
+            <Text type="secondary">or</Text>
+          </div>
+
+          <Button
+            icon={<GoogleOutlined />}
+            onClick={loginWithGoogle}
+            style={{
+              width: "100%",
+              height: "40px",
+              backgroundColor: "#fff",
+              borderColor: "#d9d9d9",
+              color: "rgba(0, 0, 0, 0.85)",
+            }}>
+            Sign in with Google
+          </Button>
         </Card>
       </div>
       <Footer />

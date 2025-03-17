@@ -51,7 +51,7 @@ const fakeChildren = [
   },
 ];
 
-const GrowthChartMember = () => {
+const Children = () => {
   const navigate = useNavigate();
   const [selectedChild, setSelectedChild] = useState(fakeChildren[0].id);
   const [chartData, setChartData] = useState({});
@@ -166,7 +166,7 @@ const GrowthChartMember = () => {
                 </Select>
                 <Button
                   type="primary"
-                  onClick={() => navigate("/profile/growth-tracker")}
+                  onClick={() => navigate("/profile/child-data")}
                   style={{ backgroundColor: "#0082c8", borderColor: "#0082c8" }}
                 >
                   Import Data <RightOutlined />
@@ -194,4 +194,4 @@ const GrowthChartMember = () => {
   );
 };
 
-export default GrowthChartMember;
+export default Children;

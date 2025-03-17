@@ -11,13 +11,14 @@ export const routes = {
   developmentMilestones: "/development-milestones",
   verificationSent: "/verification-sent",
   blogDetail: "/blogs/:id",
+  profile: "/profile",
 
-  // Membership pages
-  growthTracker: "/profile/growth-tracker",
-  growthChartMember: "/profile/growth-chart",
+  // Member pages
+  childData: "/profile/child-data",
+  children: "/profile/children",
   consultation: "/member-consultation",
 
-  //Doctor pages
+  // Doctor pages
   doctorConsultation: "/doctor-consultation",
   doctorConsultationHistory: "/doctor-consultation-history",
   doctorConsultationChat: "/doctor-consultation-history/chat/:id",
