@@ -223,9 +223,7 @@ const DoctorConsultation = () => {
                 <Title level={2} style={{ color: "#0056A1", marginBottom: 0 }}>
                   Consultation Requests
                 </Title>
-                <Text type="secondary">
-                  Review and respond to parent consultation requests
-                </Text>
+                <Text type="secondary">Review consultation requests</Text>
               </div>
             </div>
           }
@@ -309,7 +307,7 @@ const DoctorConsultation = () => {
                             type="primary"
                             onClick={() => handleReview(item)}
                             loading={loading}>
-                            Review
+                            View
                           </Button>
                         </Space>
                       </div>

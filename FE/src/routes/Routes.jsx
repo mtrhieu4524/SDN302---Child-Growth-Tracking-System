@@ -28,6 +28,7 @@ import VerificationSent from "../pages/VerificationSent";
 import PublicRoute from "./PublicRoute";
 import PaymentDetails from "../pages/PaymentDetails";
 import DoctorConsultationHistory from "../pages/DoctorPages/DoctorConsultationHistory";
+import DoctorConsultationChat from "../pages/DoctorPages/DoctorConsultationChat";
 
 export default function AppRoute() {
   return (
@@ -66,6 +67,10 @@ export default function AppRoute() {
       <Route
         path={routes.doctorConsultaionHistory}
         element={<DoctorConsultationHistory />}
+      />
+      <Route
+        path={routes.doctorConsultaionChat}
+        element={<DoctorConsultationChat />}
       />
       {/* Admin Routes */}
       <Route
