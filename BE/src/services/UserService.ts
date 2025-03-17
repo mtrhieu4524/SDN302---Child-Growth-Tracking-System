@@ -150,8 +150,6 @@ class UserService implements IUserService {
         role: role,
       };
 
-      console.log(data);
-
       const user: IUser = await this.userRepository.createUser(data, session);
 
       await this.database.commitTransaction(session);
@@ -688,7 +686,6 @@ class UserService implements IUserService {
           session
         );
 
-      console.log(updatedConsultation);
       await this.database.commitTransaction(session);
       return updatedConsultation;
     } catch (error) {

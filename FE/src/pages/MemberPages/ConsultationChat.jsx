@@ -109,11 +109,10 @@ const ConsultationChat = () => {
             message.success("Message sent successfully!");
         } catch (error) {
             console.error("Error sending message:", error);
-    
             
             if (error.response?.status === 400 && error.response.data?.validationErrors) {
                 error.response.data.validationErrors.forEach((err) => {
-                    message.error(`${err.error}`);
+                    message.error("failed");
                 });
             } else {
                 message.error("Failed to send message. Please try again.");
@@ -188,7 +187,6 @@ const ConsultationChat = () => {
                                                             src={attachment}
                                                             fallback="https://watchdiana.fail/blog/wp-content/themes/koji/assets/images/default-fallback-image.png"
                                                             width={"50%"}
-                                                            height={"500px"}
                                                             style={{ marginRight: "8px" }}
                                                         />
                                                     </>

@@ -67,7 +67,6 @@ class PaymentQueue implements IPaymentQueue {
                   data.type
                 );
 
-                // console.log("IN QUEUE");
                 await this.userService.updateSubscription(
                   data.userId,
                   data.membershipPackageId
@@ -84,7 +83,6 @@ class PaymentQueue implements IPaymentQueue {
                 reject(processingError);
               }
             } else {
-              console.log("No message returned");
               resolve();
             }
           },

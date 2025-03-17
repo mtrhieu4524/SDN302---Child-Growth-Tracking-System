@@ -34,6 +34,9 @@ import { Navigate } from "react-router-dom";
 import DoctorConsultationChat from "../pages/DoctorPages/DoctorConsultationChat";
 import ConsultationChat from "../pages/MemberPages/ConsultationChat";
 import Profile from "../pages/Profile";
+import CreateBlog from "../pages/CreateBlog";
+import BlogManagement from "../pages/AdminPages/BlogManagement";
+import ChildData from "../pages/MemberPages/ChildData";
 
 export default function AppRoute() {
   return (
@@ -55,6 +58,7 @@ export default function AppRoute() {
         element={<DevelopmentMilestones />}
       />
       <Route path={routes.blogs} element={<Blogs />} />
+      <Route path={routes.createBlog} element={<CreateBlog />} />
       <Route path={routes.membership} element={<Membership />} />
       <Route path={routes.paymentDetails} element={<PaymentDetails />} />
       <Route path={routes.growthChart} element={<GrowthChart />} />
@@ -77,7 +81,7 @@ export default function AppRoute() {
       />
       <Route
         path={routes.growthTrackerBase}
-        element={<PrivateRoute requiredRole={Role.MEMBER} element={<Navigate to="/profile/children" replace />} />}
+        element={<PrivateRoute requiredRole={Role.MEMBER} element={<ChildData />} />}
       />
       <Route
         path="/profile/growth-chart"
@@ -128,6 +132,10 @@ export default function AppRoute() {
       <Route
         path={routes.consultationManagement}
         element={<PrivateRoute requiredRole={Role.ADMIN} element={<ConsultationManagement />} />}
+      />
+      <Route
+        path={routes.blogManagement}
+        element={<PrivateRoute requiredRole={Role.ADMIN} element={<BlogManagement />} />}
       />
       <Route
         path={routes.userManagement}

@@ -50,14 +50,12 @@ class MembershipPackageRepository implements IMembershipPackageRepository {
         _id: new mongoose.Types.ObjectId(id as string),
       };
 
-      // console.log("in repo", searchQuery);
 
       if (!ignoreDeleted) {
         searchQuery.isDeleted = false;
       }
 
       const membershipPackage = await MembershipModel.findOne(searchQuery);
-      // console.log("data:", membershipPackage);
 
       if (!membershipPackage) {
         throw new CustomException(

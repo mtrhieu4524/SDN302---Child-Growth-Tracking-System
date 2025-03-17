@@ -89,7 +89,6 @@ class PaymentService implements IPaymentService {
 
         case "VND":
           if (price * 25000 !== testPackage.price.value) {
-            console.log(price, typeof price, testPackage);
             throw new CustomException(
               StatusCodeEnums.BadRequest_400,
               "Price mismatch, please check the item's price"

@@ -18,6 +18,7 @@ import ScrollToTop from "../../components/ScrollToTop";
 import { RightOutlined } from "@ant-design/icons";
 import api from "../../configs/api";
 import { message } from "antd";
+import moment from "moment";
 
 ChartJS.register(
   CategoryScale,
@@ -42,39 +43,35 @@ const GrowthChartMember = () => {
     document.title = "Growth Chart";
     if (childId) {
       fetchChildData();
-    } else {
-      updateChartData();
     }
   }, [childId]);
 
+  // Fetch child data and growth data
   const fetchChildData = async () => {
     try {
-      const response = await api.get(`/children/${childId}`);
-      console.log('Child data:', response.data); // Để debug response
-      if (response.data) {
-        setChildName(response.data.name || "");
+      // Fetch child details
+      const childResponse = await api.get(`/children/${childId}`);
+      if (childResponse.data) {
+        setChildName(childResponse.data.name || "");
       }
-      updateChartData();
+
+      // Fetch growth data
+      const growthResponse = await api.get(`/children/${childId}/growth-data`);
+      if (growthResponse.data && growthResponse.data.growthData) {
+        updateChartData(growthResponse.data.growthData);
+      }
     } catch (error) {
-      console.error('Error fetching child data:', error);
-      message.error('Không thể tải thông tin của trẻ');
+      console.error('Error fetching data:', error);
+      message.error('Failed to load growth data');
     } finally {
       setLoading(false);
     }
   };
 
-  const updateChartData = () => {
-    // Sử dụng hardcode data cho biểu đồ
-    const growthData = [
-      { date: "2023-01-01", weight: 3.5, height: 50, bmi: 14.0 },
-      { date: "2023-06-01", weight: 6.0, height: 60, bmi: 16.67 },
-      { date: "2024-01-01", weight: 9.0, height: 70, bmi: 18.37 },
-      { date: "2024-06-01", weight: 11.0, height: 80, bmi: 17.19 },
-      { date: "2025-01-01", weight: 13.0, height: 90, bmi: 16.05 },
-    ];
-
+  // Update chart data with fetched growth data
+  const updateChartData = (growthData) => {
     const formattedData = {
-      labels: growthData.map((item) => item.date),
+      labels: growthData.map((item) => moment(item.inputDate).format('DD/MM/YYYY')), // Format dates
       datasets: [
         {
           label: "Weight (kg)",
@@ -95,10 +92,19 @@ const GrowthChartMember = () => {
           pointHoverRadius: 8,
         },
         {
-          label: "BMI",
-          data: growthData.map((item) => item.bmi),
+          label: "Head Circumference (cm)",
+          data: growthData.map((item) => item.headCircumference || null), // Handle null values
           borderColor: "rgb(75, 192, 192)",
           backgroundColor: "rgba(75, 192, 192, 0.2)",
+          tension: 0.4,
+          pointRadius: 5,
+          pointHoverRadius: 8,
+        },
+        {
+          label: "Arm Circumference (cm)",
+          data: growthData.map((item) => item.armCircumference || null), // Handle null values
+          borderColor: "rgb(153, 102, 255)",
+          backgroundColor: "rgba(153, 102, 255, 0.2)",
           tension: 0.4,
           pointRadius: 5,
           pointHoverRadius: 8,

@@ -7,6 +7,7 @@ import {
   FileOutlined,
   CrownOutlined,
   LogoutOutlined,
+  FileTextTwoTone,
 } from "@ant-design/icons";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
@@ -44,6 +45,11 @@ const AdminLayout = ({ children }) => {
       key: "/admin/premium-list",
       icon: <CrownOutlined />,
       label: "Premium Management",
+    },
+    {
+      key: "/admin/blog-management",
+      icon: <FileTextTwoTone />,
+      label: "Blog Management",
     },
     {
       key: "/logout",

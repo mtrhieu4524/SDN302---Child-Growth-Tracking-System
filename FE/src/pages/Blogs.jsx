@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import {
   Card,
   Row,
@@ -25,6 +25,8 @@ import Footer from "./../components/Footer";
 import ScrollToTop from "./../components/ScrollToTop";
 import axios from "axios";
 import moment from "moment";
+import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../contexts/AuthContext";
 
 const { Title, Paragraph, Text } = Typography;
 const { Search } = Input;
@@ -39,6 +41,8 @@ const Blogs = () => {
     total: 0,
   });
   const [searchQuery, setSearchQuery] = useState("");
+  const navigate = useNavigate();
+  const { user } = useContext(AuthContext);
 
   const fetchPosts = async (page = 1, size = 6, search = "") => {
     setLoading(true);
@@ -53,8 +57,6 @@ const Blogs = () => {
           status: "PUBLISHED",
         },
       });
-
-      console.log("Fetched posts:", response.data);
 
       if (response.data && response.data.posts) {
         setPosts(response.data.posts);
@@ -140,24 +142,45 @@ const Blogs = () => {
       <Header />
       <div style={{ background: "#f0f2f5", padding: "80px 24px 40px" }}>
         <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
-          {/* Search bar */}
-          <div
-            style={{
-              marginBottom: "40px",
-              display: "flex",
-              justifyContent: "center",
-            }}
-          >
-            <Search
-              placeholder="Search blog posts by title"
-              allowClear
-              enterButton={<SearchOutlined />}
-              size="large"
-              onSearch={handleSearch}
-              onChange={handleSearchChange}
-              value={searchQuery}
-              style={{ maxWidth: "500px", width: "100%" }}
-            />
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%" }}>
+            <div
+              style={{
+                display: "flex",
+              }}
+            >
+              <Search
+                placeholder="Search blog posts by title"
+                allowClear
+                enterButton={<SearchOutlined />}
+                size="large"
+                onSearch={handleSearch}
+                onChange={handleSearchChange}
+                value={searchQuery}
+                style={{ maxWidth: "1000px", width: "1000px" }}
+              />
+            </div>
+
+            <div style={{ textAlign: "right" }}>
+              <Button
+                type="primary"
+                onClick={() => { 
+                  if (!user) {
+                    navigate("/login");
+                  } else {
+                    navigate("/create-blog");
+                  }
+                }}
+                style={{
+                  backgroundColor: "#0082C8",
+                  borderColor: "#0082C8",
+                  borderRadius: "6px",
+                  padding: "0 24px",
+                  height: "40px",
+                }}
+              >
+                Create Blog
+              </Button>
+            </div>
           </div>
 
           {/* Featured Post */}

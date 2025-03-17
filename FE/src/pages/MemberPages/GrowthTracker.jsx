@@ -198,11 +198,13 @@ const GrowthTracker = () => {
       title: 'Head Circumference (cm)',
       dataIndex: 'headCircumference',
       key: 'headCircumference',
+      render: (text) => (text === null || text === undefined ? 'N/A' : text),
     },
     {
       title: 'Arm Circumference (cm)',
       dataIndex: 'armCircumference',
       key: 'armCircumference',
+      render: (text) => (text === null || text === undefined ? 'N/A' : text),
     },
     {
       title: 'Created At',
@@ -414,7 +416,7 @@ const GrowthTracker = () => {
           title="Growth Data History"
           open={isGrowthDataVisible}
           onCancel={() => setIsGrowthDataVisible(false)}
-          width={1000}
+          width={1500}
           footer={null}
         >
           {loading ? (

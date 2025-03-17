@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Email Verified Successfully</title>
+    <style>
+      body {
+        background-color: #f5f0e1; /* White Beige */
+        font-family: "Open Sans", Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+      }
+
+      .container {
+        width: 100%;
+        padding: 20px;
+      }
+
+      .email-wrapper {
+        width: 100%;
+        max-width: 400px;
+        background: white;
+        padding: 30px;
+        text-align: left;
+        border-radius: 10px;
+        border: 1px solid #0c0e0c; /* Black border */
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      h1 {
+        color: #333;
+        margin-bottom: 10px;
+      }
+
+      p {
+        color: #666;
+        font-size: 14px;
+        line-height: 1.8;
+        font-family: "Open Sans", Arial, sans-serif;
+      }
+
+      a {
+        text-decoration: none;
+      }
+
+      .header-title {
+        margin: 0;
+      }
+
+      .success-message {
+        color: #52c41a; /* Green for success */
+        font-weight: bold;
+      }
+
+      .redirect-button {
+        display: inline-block;
+        padding: 12px 20px;
+        background-color: #f5f0e1;
+        color: #0c0e0c !important;
+        font-size: 17px;
+        font-weight: bold;
+        border-radius: 5px;
+        border: 1px solid #0c0e0c;
+        text-align: center;
+        margin-top: 20px;
+        cursor: pointer;
+      }
+
+      .redirect-button:hover {
+        background-color: #e0d8c0; /* Slightly darker beige on hover */
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Use a table to center content -->
+    <table
+      class="container"
+      role="presentation"
+      width="100%"
+      cellspacing="0"
+      cellpadding="0"
+    >
+      <tr>
+        <td align="center">
+          <div class="email-wrapper">
+            <h1 class="header-title">Email Verified Successfully</h1>
+            <p style="border-top: 1px solid #f5f0e1; padding-top: 20px;">
+              Your email has been successfully verified!
+            </p>
+            <p>
+              You can now log in to your account and start using our services.
+            </p>
+            <p style="border-bottom: 1px solid #f5f0e1; padding-bottom: 20px">
+              If you have any questions, feel free to contact our support team.
+            </p>
+            <a href="<%= link + '/login' %>" class="redirect-button">
+                Go back to website
+            </a>
+          </div>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>

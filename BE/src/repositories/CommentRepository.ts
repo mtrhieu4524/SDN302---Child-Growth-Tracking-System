@@ -94,16 +94,38 @@ class CommentRepository implements ICommentRepository {
       if (!ignoreDeleted) {
         searchQuery.isDeleted = false;
       }
-      // console.log(searchQuery);
-
+  
       const comments = await CommentModel.aggregate([
         {
           $match: searchQuery,
         },
+        {
+          $lookup: {
+            from: "users", // The collection to join with (User collection)
+            localField: "userId", // Field from the Comment collection
+            foreignField: "_id", // Field from the User collection
+            as: "user", // Output array field
+          },
+        },
+        {
+          $unwind: "$user", // Unwind the user array (since $lookup returns an array)
+        },
+        {
+          $project: {
+            _id: 1,
+            userId: 1,
+            postId: 1,
+            content: 1,
+            isDeleted: 1,
+            createdAt: 1,
+            updatedAt: 1,
+            "user.name": 1,
+          },
+        },
         { $skip: (query.page - 1) * query.size },
         { $limit: query.size },
       ]);
-
+  
       const totalComment = await CommentModel.countDocuments(searchQuery);
       return {
         comments: comments || [],

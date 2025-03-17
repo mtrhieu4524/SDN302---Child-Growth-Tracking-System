@@ -99,8 +99,6 @@ class ConsultationMessageService implements IConsultationMessageService {
 
       const formattedMessage = extractAndReplaceImages(message, attachments);
 
-      // console.log(attachments);
-
       const consultationMessage =
         await this.consultationMessageRepository.createConsultationMessage(
           {

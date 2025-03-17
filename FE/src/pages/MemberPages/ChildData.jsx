@@ -18,7 +18,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import HeaderComponent from "../../components/Header";
 import FooterComponent from "../../components/Footer";
 import ScrollToTop from "../../components/ScrollToTop";
-import { RightOutlined, DownOutlined, DeleteOutlined } from "@ant-design/icons";
+import { RightOutlined, DeleteOutlined } from "@ant-design/icons";
 import api from "../../configs/api";
 
 const { Title, Text } = Typography;

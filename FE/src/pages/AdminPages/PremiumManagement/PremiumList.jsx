@@ -41,8 +41,6 @@ const PremiumList = () => {
         },
       });
 
-      console.log("response", response);
-
       if (response.data && response.data.packages) {
         const formattedPackages = response.data.packages.map((pkg) => ({
           key: pkg._id,

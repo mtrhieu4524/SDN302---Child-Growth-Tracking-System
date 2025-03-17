@@ -31,59 +31,6 @@ ChartJS.register(
 
 const { Title, Text } = Typography;
 
-const GrowthChartMember = () => {
-  const { childId } = useParams();
-  const navigate = useNavigate();
-  const [chartData, setChartData] = useState({});
-  const [childName, setChildName] = useState("");
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    document.title = "Child Growth Tracking - Growth Chart";
-    if (childId) {
-      fetchChildData();
-    } else {
-      updateChartData();
-    }
-  }, [childId]);
-
-  const fetchChildData = async () => {
-    try {
-      const response = await api.get(`/children/${childId}`);
-      console.log('Child data:', response.data); // Để debug response
-      if (response.data) {
-        setChildName(response.data.name || "");
-      }
-      updateChartData();
-    } catch (error) {
-      console.error('Error fetching child data:', error);
-      message.error('Không thể tải thông tin của trẻ');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // const updateChartData = () => {
-  //   // Sử dụng hardcode data cho biểu đồ
-  //   const growthData = [
-  //     { date: "2023-01-01", weight: 3.5, height: 50, bmi: 14.0 },
-  //     { date: "2023-06-01", weight: 6.0, height: 60, bmi: 16.67 },
-  //     { date: "2024-01-01", weight: 9.0, height: 70, bmi: 18.37 },
-  //     { date: "2024-06-01", weight: 11.0, height: 80, bmi: 17.19 },
-  //     { date: "2025-01-01", weight: 13.0, height: 90, bmi: 16.05 },
-  //   ],
-  // },
-  // {
-  //   id: 2, name: "Liam Smith", data: [
-  //     { date: "2023-01-01", weight: 4.0, height: 52, bmi: 14.8 },
-  //     { date: "2023-06-01", weight: 7.2, height: 62, bmi: 18.76 },
-  //     { date: "2024-01-01", weight: 10.5, height: 72, bmi: 20.21 },
-  //     { date: "2024-06-01", weight: 12.8, height: 82, bmi: 19.06 },
-  //     { date: "2025-01-01", weight: 15.0, height: 92, bmi: 17.72 },
-  //   ],
-  // },
-};
-
 const Children = () => {
   const navigate = useNavigate();
   const [selectedChild, setSelectedChild] = useState(fakeChildren[0].id);
@@ -174,12 +121,21 @@ const Children = () => {
       <div style={contentStyle}>
         <Card
           title={
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                marginBottom: "20px",
+              }}
+            >
               <div>
                 <Title level={2} style={{ color: "#0056A1", marginBottom: 0 }}>
-                  {childName ? `${childName}'s Growth Chart` : 'Growth Chart'}
+                  {childName ? `${childName}'s Growth Chart` : "Growth Chart"}
                 </Title>
-                <Text type="secondary">Track your child's development over time</Text>
+                <Text type="secondary">
+                  Track your child's development over time
+                </Text>
               </div>
               <div>
                 <Button

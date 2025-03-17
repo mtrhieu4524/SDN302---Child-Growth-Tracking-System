@@ -123,7 +123,7 @@ const HeaderComponent = () => {
     },
     {
       key: "child-tracker",
-      label: <a href="/profile/growth-chart">Child Tracker</a>,
+      label: <a href="/profile/children">Child Tracker</a>,
       icon: <SolutionOutlined />,
     },
     {

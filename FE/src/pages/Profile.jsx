@@ -10,6 +10,7 @@ import {
   message,
   Form,
   Divider,
+  Upload,
 } from "antd";
 import {
   UserOutlined,
@@ -18,6 +19,7 @@ import {
   PhoneOutlined,
   MailOutlined,
   CalendarOutlined,
+  UploadOutlined,
 } from "@ant-design/icons";
 import { Formik } from "formik";
 import * as Yup from "yup";
@@ -62,12 +64,29 @@ const Profile = () => {
   const showUpdateModal = () => setIsUpdateModalVisible(true);
   const showChangePasswordModal = () => setIsChangePasswordModalVisible(true);
 
-  const handleUpdate = async (values) => {
+  const handleUpdate = async (values, { setSubmitting }) => {
     try {
-      await api.patch(`/users/${user._id}`, values);
+      const formData = new FormData();
+
+      // Append profile fields to FormData
+      formData.append("name", values.name);
+      formData.append("phoneNumber", values.phoneNumber);
+
+      // Append avatar file if selected
+      if (values.avatar) {
+        formData.append("avatar", values.avatar);
+      }
+
+      // Send the request
+      const response = await api.patch(`/users/${user._id}`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
       message.success("Profile updated successfully");
       setIsUpdateModalVisible(false);
-      window.location.reload();
+      window.location.reload(); // Refresh the page to reflect changes
     } catch (err) {
       if (
         err.response &&
@@ -80,6 +99,8 @@ const Profile = () => {
       } else {
         message.error("Failed to update profile");
       }
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -217,7 +238,7 @@ const Profile = () => {
 
             <Button
               type="primary"
-              icon={<EditOutlined />}
+              icon={<EditOutlined style={{ marginRight: "5px" }}/>}
               onClick={showUpdateModal}
               className="action-button"
               size="large">
@@ -225,7 +246,7 @@ const Profile = () => {
             </Button>
 
             <Button
-              icon={<LockOutlined />}
+              icon={<LockOutlined style={{ marginRight: "5px" }} />}
               onClick={showChangePasswordModal}
               className="action-button"
               size="large">
@@ -246,6 +267,7 @@ const Profile = () => {
           initialValues={{
             name: user.name,
             phoneNumber: user.phoneNumber || "",
+            avatar: null, // Add avatar field
           }}
           validationSchema={updateProfileSchema}
           onSubmit={handleUpdate}>
@@ -256,8 +278,24 @@ const Profile = () => {
             handleSubmit,
             errors,
             touched,
+            setFieldValue, // Add setFieldValue for file upload
           }) => (
             <Form onFinish={handleSubmit} layout="vertical">
+              {/* Avatar Upload */}
+              <Form.Item label="Avatar">
+                <Upload
+                  name="avatar"
+                  beforeUpload={(file) => {
+                    setFieldValue("avatar", file); // Set the file in Formik values
+                    return false; // Prevent automatic upload
+                  }}
+                  maxCount={1}
+                  accept="image/*">
+                  <Button icon={<UploadOutlined />}>Upload Avatar</Button>
+                </Upload>
+              </Form.Item>
+
+              {/* Name Field */}
               <Form.Item
                 label="Name"
                 validateStatus={errors.name && touched.name ? "error" : ""}
@@ -271,6 +309,7 @@ const Profile = () => {
                 />
               </Form.Item>
 
+              {/* Phone Number Field */}
               <Form.Item
                 label="Phone Number"
                 validateStatus={
@@ -290,6 +329,7 @@ const Profile = () => {
                 />
               </Form.Item>
 
+              {/* Modal Buttons */}
               <Form.Item>
                 <div className="modal-buttons">
                   <Button
