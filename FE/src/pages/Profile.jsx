@@ -1,12 +1,32 @@
 import React, { useContext, useState } from "react";
-import { Card, Avatar, Typography, Descriptions, Spin, Button, Modal, Input, message } from "antd";
-import { Formik, Form, Field, ErrorMessage } from "formik";
+import {
+  Card,
+  Avatar,
+  Typography,
+  Spin,
+  Button,
+  Modal,
+  Input,
+  message,
+  Form,
+  Divider,
+} from "antd";
+import {
+  UserOutlined,
+  EditOutlined,
+  LockOutlined,
+  PhoneOutlined,
+  MailOutlined,
+  CalendarOutlined,
+} from "@ant-design/icons";
+import { Formik } from "formik";
 import * as Yup from "yup";
 import HeaderComponent from "../components/Header";
 import { AuthContext } from "../contexts/AuthContext";
 import api from "../configs/api";
+import FooterComponent from "../components/Footer";
 
-const { Title } = Typography;
+const { Title, Text } = Typography;
 
 // Yup validation schema for updating profile
 const updateProfileSchema = Yup.object().shape({
@@ -14,14 +34,12 @@ const updateProfileSchema = Yup.object().shape({
     .required("Name is required")
     .min(2, "Name must be at least 2 characters")
     .max(50, "Name must not exceed 50 characters"),
-  phoneNumber: Yup.string()
-    .required("Phone number is required")
+  phoneNumber: Yup.string().required("Phone number is required"),
 });
 
 // Yup validation schema for changing password
 const changePasswordSchema = Yup.object().shape({
-  oldPassword: Yup.string()
-    .required("Current password is required"),
+  oldPassword: Yup.string().required("Current password is required"),
   newPassword: Yup.string()
     .required("New password is required")
     .min(8, "Password must be at least 8 characters")
@@ -38,7 +56,8 @@ const changePasswordSchema = Yup.object().shape({
 const Profile = () => {
   const { user, loading, error, logout } = useContext(AuthContext);
   const [isUpdateModalVisible, setIsUpdateModalVisible] = useState(false);
-  const [isChangePasswordModalVisible, setIsChangePasswordModalVisible] = useState(false);
+  const [isChangePasswordModalVisible, setIsChangePasswordModalVisible] =
+    useState(false);
 
   const showUpdateModal = () => setIsUpdateModalVisible(true);
   const showChangePasswordModal = () => setIsChangePasswordModalVisible(true);
@@ -50,24 +69,11 @@ const Profile = () => {
       setIsUpdateModalVisible(false);
       window.location.reload();
     } catch (err) {
-      if (err.response && err.response.status === 400 && err.response.data?.validationErrors) {
-        err.response.data.validationErrors.forEach(({ field, error }) => {
-          message.error(`${error}`);
-        });
-      } else {
-        message.error("Failed to update profile");
-      }
-    }
-  };  
-
-  const handleChangePassword = async (values) => {
-    try {
-      await api.put(`/auth/change-password`, values);
-      message.success("Password changed successfully");
-      logout();
-      setIsChangePasswordModalVisible(false);
-    } catch (err) {
-      if (err.response && err.response.status === 400 && err.response.data?.validationErrors) {
+      if (
+        err.response &&
+        err.response.status === 400 &&
+        err.response.data?.validationErrors
+      ) {
         err.response.data.validationErrors.forEach(({ field, error }) => {
           message.error(`${error}`);
         });
@@ -77,17 +83,39 @@ const Profile = () => {
     }
   };
 
+  const handleChangePassword = async (values) => {
+    try {
+      await api.put(`/auth/change-password`, values);
+      message.success("Password changed successfully");
+      logout();
+      setIsChangePasswordModalVisible(false);
+    } catch (err) {
+      if (
+        err.response &&
+        err.response.status === 400 &&
+        err.response.data?.validationErrors
+      ) {
+        err.response.data.validationErrors.forEach(({ field, error }) => {
+          message.error(`${error}`);
+        });
+      } else {
+        message.error("Failed to update password");
+      }
+    }
+  };
+
   if (loading) {
     return (
-      <div style={{ textAlign: "center", padding: "50px 0" }}>
+      <div className="loading-container">
         <Spin size="large" />
+        <Text style={{ marginTop: 16 }}>Loading your profile...</Text>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div style={{ textAlign: "center", padding: "50px 0" }}>
+      <div className="error-container">
         <Title level={4} style={{ color: "#ff4d4f" }}>
           {error}
         </Title>
@@ -97,48 +125,115 @@ const Profile = () => {
 
   if (!user) {
     return (
-      <div style={{ textAlign: "center", padding: "50px 0" }}>
+      <div className="no-data-container">
         <Title level={4}>No user data available</Title>
       </div>
     );
   }
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
+    <div className="profile-container">
       <HeaderComponent />
-      <Card>
-        <div style={{ textAlign: "center", marginBottom: "24px" }}>
-          <Avatar
-            src={user?.avatar}
-            size={100}
-            style={{ backgroundColor: "#f0f0f0", fontSize: "48px" }}
-          >
-            {!user?.avatar && user?.name?.charAt(0)}
-          </Avatar>
-          <Title level={3} style={{ marginTop: "16px" }}>
-            {user?.name}
+
+      <div className="profile-content">
+        <div className="profile-header">
+          <Title level={2} style={{ marginBottom: 0 }}>
+            My Profile
           </Title>
+          <Text type="secondary">Manage your account information</Text>
         </div>
 
-        <Descriptions bordered column={1}>
-          <Descriptions.Item label="Email">{user?.email}</Descriptions.Item>
-          <Descriptions.Item label="Phone Number">
-            {user?.phoneNumber || "N/A"}
-          </Descriptions.Item>
-          <Descriptions.Item label="Joined On">
-            {user?.createdAt ? new Date(user.createdAt).toLocaleDateString() : "N/A"}
-          </Descriptions.Item>
-        </Descriptions>
+        <div className="profile-cards">
+          <Card className="profile-card">
+            <div className="profile-info">
+              <div className="avatar-section">
+                <Avatar
+                  src={user?.avatar}
+                  size={120}
+                  style={{
+                    backgroundColor: "#1890ff",
+                    fontSize: "50px",
+                    boxShadow: "0 8px 16px rgba(24, 144, 255, 0.2)",
+                  }}>
+                  {!user?.avatar && user?.name?.charAt(0).toUpperCase()}
+                </Avatar>
+                <Title level={3} style={{ marginTop: "16px", marginBottom: 0 }}>
+                  {user?.name}
+                </Title>
+                <Text type="secondary">Doctor</Text>
+              </div>
 
-        <div style={{ marginTop: "24px", textAlign: "center" }}>
-          <Button type="primary" onClick={showUpdateModal} style={{ marginRight: "16px" }}>
-            Update Profile
-          </Button>
-          <Button type="default" onClick={showChangePasswordModal}>
-            Change Password
-          </Button>
+              <Divider style={{ margin: "24px 0" }} />
+
+              <div className="profile-details">
+                <div className="profile-item">
+                  <div className="profile-icon">
+                    <MailOutlined />
+                  </div>
+                  <div className="profile-text">
+                    <Text type="secondary">Email</Text>
+                    <Text strong>{user?.email}</Text>
+                  </div>
+                </div>
+
+                <div className="profile-item">
+                  <div className="profile-icon">
+                    <PhoneOutlined />
+                  </div>
+                  <div className="profile-text">
+                    <Text type="secondary">Phone Number</Text>
+                    <Text strong>{user?.phoneNumber || "Not provided"}</Text>
+                  </div>
+                </div>
+
+                <div className="profile-item">
+                  <div className="profile-icon">
+                    <CalendarOutlined />
+                  </div>
+                  <div className="profile-text">
+                    <Text type="secondary">Joined On</Text>
+                    <Text strong>
+                      {user?.createdAt
+                        ? new Date(user.createdAt).toLocaleDateString("en-US", {
+                            month: "long",
+                            day: "numeric",
+                            year: "numeric",
+                          })
+                        : "N/A"}
+                    </Text>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </Card>
+
+          <Card className="action-card">
+            <Title level={4}>Account Settings</Title>
+            <Text
+              type="secondary"
+              style={{ marginBottom: 24, display: "block" }}>
+              Update your personal information or change your password
+            </Text>
+
+            <Button
+              type="primary"
+              icon={<EditOutlined />}
+              onClick={showUpdateModal}
+              className="action-button"
+              size="large">
+              Update Profile
+            </Button>
+
+            <Button
+              icon={<LockOutlined />}
+              onClick={showChangePasswordModal}
+              className="action-button"
+              size="large">
+              Change Password
+            </Button>
+          </Card>
         </div>
-      </Card>
+      </div>
 
       {/* Update Profile Modal */}
       <Modal
@@ -146,40 +241,72 @@ const Profile = () => {
         open={isUpdateModalVisible}
         onCancel={() => setIsUpdateModalVisible(false)}
         footer={null}
-      >
+        width={480}>
         <Formik
-          initialValues={{ name: user.name, phoneNumber: user.phoneNumber }}
+          initialValues={{
+            name: user.name,
+            phoneNumber: user.phoneNumber || "",
+          }}
           validationSchema={updateProfileSchema}
-          onSubmit={handleUpdate}
-        >
-          {({ isSubmitting }) => (
-            <Form>
-              <div style={{ marginBottom: "16px" }}>
-                <label>Name</label>
-                <Field name="name" as={Input} style={{ marginTop: "8px" }} />
-                <ErrorMessage 
-                  name="name" 
-                  component="div" 
-                  style={{ color: "#ff4d4f", marginTop: "4px" }} 
+          onSubmit={handleUpdate}>
+          {({
+            isSubmitting,
+            values,
+            handleChange,
+            handleSubmit,
+            errors,
+            touched,
+          }) => (
+            <Form onFinish={handleSubmit} layout="vertical">
+              <Form.Item
+                label="Name"
+                validateStatus={errors.name && touched.name ? "error" : ""}
+                help={errors.name && touched.name ? errors.name : ""}>
+                <Input
+                  name="name"
+                  value={values.name}
+                  onChange={handleChange}
+                  prefix={<UserOutlined style={{ color: "#bfbfbf" }} />}
+                  size="large"
                 />
-              </div>
-              <div style={{ marginBottom: "24px" }}>
-                <label>Phone Number</label>
-                <Field name="phoneNumber" as={Input} style={{ marginTop: "8px" }} />
-                <ErrorMessage 
-                  name="phoneNumber" 
-                  component="div" 
-                  style={{ color: "#ff4d4f", marginTop: "4px" }} 
+              </Form.Item>
+
+              <Form.Item
+                label="Phone Number"
+                validateStatus={
+                  errors.phoneNumber && touched.phoneNumber ? "error" : ""
+                }
+                help={
+                  errors.phoneNumber && touched.phoneNumber
+                    ? errors.phoneNumber
+                    : ""
+                }>
+                <Input
+                  name="phoneNumber"
+                  value={values.phoneNumber}
+                  onChange={handleChange}
+                  prefix={<PhoneOutlined style={{ color: "#bfbfbf" }} />}
+                  size="large"
                 />
-              </div>
-              <Button 
-                type="primary" 
-                htmlType="submit" 
-                loading={isSubmitting}
-                style={{ width: "100%" }}
-              >
-                Save
-              </Button>
+              </Form.Item>
+
+              <Form.Item>
+                <div className="modal-buttons">
+                  <Button
+                    onClick={() => setIsUpdateModalVisible(false)}
+                    style={{ marginRight: 16 }}
+                    size="large">
+                    Cancel
+                  </Button>
+                  <Button
+                    type="primary"
+                    htmlType="submit"
+                    loading={isSubmitting}
+                    size="large">
+                    Save Changes
+                  </Button>
+                </div>
+              </Form.Item>
             </Form>
           )}
         </Formik>
@@ -191,68 +318,199 @@ const Profile = () => {
         open={isChangePasswordModalVisible}
         onCancel={() => setIsChangePasswordModalVisible(false)}
         footer={null}
-      >
+        width={480}>
         <Formik
-          initialValues={{ oldPassword: "", newPassword: "", confirmNewPassword: "" }}
+          initialValues={{
+            oldPassword: "",
+            newPassword: "",
+            confirmNewPassword: "",
+          }}
           validationSchema={changePasswordSchema}
-          onSubmit={handleChangePassword}
-        >
-          {({ isSubmitting }) => (
-            <Form>
-              <div style={{ marginBottom: "16px" }}>
-                <label>Current Password</label>
-                <Field 
-                  name="oldPassword" 
-                  type="password" 
-                  as={Input.Password} 
-                  style={{ marginTop: "8px" }} 
+          onSubmit={handleChangePassword}>
+          {({
+            isSubmitting,
+            values,
+            handleChange,
+            handleSubmit,
+            errors,
+            touched,
+          }) => (
+            <Form onFinish={handleSubmit} layout="vertical">
+              <Form.Item
+                label="Current Password"
+                validateStatus={
+                  errors.oldPassword && touched.oldPassword ? "error" : ""
+                }
+                help={
+                  errors.oldPassword && touched.oldPassword
+                    ? errors.oldPassword
+                    : ""
+                }>
+                <Input.Password
+                  name="oldPassword"
+                  value={values.oldPassword}
+                  onChange={handleChange}
+                  prefix={<LockOutlined style={{ color: "#bfbfbf" }} />}
+                  size="large"
                 />
-                <ErrorMessage 
-                  name="oldPassword" 
-                  component="div" 
-                  style={{ color: "#ff4d4f", marginTop: "4px" }} 
+              </Form.Item>
+
+              <Form.Item
+                label="New Password"
+                validateStatus={
+                  errors.newPassword && touched.newPassword ? "error" : ""
+                }
+                help={
+                  errors.newPassword && touched.newPassword
+                    ? errors.newPassword
+                    : ""
+                }>
+                <Input.Password
+                  name="newPassword"
+                  value={values.newPassword}
+                  onChange={handleChange}
+                  prefix={<LockOutlined style={{ color: "#bfbfbf" }} />}
+                  size="large"
                 />
-              </div>
-              <div style={{ marginBottom: "16px" }}>
-                <label>New Password</label>
-                <Field 
-                  name="newPassword" 
-                  type="password" 
-                  as={Input.Password} 
-                  style={{ marginTop: "8px" }} 
+              </Form.Item>
+
+              <Form.Item
+                label="Confirm New Password"
+                validateStatus={
+                  errors.confirmNewPassword && touched.confirmNewPassword
+                    ? "error"
+                    : ""
+                }
+                help={
+                  errors.confirmNewPassword && touched.confirmNewPassword
+                    ? errors.confirmNewPassword
+                    : ""
+                }>
+                <Input.Password
+                  name="confirmNewPassword"
+                  value={values.confirmNewPassword}
+                  onChange={handleChange}
+                  prefix={<LockOutlined style={{ color: "#bfbfbf" }} />}
+                  size="large"
                 />
-                <ErrorMessage 
-                  name="newPassword" 
-                  component="div" 
-                  style={{ color: "#ff4d4f", marginTop: "4px" }} 
-                />
-              </div>
-              <div style={{ marginBottom: "24px" }}>
-                <label>Confirm New Password</label>
-                <Field 
-                  name="confirmNewPassword" 
-                  type="password" 
-                  as={Input.Password} 
-                  style={{ marginTop: "8px" }} 
-                />
-                <ErrorMessage 
-                  name="confirmNewPassword" 
-                  component="div" 
-                  style={{ color: "#ff4d4f", marginTop: "4px" }} 
-                />
-              </div>
-              <Button 
-                type="primary" 
-                htmlType="submit" 
-                loading={isSubmitting}
-                style={{ width: "100%" }}
-              >
-                Change Password
-              </Button>
+              </Form.Item>
+
+              <Form.Item>
+                <div className="modal-buttons">
+                  <Button
+                    onClick={() => setIsChangePasswordModalVisible(false)}
+                    style={{ marginRight: 16 }}
+                    size="large">
+                    Cancel
+                  </Button>
+                  <Button
+                    type="primary"
+                    htmlType="submit"
+                    loading={isSubmitting}
+                    size="large"
+                    danger>
+                    Change Password
+                  </Button>
+                </div>
+              </Form.Item>
             </Form>
           )}
         </Formik>
       </Modal>
+      <FooterComponent />
+
+      <style jsx>{`
+        .profile-container {
+          display: flex;
+          flex-direction: column;
+          min-height: 100vh;
+          background-color: #f0f2f5;
+        }
+
+        .loading-container,
+        .error-container,
+        .no-data-container {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          padding: 100px 0;
+          text-align: center;
+        }
+
+        .profile-content {
+          max-width: 1200px;
+          margin: 32px auto;
+          padding: 0 24px;
+          width: 100%;
+        }
+
+        .profile-header {
+          margin-bottom: 24px;
+        }
+
+        .profile-cards {
+          display: grid;
+          grid-template-columns: 2fr 1fr;
+          gap: 24px;
+        }
+
+        .profile-card,
+        .action-card {
+          border-radius: 12px;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+          overflow: hidden;
+        }
+
+        .avatar-section {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          margin-bottom: 16px;
+        }
+
+        .profile-details {
+          display: flex;
+          flex-direction: column;
+          gap: 20px;
+        }
+
+        .profile-item {
+          display: flex;
+          align-items: center;
+        }
+
+        .profile-icon {
+          font-size: 20px;
+          color: #1890ff;
+          margin-right: 16px;
+          min-width: 24px;
+          text-align: center;
+        }
+
+        .profile-text {
+          display: flex;
+          flex-direction: column;
+        }
+
+        .action-button {
+          display: block;
+          width: 100%;
+          margin-bottom: 16px;
+        }
+
+        .modal-buttons {
+          display: flex;
+          justify-content: flex-end;
+          margin-top: 24px;
+        }
+
+        @media (max-width: 768px) {
+          .profile-cards {
+            grid-template-columns: 1fr;
+          }
+        }
+      `}</style>
     </div>
   );
 };

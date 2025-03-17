@@ -57,21 +57,17 @@ const DoctorConsultationHistory = () => {
         response.data.consultations &&
         Array.isArray(response.data.consultations)
       ) {
-        // Filter consultations to only show ones where requestDetails.status is "Accepted"
         const acceptedConsultations = response.data.consultations.filter(
           (consultation) =>
             consultation.requestDetails &&
             consultation.requestDetails.status === "Accepted"
         );
 
-        // Deduplicate consultations based on requestId
-        // Use a Map to keep track of the most recent consultation for each requestId
         const requestIdMap = new Map();
 
         acceptedConsultations.forEach((consultation) => {
           const requestId = consultation.requestId;
 
-          // If this requestId is not in the map yet, or if this consultation is newer
           if (
             !requestIdMap.has(requestId) ||
             new Date(consultation.updatedAt) >
@@ -81,10 +77,7 @@ const DoctorConsultationHistory = () => {
           }
         });
 
-        // Convert the Map values back to an array
         const uniqueConsultations = Array.from(requestIdMap.values());
-
-        // Sort by updatedAt date (most recent first)
         uniqueConsultations.sort(
           (a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)
         );
@@ -106,13 +99,11 @@ const DoctorConsultationHistory = () => {
     setCurrentPage(page);
   };
 
-  // Handle view details action (show details in modal)
   const handleViewDetails = (consultation) => {
     setSelectedConsultation(consultation);
     setModalVisible(true);
   };
 
-  // Format date for display
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleDateString("en-US", {
@@ -124,7 +115,6 @@ const DoctorConsultationHistory = () => {
     });
   };
 
-  // Calculate age from birthdate
   const calculateAge = (birthDate) => {
     const birth = new Date(birthDate);
     const now = new Date();
@@ -141,7 +131,6 @@ const DoctorConsultationHistory = () => {
       : `${years} years, ${months} months`;
   };
 
-  // Capitalize status and set color
   const getStatusProps = (status) => {
     const capitalizedStatus =
       status.charAt(0).toUpperCase() + status.slice(1).toLowerCase();
@@ -162,12 +151,10 @@ const DoctorConsultationHistory = () => {
     return { text: capitalizedStatus, color };
   };
 
-  // Handle start consultation action
   const handleStartConsultation = (consultationId) => {
     navigate(`/doctor-consultation-history/chat/${consultationId}`);
   };
 
-  // Render loading spinner
   const renderLoading = () => (
     <div style={{ textAlign: "center", padding: "50px 0" }}>
       <Spin size="large" />
@@ -227,17 +214,20 @@ const DoctorConsultationHistory = () => {
                         background: "#ffffff",
                         transition: "all 0.3s",
                         border: "1px solid #e8e8e8",
+                        boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
                       }}
                       hoverable
                       title={
-                        <Title level={4} style={{ margin: 0 }}>
-                          {item.requestDetails?.title ||
-                            "Untitled Consultation"}
+                        <Title
+                          level={4}
+                          style={{ margin: 0, color: "#0056A1" }}>
+                          Parent: {member.name || "Unknown"}
                         </Title>
                       }
                       extra={<Text type={statusColor}>{statusText}</Text>}>
-                      <div style={{ padding: "10px 0" }}>
-                        <Text strong>Parent:</Text> {member.name || "Unknown"}
+                      <div style={{ padding: "10px 0", color: "#333" }}>
+                        <Text strong>Title:</Text>{" "}
+                        {item.requestDetails?.title || "Untitled Consultation"}
                         <br />
                         <Text strong>Child:</Text> {child.name || "Unknown"}
                         <br />
@@ -265,7 +255,12 @@ const DoctorConsultationHistory = () => {
                         <Button
                           type="primary"
                           onClick={() => handleViewDetails(item)}
-                          loading={loading}>
+                          loading={loading}
+                          style={{
+                            backgroundColor: "#0056A1",
+                            borderColor: "#0056A1",
+                            borderRadius: 4,
+                          }}>
                           View Details
                         </Button>
                       </div>
@@ -294,23 +289,46 @@ const DoctorConsultationHistory = () => {
 
       {/* Modal for Consultation Details */}
       <Modal
-        title="Consultation Details"
+        title={
+          <span style={{ color: "blue", fontSize: "30px", fontWeight: "bold" }}>
+            Consultation Details
+          </span>
+        }
         open={modalVisible}
         onCancel={() => setModalVisible(false)}
         footer={[
           <Button key="cancel" onClick={() => setModalVisible(false)}>
-            Close
+            Cancel
           </Button>,
           <Button
             type="primary"
-            onClick={() => handleStartConsultation(selectedConsultation._id)}>
+            onClick={() => handleStartConsultation(selectedConsultation._id)}
+            style={{
+              backgroundColor: "#0056A1",
+              borderColor: "#0056A1",
+              borderRadius: 4,
+            }}>
             Start Consultation
           </Button>,
         ]}
-        width={700}>
+        width={1200}
+        centered
+        maskClosable={false}
+        mask={true}
+        maskStyle={{ backgroundColor: "rgba(0, 0, 0, 0.6)" }}
+        bodyStyle={{
+          maxHeight: "calc(100vh - 200px)",
+          overflowY: "auto",
+          padding: "24px",
+        }}
+        style={{
+          top: 20,
+        }}
+        destroyOnClose={true}
+        className="consultation-detail-modal">
         {selectedConsultation &&
           selectedConsultation.requestDetails?.children?.length > 0 && (
-            <>
+            <div style={{ padding: "0 10px" }}>
               <Title level={4}>
                 Child: {selectedConsultation.requestDetails.children[0].name}
               </Title>
@@ -342,62 +360,345 @@ const DoctorConsultationHistory = () => {
               <Text strong>Updated:</Text>{" "}
               {formatDate(selectedConsultation.updatedAt)}
               <br />
+              {/* Growth Velocity Results */}
               {selectedConsultation.requestDetails.children[0]
                 .growthVelocityResult && (
-                <div style={{ marginTop: 20, marginBottom: 20 }}>
-                  <Text strong>Growth Velocity Results:</Text>
-                  <List
-                    size="small"
-                    dataSource={
-                      selectedConsultation.requestDetails.children[0]
-                        .growthVelocityResult
-                    }
-                    renderItem={(growthData) => (
-                      <List.Item>
-                        <Text>
-                          {growthData.period} (
-                          {new Date(growthData.startDate).toLocaleDateString()}{" "}
-                          - {new Date(growthData.endDate).toLocaleDateString()}
-                          ):
-                        </Text>{" "}
-                        {growthData.weight.description !==
-                        "Insufficient data" ? (
-                          <Text>
-                            Weight: {growthData.weight.weightVelocity}
-                          </Text>
-                        ) : (
-                          <Text type="secondary">Insufficient weight data</Text>
-                        )}
-                        {growthData.height.description !==
-                        "Insufficient data" ? (
-                          <Text>
-                            , Height: {growthData.height.heightVelocity}
-                          </Text>
-                        ) : (
-                          <Text type="secondary">
-                            , Insufficient height data
-                          </Text>
-                        )}
-                        {growthData.headCircumference.description !==
-                        "Insufficient data" ? (
-                          <Text>
-                            , Head:{" "}
-                            {
-                              growthData.headCircumference
-                                .headCircumferenceVelocity
-                            }
-                          </Text>
-                        ) : (
-                          <Text type="secondary">
-                            , Insufficient head circumference data
-                          </Text>
-                        )}
-                      </List.Item>
+                <div style={{ marginTop: 30, marginBottom: 30 }}>
+                  <Title
+                    level={4}
+                    style={{ marginBottom: 20, color: "#0056A1" }}>
+                    Growth Velocity Results
+                  </Title>
+
+                  <div
+                    style={{
+                      border: "1px solid #d9d9d9",
+                      borderRadius: 8,
+                      boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+                      overflow: "hidden",
+                    }}>
+                    {selectedConsultation.requestDetails.children[0].growthVelocityResult.map(
+                      (result, index) => (
+                        <div
+                          key={index}
+                          style={{
+                            padding: 20,
+                            borderBottom:
+                              index <
+                              selectedConsultation.requestDetails.children[0]
+                                .growthVelocityResult.length -
+                                1
+                                ? "1px solid #e8e8e8"
+                                : "none",
+                            backgroundColor:
+                              index % 2 === 0 ? "#f9f9f9" : "white",
+                          }}>
+                          <div style={{ marginBottom: 15 }}>
+                            <Title
+                              level={5}
+                              style={{
+                                marginBottom: 8,
+                                fontSize: 18,
+                                backgroundColor: "#0056A1",
+                                color: "white",
+                                padding: "8px 16px",
+                                borderRadius: 4,
+                                display: "inline-block",
+                              }}>
+                              {result.period}
+                            </Title>
+                            <div
+                              style={{
+                                fontSize: 14,
+                                color: "#666",
+                                marginLeft: 5,
+                              }}>
+                              {formatDate(result.startDate)} -{" "}
+                              {formatDate(result.endDate)}
+                            </div>
+                          </div>
+
+                          <div
+                            style={{
+                              display: "flex",
+                              flexDirection: "row",
+                              gap: 15,
+                              flexWrap: "wrap",
+                            }}>
+                            {/* Weight Column */}
+                            <div style={{ flex: 1, minWidth: "30%" }}>
+                              <Card
+                                title={
+                                  <div
+                                    style={{
+                                      display: "flex",
+                                      alignItems: "center",
+                                    }}>
+                                    <div
+                                      style={{
+                                        backgroundColor: "#f5a623",
+                                        width: 16,
+                                        height: 16,
+                                        borderRadius: 8,
+                                        marginRight: 8,
+                                      }}></div>
+                                    <span>Weight</span>
+                                  </div>
+                                }
+                                style={{ height: "fit-content" }}
+                                headStyle={{
+                                  backgroundColor: "#fffbf2",
+                                  borderBottom: "1px solid #ffebb7",
+                                }}>
+                                <div
+                                  style={{
+                                    padding: 10,
+                                    fontSize: 16,
+                                    minHeight: 80,
+                                    display: "flex",
+                                    alignItems: "center",
+                                  }}>
+                                  {result.weight.description ? (
+                                    <div>
+                                      <label>Weight Velocity:</label>
+                                      <div
+                                        style={{
+                                          fontSize: 24,
+                                          fontWeight: "bold",
+                                          marginBottom: 20,
+                                        }}>
+                                        {result.weight?.weightVelocity?.toFixed(
+                                          2
+                                        ) || "N/A"}
+                                      </div>
+                                      <label>Weight Percentile:</label>
+                                      <div
+                                        style={{
+                                          fontSize: 24,
+                                          fontWeight: "bold",
+                                          marginBottom: 5,
+                                        }}>
+                                        {result.weight?.percentile || "N/A"}
+                                      </div>
+                                    </div>
+                                  ) : (
+                                    <Text
+                                      type="secondary"
+                                      style={{ fontSize: 16 }}>
+                                      Insufficient data to determine weight
+                                      percentile.
+                                    </Text>
+                                  )}
+                                </div>
+                              </Card>
+                            </div>
+
+                            {/* Height Column */}
+                            <div style={{ flex: 1, minWidth: "30%" }}>
+                              <Card
+                                title={
+                                  <div
+                                    style={{
+                                      display: "flex",
+                                      alignItems: "center",
+                                    }}>
+                                    <div
+                                      style={{
+                                        backgroundColor: "#4CAF50",
+                                        width: 16,
+                                        height: 16,
+                                        borderRadius: 8,
+                                        marginRight: 8,
+                                      }}></div>
+                                    <span>Height</span>
+                                  </div>
+                                }
+                                style={{ height: "fit-content" }}
+                                headStyle={{
+                                  backgroundColor: "#f2fff3",
+                                  borderBottom: "1px solid #d4edda",
+                                }}>
+                                <div
+                                  style={{
+                                    padding: 10,
+                                    fontSize: 16,
+                                    minHeight: 80,
+                                    display: "flex",
+                                    alignItems: "center",
+                                  }}>
+                                  {result.height.description !==
+                                  "Insufficient data" ? (
+                                    <div>
+                                      <label>Height Velocity:</label>
+                                      <div
+                                        style={{
+                                          fontSize: 24,
+                                          fontWeight: "bold",
+                                          marginBottom: 20,
+                                        }}>
+                                        {result.height?.heightVelocity?.toFixed(
+                                          2
+                                        ) || "N/A"}
+                                      </div>
+                                      <label>Height Percentile:</label>
+                                      <div
+                                        style={{
+                                          fontSize: 24,
+                                          fontWeight: "bold",
+                                          marginBottom: 5,
+                                        }}>
+                                        {result.height?.percentile || "N/A"}
+                                      </div>
+                                    </div>
+                                  ) : (
+                                    <Text
+                                      type="secondary"
+                                      style={{ fontSize: 16 }}>
+                                      Insufficient data to determine height
+                                      percentile.
+                                    </Text>
+                                  )}
+                                </div>
+                              </Card>
+                            </div>
+
+                            {/* Head Circumference Column */}
+                            <div style={{ flex: 1, minWidth: "30%" }}>
+                              <Card
+                                title={
+                                  <div
+                                    style={{
+                                      display: "flex",
+                                      alignItems: "center",
+                                    }}>
+                                    <div
+                                      style={{
+                                        backgroundColor: "#9C27B0",
+                                        width: 16,
+                                        height: 16,
+                                        borderRadius: 8,
+                                        marginRight: 8,
+                                      }}></div>
+                                    <span>Head Circumference</span>
+                                  </div>
+                                }
+                                style={{ height: "fit-content" }}
+                                headStyle={{
+                                  backgroundColor: "#f9f0ff",
+                                  borderBottom: "1px solid #e3c8f0",
+                                }}>
+                                <div
+                                  style={{
+                                    padding: 10,
+                                    fontSize: 16,
+                                    minHeight: 80,
+                                    display: "flex",
+                                    alignItems: "center",
+                                  }}>
+                                  {result.headCircumference &&
+                                  result.headCircumference.description !==
+                                    "Insufficient data" ? (
+                                    <div>
+                                      <label>
+                                        Head Circumference Velocity:
+                                      </label>
+                                      <div
+                                        style={{
+                                          fontSize: 24,
+                                          fontWeight: "bold",
+                                          marginBottom: 20,
+                                        }}>
+                                        {result.headCircumference?.headCircumferenceVelocity?.toFixed(
+                                          2
+                                        ) || "N/A"}
+                                      </div>
+                                      <label>
+                                        Head Circumference Percentile:
+                                      </label>
+                                      <div
+                                        style={{
+                                          fontSize: 24,
+                                          fontWeight: "bold",
+                                          marginBottom: 5,
+                                        }}>
+                                        {result.headCircumference?.percentile ||
+                                          "N/A"}
+                                      </div>
+                                    </div>
+                                  ) : (
+                                    <Text
+                                      type="secondary"
+                                      style={{ fontSize: 16 }}>
+                                      Insufficient data to determine head
+                                      circumference percentile.
+                                    </Text>
+                                  )}
+                                </div>
+                              </Card>
+                            </div>
+                          </div>
+
+                          {/* Percentile Information (if available) */}
+                          {(result.weight.description &&
+                            result.weight.description.includes("percentile")) ||
+                          (result.height.description &&
+                            result.height.description.includes("percentile")) ||
+                          (result.headCircumference &&
+                            result.headCircumference.description &&
+                            result.headCircumference.description.includes(
+                              "percentile"
+                            )) ? (
+                            <div
+                              style={{
+                                marginTop: 15,
+                                padding: 15,
+                                backgroundColor: "#f0f7ff",
+                                borderRadius: 8,
+                                border: "1px solid #d0e3ff",
+                              }}>
+                              <Text strong style={{ color: "#0056A1" }}>
+                                Percentile Information:
+                              </Text>
+                              {result.weight.description &&
+                                result.weight.description.includes(
+                                  "percentile"
+                                ) && (
+                                  <div style={{ marginTop: 8 }}>
+                                    <Text style={{ display: "block" }}>
+                                      {result.weight.description}
+                                    </Text>
+                                  </div>
+                                )}
+                              {result.height.description &&
+                                result.height.description.includes(
+                                  "percentile"
+                                ) && (
+                                  <div style={{ marginTop: 8 }}>
+                                    <Text style={{ display: "block" }}>
+                                      {result.height.description}
+                                    </Text>
+                                  </div>
+                                )}
+                              {result.headCircumference &&
+                                result.headCircumference.description &&
+                                result.headCircumference.description.includes(
+                                  "percentile"
+                                ) && (
+                                  <div style={{ marginTop: 8 }}>
+                                    <Text style={{ display: "block" }}>
+                                      {result.headCircumference.description}
+                                    </Text>
+                                  </div>
+                                )}
+                            </div>
+                          ) : null}
+                        </div>
+                      )
                     )}
-                  />
+                  </div>
                 </div>
               )}
-            </>
+            </div>
           )}
       </Modal>
     </div>
