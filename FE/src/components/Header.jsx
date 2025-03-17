@@ -62,11 +62,11 @@ const HeaderComponent = () => {
   ];
 
   const doctorDropdownMenuItems = [
-    // {
-    //   key: "profile",
-    //   label: <a href="/profile">Profile</a>,
-    //   icon: <UserOutlined />,
-    // },
+    {
+      key: "profile",
+      label: <a href="/profile">Profile</a>,
+      icon: <UserOutlined />,
+    },
     {
       key: "doctor-consultation",
       label: <a href="/doctor-consultation">Consultation Request</a>,
