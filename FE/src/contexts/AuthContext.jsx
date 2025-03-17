@@ -5,6 +5,8 @@ import api from "../configs/api";
 
 export const AuthContext = createContext();
 
+const API_URL = 'http://localhost:4000/api'
+
 export const AuthProvider = ({ children }) => {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
@@ -55,6 +57,10 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const loginWithGoogle = () => {
+    window.location.href = `${API_URL}/auth/google`;
+  };
+
   const register = async (name, email, password) => {
     try {
       const res = await api.post("/auth/signup", { name, email, password });
@@ -71,7 +77,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout, register }}>
+    <AuthContext.Provider value={{ user, loading, login, logout, register, loginWithGoogle }}>
       {children}
     </AuthContext.Provider>
   );
