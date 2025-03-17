@@ -17,6 +17,8 @@ export const routes = {
   growthTracker: "/profile/growth-tracker/:childId",
   growthChartMember: "/profile/growth-chart/:childId",
   consultation: "/member-consultation",
+  consultationHistory: "/member-consultation-history",
+  consultationChat: "/member-consultation-history/chat/:id",
 
   //Doctor pages
   doctorConsultation: "/doctor-consultation",

@@ -1,6 +1,11 @@
 import { Layout, Row, Col, Typography } from "antd";
 import "./style/Footer.css";
-import { UserOutlined, HomeOutlined, PhoneOutlined, MailOutlined } from "@ant-design/icons";
+import {
+  UserOutlined,
+  HomeOutlined,
+  PhoneOutlined,
+  MailOutlined,
+} from "@ant-design/icons";
 
 const { Footer } = Layout;
 const { Title, Link, Paragraph } = Typography;
@@ -34,20 +39,34 @@ const FooterComponent = () => {
                         <UserOutlined style={{ marginRight: "8px", color: "white" }} />
                         <Link href="https://ng.linkedin.com/in/iroro-yarhere-a400a111" target="_blank" rel="noopener noreferrer" className="footer-link">Dr. Iroro E Yarhere Paediatrician and Endocrinologist</Link><br />
 
-                        <HomeOutlined style={{ marginRight: "8px", color: "white" }} />
-                        <Link href="https://upthng.com/" target="_blank" rel="noopener noreferrer" className="footer-link">University of Port Harcourt Teaching Hospital</Link><br />
+            <HomeOutlined style={{ marginRight: "8px", color: "white" }} />
+            <Link
+              href="#"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="footer-link">
+              FPT University - HCMC
+            </Link>
+            <br />
 
-                        <PhoneOutlined style={{ marginRight: "8px", color: "white" }} />
-                        <Link href="tel:+1234567890" className="footer-link">+123 4567890</Link><br />
+            <PhoneOutlined style={{ marginRight: "8px", color: "white" }} />
+            <Link href="tel:+1234567890" className="footer-link">
+              +123 4567890
+            </Link>
+            <br />
 
-                        <MailOutlined style={{ marginRight: "8px", color: "white" }} />
-                        <Link href="mailto:childgrowthtracking@gmail.com" className="footer-link">childgrowthtracking@gmail.com</Link><br />
-                    </Paragraph>
-
-                </Col>
-            </Row>
-        </Footer>
-    );
+            <MailOutlined style={{ marginRight: "8px", color: "white" }} />
+            <Link
+              href="mailto:childgrowthtracking@gmail.com"
+              className="footer-link">
+              childgrowthtracking@gmail.com
+            </Link>
+            <br />
+          </Paragraph>
+        </Col>
+      </Row>
+    </Footer>
+  );
 };
 
 export default FooterComponent;

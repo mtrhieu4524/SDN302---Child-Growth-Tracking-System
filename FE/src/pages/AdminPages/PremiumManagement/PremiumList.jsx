@@ -41,9 +41,11 @@ const PremiumList = () => {
         },
       });
 
+      console.log("response", response);
+
       if (response.data && response.data.packages) {
         const formattedPackages = response.data.packages
-          .filter(pkg => !pkg.isDeleted)
+          .filter((pkg) => !pkg.isDeleted)
           .map((pkg) => ({
             key: pkg._id,
             name: pkg.name,
@@ -96,19 +98,23 @@ const PremiumList = () => {
       },
       onOk: async () => {
         try {
-          const response = await api.delete(`/membership-packages/${packageId}`);
-          
+          const response = await api.delete(
+            `/membership-packages/${packageId}`
+          );
+
           if (response.status === 200) {
-            message.success('Premium package deleted successfully');
-            setPackages(packages.filter(pkg => pkg.key !== packageId));
-            setPagination(prev => ({
+            message.success("Premium package deleted successfully");
+            setPackages(packages.filter((pkg) => pkg.key !== packageId));
+            setPagination((prev) => ({
               ...prev,
-              total: prev.total - 1
+              total: prev.total - 1,
             }));
           }
         } catch (error) {
-          console.error('Error deleting package:', error);
-          message.error(error.response?.data?.message || 'Failed to delete package');
+          console.error("Error deleting package:", error);
+          message.error(
+            error.response?.data?.message || "Failed to delete package"
+          );
         }
       },
     });
@@ -154,11 +160,7 @@ const PremiumList = () => {
       dataIndex: "status",
       key: "status",
       align: "center",
-      render: (status) => (
-        <Tag color="#52c41a">
-          Active
-        </Tag>
-      ),
+      render: (status) => <Tag color="#52c41a">Active</Tag>,
     },
     {
       title: "Date created",

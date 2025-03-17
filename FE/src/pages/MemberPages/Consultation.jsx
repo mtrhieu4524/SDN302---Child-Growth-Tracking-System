@@ -5,7 +5,6 @@ import HeaderComponent from "../../components/Header";
 import FooterComponent from "../../components/Footer";
 import ScrollToTop from "../../components/ScrollToTop";
 
-const { Content } = Layout;
 const { Title, Text } = Typography;
 const { TextArea } = Input;
 
@@ -50,9 +49,9 @@ const Consultation = () => {
         document.title = "Child Growth Tracking - Doctor Consultation";
     }, []);
     return (
-        <Layout style={{ minHeight: "100vh" }}>
+        <div style={{ minHeight: "100vh" }}>
             <HeaderComponent />
-            <Content style={{ padding: "80px 20px", background: "#f0f2f5" }}>
+            <div style={{ padding: "80px 20px", background: "#f0f2f5" }}>
                 <Card
                     title={
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
@@ -142,10 +141,10 @@ const Consultation = () => {
                         </Form.Item>
                     </Form>
                 </Card>
-            </Content>
+            </div>
             <FooterComponent />
             <ScrollToTop />
-        </Layout>
+        </div>
     );
 };
 

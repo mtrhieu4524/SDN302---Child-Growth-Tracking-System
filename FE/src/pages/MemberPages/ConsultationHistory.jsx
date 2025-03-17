@@ -6,46 +6,40 @@ import {
   Typography,
   message,
   Modal,
-  Input,
-  Form,
-  Space,
   Spin,
   Pagination,
-  Table,
 } from "antd";
 import HeaderComponent from "../../components/Header";
 import FooterComponent from "../../components/Footer";
 import ScrollToTop from "../../components/ScrollToTop";
 import { AuthContext } from "../../contexts/AuthContext";
-import axios from "axios";
 import api from "../../configs/api";
+import { useNavigate } from "react-router-dom";
 
 const { Title, Text } = Typography;
-const { TextArea } = Input;
-const { confirm } = Modal;
 
-const DoctorConsultation = () => {
+const ConsultationHistory = () => {
   const { user } = useContext(AuthContext);
   const [consultations, setConsultations] = useState([]);
-  const [selectedConsultation, setSelectedConsultation] = useState(null);
-  const [responseText, setResponseText] = useState("");
-  const [modalVisible, setModalVisible] = useState(false);
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalRequests, setTotalRequests] = useState(0);
+  const [selectedConsultation, setSelectedConsultation] = useState(null);
+  const [modalVisible, setModalVisible] = useState(false);
   const pageSize = 5;
+  const navigate = useNavigate();
 
   useEffect(() => {
-    document.title = "Child Growth Tracker - Consultation Request";
+    document.title = "Child Growth Tracker - Consultation History";
     if (user && user._id) {
-      fetchConsultations();
+      fetchConsultationHistory();
     }
   }, [user, currentPage]);
 
-  const fetchConsultations = async () => {
+  const fetchConsultationHistory = async () => {
     try {
       setLoading(true);
-      const response = await api.get(`/requests/users/${user._id}`, {
+      const response = await api.get(`/consultations/users/${user._id}`, {
         params: {
           id: user._id,
           page: currentPage,
@@ -54,23 +48,48 @@ const DoctorConsultation = () => {
           order: "descending",
           sortBy: "date",
           status: "",
-          as: "DOCTOR",
+          as: "MEMBER",
         },
       });
 
       if (
         response.data &&
-        response.data.requests &&
-        response.data.requests.requests
+        response.data.consultations &&
+        Array.isArray(response.data.consultations)
       ) {
-        setConsultations(response.data.requests.requests);
-        setTotalRequests(response.data.requests.total);
+        const acceptedConsultations = response.data.consultations.filter(
+          (consultation) =>
+            consultation.requestDetails &&
+            consultation.requestDetails.status === "Accepted"
+        );
+
+        const requestIdMap = new Map();
+
+        acceptedConsultations.forEach((consultation) => {
+          const requestId = consultation.requestId;
+
+          if (
+            !requestIdMap.has(requestId) ||
+            new Date(consultation.updatedAt) >
+              new Date(requestIdMap.get(requestId).updatedAt)
+          ) {
+            requestIdMap.set(requestId, consultation);
+          }
+        });
+
+        const uniqueConsultations = Array.from(requestIdMap.values());
+        uniqueConsultations.sort(
+          (a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)
+        );
+
+        setConsultations(uniqueConsultations);
+        setTotalRequests(uniqueConsultations.length || 0);
       } else {
-        message.error("Failed to load consultation requests");
+        message.error("Failed to load consultation history");
       }
     } catch (error) {
-      console.error("Error fetching consultations:", error);
-      message.error("Failed to load consultation requests");
+      console.error("Error fetching consultation history:", error);
+      message.error("Failed to load consultation history");
     } finally {
       setLoading(false);
     }
@@ -80,75 +99,11 @@ const DoctorConsultation = () => {
     setCurrentPage(page);
   };
 
-  // Handle review action (show details in modal)
-  const handleReview = (consultation) => {
+  const handleViewDetails = (consultation) => {
     setSelectedConsultation(consultation);
     setModalVisible(true);
   };
 
-  // Handle status update (accept or reject)
-  const handleUpdateStatus = async (consultationId, newStatus) => {
-    try {
-      setLoading(true);
-      await api.put(`/requests/status/${consultationId}`, {
-        doctorId: user._id,
-        status: newStatus,
-      });
-      message.success(`Request ${newStatus} successfully!`);
-      fetchConsultations();
-    } catch (error) {
-      console.error(`Error updating status to ${newStatus}:`, error);
-      message.error(`Failed to ${newStatus.toLowerCase()} the request`);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Show confirmation popup for accept
-  const showAcceptConfirm = (consultationId) => {
-    confirm({
-      title: "Are you sure you want to accept this request?",
-      content: "This action will mark the consultation request as accepted.",
-      okText: "Yes, Accept",
-      okType: "primary",
-      cancelText: "No",
-      onOk() {
-        handleUpdateStatus(consultationId, "Accepted");
-      },
-      onCancel() {
-        console.log("Accept action canceled");
-      },
-    });
-  };
-
-  // Show confirmation popup for reject
-  const showRejectConfirm = (consultationId) => {
-    confirm({
-      title: "Are you sure you want to reject this request?",
-      content: "This action will mark the consultation request as rejected.",
-      okText: "Yes, Reject",
-      okType: "danger",
-      cancelText: "No",
-      onOk() {
-        handleUpdateStatus(consultationId, "Rejected");
-      },
-      onCancel() {
-        console.log("Reject action canceled");
-      },
-    });
-  };
-
-  // Handle accept request
-  const handleAccept = (consultationId) => {
-    showAcceptConfirm(consultationId);
-  };
-
-  // Handle reject request
-  const handleReject = (consultationId) => {
-    showRejectConfirm(consultationId);
-  };
-
-  // Format date for display
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleDateString("en-US", {
@@ -160,7 +115,6 @@ const DoctorConsultation = () => {
     });
   };
 
-  // Calculate age from birthdate
   const calculateAge = (birthDate) => {
     const birth = new Date(birthDate);
     const now = new Date();
@@ -177,7 +131,6 @@ const DoctorConsultation = () => {
       : `${years} years, ${months} months`;
   };
 
-  // Capitalize status and set color
   const getStatusProps = (status) => {
     const capitalizedStatus =
       status.charAt(0).toUpperCase() + status.slice(1).toLowerCase();
@@ -187,9 +140,7 @@ const DoctorConsultation = () => {
       case "rejected":
         color = "danger";
         break;
-      case "pending":
-        color = "warning";
-        break;
+      case "ongoing":
       case "accepted":
         color = "success";
         break;
@@ -200,48 +151,15 @@ const DoctorConsultation = () => {
     return { text: capitalizedStatus, color };
   };
 
-  // Render loading spinner
+  const handleStartConsultation = (consultationId) => {
+    navigate(`/member-consultation-history/chat/${consultationId}`);
+  };
+
   const renderLoading = () => (
     <div style={{ textAlign: "center", padding: "50px 0" }}>
       <Spin size="large" />
     </div>
   );
-
-  // Columns for Growth Velocity Results Table
-  const growthVelocityColumns = [
-    {
-      title: "Period",
-      dataIndex: "period",
-      key: "period",
-      render: (text, record) => (
-        <Text>
-          {text} ({formatDate(record.startDate)} - {formatDate(record.endDate)})
-        </Text>
-      ),
-    },
-    {
-      title: "Weight",
-      dataIndex: "weight",
-      key: "weight",
-      render: (weight) =>
-        weight.description !== "Insufficient data" ? (
-          <Text>{weight.weightVelocity}</Text>
-        ) : (
-          <Text type="secondary">Insufficient data</Text>
-        ),
-    },
-    {
-      title: "Height",
-      dataIndex: "height",
-      key: "height",
-      render: (height) =>
-        height.description !== "Insufficient data" ? (
-          <Text>{height.heightVelocity}</Text>
-        ) : (
-          <Text type="secondary">Insufficient data</Text>
-        ),
-    },
-  ];
 
   return (
     <div style={{ minHeight: "100vh" }}>
@@ -258,9 +176,11 @@ const DoctorConsultation = () => {
               }}>
               <div>
                 <Title level={2} style={{ color: "#0056A1", marginBottom: 0 }}>
-                  Consultation Requests
+                  Consultation History
                 </Title>
-                <Text type="secondary">Review consultation requests</Text>
+                <Text type="secondary">
+                  View the history of your accepted consultations
+                </Text>
               </div>
             </div>
           }
@@ -277,76 +197,72 @@ const DoctorConsultation = () => {
               <List
                 itemLayout="vertical"
                 dataSource={consultations}
-                locale={{ emptyText: "No consultation requests found" }}
+                locale={{ emptyText: "No accepted consultation history found" }}
                 renderItem={(item) => {
                   const { text: statusText, color: statusColor } =
                     getStatusProps(item.status);
+                  const child = item.requestDetails?.children?.[0] || {};
+                  const member = item.requestDetails?.member || {};
+                  const doctor = item.requestDetails?.doctor || {};
+
                   return (
                     <Card
                       style={{
                         marginBottom: 15,
                         borderRadius: 8,
-                        paddingBottom: 10,
+                        padding: "15px",
+                        background: "#ffffff",
+                        transition: "all 0.3s",
+                        border: "1px solid #e8e8e8",
+                        boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
                       }}
-                      title={item.title || "Consultation Request"}
+                      hoverable
+                      title={
+                        <Title
+                          level={4}
+                          style={{ margin: 0, color: "#0056A1" }}>
+                          Doctor: {doctor.name || "Unknown"}
+                        </Title>
+                      }
                       extra={<Text type={statusColor}>{statusText}</Text>}>
-                      <div style={{ marginBottom: 15 }}>
-                        <Text strong>Parent:</Text>{" "}
-                        {item.member?.name || "Unknown"}
+                      <div style={{ padding: "10px 0", color: "#333" }}>
+                        <Text strong>Title:</Text>{" "}
+                        {item.requestDetails?.title || "Untitled Consultation"}
                         <br />
-                        <Text strong>Child:</Text>{" "}
-                        {item.children && item.children.length > 0
-                          ? item.children[0].name
-                          : "Unknown"}
+                        <Text strong>Child:</Text> {child.name || "Unknown"}
                         <br />
-                        {item.children &&
-                          item.children.length > 0 &&
-                          item.children[0].birthDate && (
-                            <>
-                              <Text strong>Age:</Text>{" "}
-                              {calculateAge(item.children[0].birthDate)}
-                              <br />
-                            </>
-                          )}
+                        {child.birthDate && (
+                          <>
+                            <Text strong>Age:</Text>{" "}
+                            {calculateAge(child.birthDate)}
+                            <br />
+                          </>
+                        )}
+                        <Text strong>Parent:</Text> {member.name || "Unknown"}
+                        <br />
                         <Text strong>Submitted:</Text>{" "}
                         {formatDate(item.createdAt)}
                         <br />
+                        <Text strong>Updated:</Text>{" "}
+                        {formatDate(item.updatedAt)}
                       </div>
-
                       <div
                         style={{
                           display: "flex",
                           justifyContent: "flex-end",
                           marginTop: 10,
                         }}>
-                        <Space>
-                          {item.status.toLowerCase() === "pending" && (
-                            <>
-                              <Button
-                                danger
-                                onClick={() => handleReject(item._id)}
-                                loading={loading}>
-                                Reject
-                              </Button>
-                              <Button
-                                type="primary"
-                                style={{
-                                  backgroundColor: "#52c41a",
-                                  borderColor: "#52c41a",
-                                }}
-                                onClick={() => handleAccept(item._id)}
-                                loading={loading}>
-                                Accept
-                              </Button>
-                            </>
-                          )}
-                          <Button
-                            type="primary"
-                            onClick={() => handleReview(item)}
-                            loading={loading}>
-                            View
-                          </Button>
-                        </Space>
+                        <Button
+                          type="primary"
+                          onClick={() => handleViewDetails(item)}
+                          loading={loading}
+                          style={{
+                            backgroundColor: "#0056A1",
+                            borderColor: "#0056A1",
+                            borderRadius: 4,
+                          }}>
+                          View Details
+                        </Button>
                       </div>
                     </Card>
                   );
@@ -360,6 +276,7 @@ const DoctorConsultation = () => {
                     total={totalRequests}
                     onChange={handlePageChange}
                     showSizeChanger={false}
+                    style={{ marginBottom: "20px" }}
                   />
                 </div>
               )}
@@ -370,10 +287,12 @@ const DoctorConsultation = () => {
       <FooterComponent />
       <ScrollToTop />
 
+      {/* Modal for Consultation Details */}
       <Modal
         title={
-          <span style={{ color: "#0056a1", fontSize: "30px", fontWeight: "bold" }}>
-            Consultation Request Details
+          <span
+            style={{ color: "#0056a1", fontSize: "30px", fontWeight: "bold" }}>
+            Consultation Details
           </span>
         }
         open={modalVisible}
@@ -381,6 +300,16 @@ const DoctorConsultation = () => {
         footer={[
           <Button key="cancel" onClick={() => setModalVisible(false)}>
             Cancel
+          </Button>,
+          <Button
+            type="primary"
+            onClick={() => handleStartConsultation(selectedConsultation._id)}
+            style={{
+              backgroundColor: "#0056A1",
+              borderColor: "#0056A1",
+              borderRadius: 4,
+            }}>
+            Start Consultation
           </Button>,
         ]}
         width={1200}
@@ -399,17 +328,21 @@ const DoctorConsultation = () => {
         destroyOnClose={true}
         className="consultation-detail-modal">
         {selectedConsultation &&
-          selectedConsultation.children &&
-          selectedConsultation.children.length > 0 && (
+          selectedConsultation.requestDetails?.children?.length > 0 && (
             <div style={{ padding: "0 10px" }}>
               <Title level={4}>
-                Child: {selectedConsultation.children[0].name}
+                Child: {selectedConsultation.requestDetails.children[0].name}
               </Title>
               <Text strong>Age:</Text>{" "}
-              {calculateAge(selectedConsultation.children[0].birthDate)}
+              {calculateAge(
+                selectedConsultation.requestDetails.children[0].birthDate
+              )}
               <br />
               <Text strong>Parent:</Text>{" "}
-              {selectedConsultation.member?.name || "Unknown"}
+              {selectedConsultation.requestDetails.member?.name || "Unknown"}
+              <br />
+              <Text strong>Doctor:</Text>{" "}
+              {selectedConsultation.requestDetails.doctor?.name || "Unknown"}
               <br />
               <Text strong>Status:</Text>{" "}
               {(() => {
@@ -419,14 +352,18 @@ const DoctorConsultation = () => {
                 return <Text type={statusColor}>{statusText}</Text>;
               })()}
               <br />
-              <Text strong>Request:</Text>{" "}
-              {selectedConsultation.title || "No title provided"}
+              <Text strong>Request Title:</Text>{" "}
+              {selectedConsultation.requestDetails.title || "No title provided"}
               <br />
               <Text strong>Submitted:</Text>{" "}
               {formatDate(selectedConsultation.createdAt)}
               <br />
+              <Text strong>Updated:</Text>{" "}
+              {formatDate(selectedConsultation.updatedAt)}
+              <br />
               {/* Growth Velocity Results */}
-              {selectedConsultation.children[0].growthVelocityResult && (
+              {selectedConsultation.requestDetails.children[0]
+                .growthVelocityResult && (
                 <div style={{ marginTop: 30, marginBottom: 30 }}>
                   <Title
                     level={4}
@@ -441,7 +378,7 @@ const DoctorConsultation = () => {
                       boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
                       overflow: "hidden",
                     }}>
-                    {selectedConsultation.children[0].growthVelocityResult.map(
+                    {selectedConsultation.requestDetails.children[0].growthVelocityResult.map(
                       (result, index) => (
                         <div
                           key={index}
@@ -449,8 +386,8 @@ const DoctorConsultation = () => {
                             padding: 20,
                             borderBottom:
                               index <
-                                selectedConsultation.children[0]
-                                  .growthVelocityResult.length -
+                              selectedConsultation.requestDetails.children[0]
+                                .growthVelocityResult.length -
                                 1
                                 ? "1px solid #e8e8e8"
                                 : "none",
@@ -591,7 +528,7 @@ const DoctorConsultation = () => {
                                     alignItems: "center",
                                   }}>
                                   {result.height.description !==
-                                    "Insufficient data" ? (
+                                  "Insufficient data" ? (
                                     <div>
                                       <label>Height Velocity:</label>
                                       <div
@@ -660,7 +597,7 @@ const DoctorConsultation = () => {
                                     alignItems: "center",
                                   }}>
                                   {result.headCircumference &&
-                                    result.headCircumference.description !==
+                                  result.headCircumference.description !==
                                     "Insufficient data" ? (
                                     <div>
                                       <label>
@@ -705,13 +642,13 @@ const DoctorConsultation = () => {
                           {/* Percentile Information (if available) */}
                           {(result.weight.description &&
                             result.weight.description.includes("percentile")) ||
-                            (result.height.description &&
-                              result.height.description.includes("percentile")) ||
-                            (result.headCircumference &&
-                              result.headCircumference.description &&
-                              result.headCircumference.description.includes(
-                                "percentile"
-                              )) ? (
+                          (result.height.description &&
+                            result.height.description.includes("percentile")) ||
+                          (result.headCircumference &&
+                            result.headCircumference.description &&
+                            result.headCircumference.description.includes(
+                              "percentile"
+                            )) ? (
                             <div
                               style={{
                                 marginTop: 15,
@@ -769,4 +706,4 @@ const DoctorConsultation = () => {
   );
 };
 
-export default DoctorConsultation;
+export default ConsultationHistory;
