@@ -10,7 +10,7 @@ import Blogs from "../pages/Blogs";
 import Membership from "../pages/Membership";
 import GrowthChart from "../pages/GrowthChart";
 import DevelopmentMilestones from "../pages/DevelopmentMilestones";
-import Consultation from "../pages/MemberPages/Consultaion";
+import Consultation from "../pages/MemberPages/Consultation";
 import DoctorConsultation from "../pages/DoctorPages/DoctorConsultation";
 
 import Dashboard from "../pages/AdminPages/Dashboard";
@@ -63,13 +63,13 @@ export default function AppRoute() {
       <Route path={routes.verificationSent} element={<VerificationSent />} />
       <Route path={routes.consultation} element={<Consultation />} />
       {/* Doctor Routes */}
-      <Route path={routes.doctorConsultaion} element={<DoctorConsultation />} />
+      <Route path={routes.doctorConsultation} element={<DoctorConsultation />} />
       <Route
-        path={routes.doctorConsultaionHistory}
+        path={routes.doctorConsultationHistory}
         element={<DoctorConsultationHistory />}
       />
       <Route
-        path={routes.doctorConsultaionChat}
+        path={routes.doctorConsultationChat}
         element={<DoctorConsultationChat />}
       />
       {/* Admin Routes */}

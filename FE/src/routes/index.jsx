@@ -18,9 +18,9 @@ export const routes = {
   consultation: "/member-consultation",
 
   //Doctor pages
-  doctorConsultaion: "/doctor-consultation",
-  doctorConsultaionHistory: "/doctor-consultation-history",
-  doctorConsultaionChat: "/doctor-consultation-history/chat/:id",
+  doctorConsultation: "/doctor-consultation",
+  doctorConsultationHistory: "/doctor-consultation-history",
+  doctorConsultationChat: "/doctor-consultation-history/chat/:id",
 
   // Admin pages
   dashboard: "/admin/dashboard",
