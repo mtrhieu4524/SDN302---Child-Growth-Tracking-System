@@ -46,14 +46,15 @@ class PaymentController {
     res: Response,
     next: NextFunction
   ): Promise<void> => {
-    const { price, packageId } = req.body;
+    const { price, packageId, purchaseType } = req.body;
     const userId = req.userInfo.userId;
 
     try {
       const approvalLink = await this.paymentService.createPaypalPayment(
         price,
         packageId,
-        userId
+        userId,
+        purchaseType
       );
 
       if (approvalLink) {
@@ -68,7 +69,11 @@ class PaymentController {
     }
   };
 
-  successPaypalPayment = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  successPaypalPayment = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
     const { token } = req.query;
 
     if (!token) {
@@ -129,8 +134,8 @@ class PaymentController {
     next: NextFunction
   ): Promise<void> => {
     res.render("PaymentFailedPage", {
-        message: "Your payment request was canceled.",
-        frontendUrl: process.env.FRONTEND_URL,
+      message: "Your payment request was canceled.",
+      frontendUrl: process.env.FRONTEND_URL,
     });
   };
 
@@ -139,7 +144,7 @@ class PaymentController {
     res: Response,
     next: NextFunction
   ): Promise<void> => {
-    const { price, packageId, bankCode } = req.body;
+    const { price, packageId, bankCode, purchaseType } = req.body;
     const userId = req.userInfo.userId;
     const ipAddr =
       req.headers["x-forwarded-for"] || req.connection.remoteAddress;
@@ -150,7 +155,8 @@ class PaymentController {
         userId,
         packageId,
         ipAddr as string,
-        bankCode
+        bankCode,
+        purchaseType
       );
       res.status(200).json({ url: vnpUrl });
     } catch (error) {
@@ -171,11 +177,11 @@ class PaymentController {
     const signData = querystring.stringify(vnp_Params, { encode: false });
     const hmac = crypto.createHmac("sha512", secretKey);
     const signed = hmac.update(Buffer.from(signData, "utf-8")).digest("hex");
-  
+
     if (secureHash === signed && vnp_Params["vnp_ResponseCode"] === "00") {
       try {
         const amount = parseFloat(vnp_Params.vnp_Amount as string) / 100; // Convert from VND cents
-  
+
         const data = {
           userId: (vnp_Params.vnp_OrderInfo as string).split("%")[0],
           membershipPackageId: (vnp_Params.vnp_OrderInfo as string).split("%7C")[1],
@@ -192,7 +198,6 @@ class PaymentController {
   
         await this.paymentQueue.sendPaymentData(data);
         const receipt = await this.paymentQueue.consumePaymentData();
-  
         // Render EJS page
         return res.render("PaymentReturn", {
           success: true,

@@ -11,6 +11,7 @@ import {
   Empty,
   Avatar,
   Tag,
+  message,
 } from "antd";
 import {
   RightOutlined,
@@ -87,9 +88,31 @@ const Blogs = () => {
     fetchPosts(page, pageSize, searchQuery);
   };
 
+  const validateSearchInput = (value) => {
+    const cleanValue = value
+      .replace(/[^a-zA-Z0-9\s]/g, "")
+      .replace(/\s+/g, " ")
+      .trim();
+    return cleanValue;
+  };
+
   const handleSearch = (value) => {
-    setSearchQuery(value);
-    fetchPosts(1, pagination.pageSize, value);
+    const cleanedValue = validateSearchInput(value);
+
+    if (!cleanedValue) {
+      message.warning("Please enter a valid blog title");
+      setSearchQuery("");
+      fetchPosts(1, pagination.pageSize, "");
+      return;
+    }
+
+    setSearchQuery(cleanedValue);
+    fetchPosts(1, pagination.pageSize, cleanedValue);
+  };
+
+  const handleSearchChange = (e) => {
+    const cleanedValue = validateSearchInput(e.target.value);
+    setSearchQuery(cleanedValue);
   };
 
   // Function to extract text content from HTML string
@@ -126,11 +149,13 @@ const Blogs = () => {
               justifyContent: "center",
             }}>
             <Search
-              placeholder="Search blog posts"
+              placeholder="Search blog posts by title"
               allowClear
               enterButton={<SearchOutlined />}
               size="large"
               onSearch={handleSearch}
+              onChange={handleSearchChange}
+              value={searchQuery}
               style={{ maxWidth: "500px", width: "100%" }}
             />
           </div>
