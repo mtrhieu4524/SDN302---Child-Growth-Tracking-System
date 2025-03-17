@@ -27,6 +27,8 @@ import VerificationSent from "../pages/VerificationSent";
 import PublicRoute from "./PublicRoute";
 import PaymentDetails from "../pages/PaymentDetails";
 import ConsultationManagement from "../pages/AdminPages/ConsultationManagement";
+import DoctorConsultationHistory from "../pages/DoctorPages/DoctorConsultationHistory";
+import DoctorConsultationChat from "../pages/DoctorPages/DoctorConsultationChat";
 
 export default function AppRoute() {
   return (
@@ -43,13 +45,15 @@ export default function AppRoute() {
       />
       <Route path={routes.aboutUs} element={<About />} />
       <Route path={routes.faqs} element={<FAQs />} />
-      <Route path={routes.developmentMilestones} element={<DevelopmentMilestones />} />
+      <Route
+        path={routes.developmentMilestones}
+        element={<DevelopmentMilestones />}
+      />
       <Route path={routes.blogs} element={<Blogs />} />
       <Route path={routes.membership} element={<Membership />} />
       <Route path={routes.paymentDetails} element={<PaymentDetails />} />
       <Route path={routes.growthChart} element={<GrowthChart />} />
       <Route path={routes.blogDetail} element={<BlogDetailed />} />
-
       {/* Membership pages */}
       <Route path={routes.growthTracker} element={<GrowthTracker />} />
       <Route
@@ -58,10 +62,16 @@ export default function AppRoute() {
       />{" "}
       <Route path={routes.verificationSent} element={<VerificationSent />} />
       <Route path={routes.consultation} element={<Consultation />} />
-
       {/* Doctor Routes */}
-      <Route path={routes.doctorConsultation} element={<DoctorConsultation />} />
-
+      <Route path={routes.doctorConsultaion} element={<DoctorConsultation />} />
+      <Route
+        path={routes.doctorConsultaionHistory}
+        element={<DoctorConsultationHistory />}
+      />
+      <Route
+        path={routes.doctorConsultaionChat}
+        element={<DoctorConsultationChat />}
+      />
       {/* Admin Routes */}
       <Route
         path={routes.dashboard}
