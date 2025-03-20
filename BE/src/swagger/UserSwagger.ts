@@ -7,8 +7,6 @@
  *              `Admins` & `doctors` can view other `members` & `doctors`. <br>
  *              `Member` can only view `doctors`. <br>
  *     tags: [Users]
- *     security:
- *       - BearerAuth: []
  *     parameters:
  *       - in: query
  *         name: page
@@ -53,8 +51,6 @@
  *              `Admins` & `doctors` can view other `members` & `doctors`. <br>
  *              `Member` can only view `doctors`. <br>
  *     tags: [Users]
- *     security:
- *       - BearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -121,8 +117,6 @@
  *     summary: Delete a user(Admin)
  *     description: Deletes a user by ID. Only accessible by admins .
  *     tags: [Users]
- *     security:
- *       - BearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -146,8 +140,6 @@
  *     summary: Remove user membership
  *     description: Removes the current subscription or membership of a user.
  *     tags: [Users]
- *     security:
- *       - BearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -243,4 +235,28 @@
  *         description: Invalid request data
  *       500:
  *         description: Internal server error
+ */
+
+/**
+ * @swagger
+ * /api/users/download-chart:
+ *   put:
+ *     summary: Download user chart
+ *     description: Allows users with the appropriate membership to download a chart.
+ *     tags: [Users]
+ *     responses:
+ *       200:
+ *         description: Successfully downloaded the chart.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Chart downloaded successfully"
+ *       403:
+ *         description: User does not have permission to download the chart.
+ *       500:
+ *         description: Internal server error.
  */

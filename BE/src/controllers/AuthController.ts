@@ -1,9 +1,10 @@
 import { Request, Response, NextFunction } from "express";
+// import AuthService from "../services/AuthService";
 import StatusCodeEnum from "../enums/StatusCodeEnum";
 import ms from "ms";
 import { ISession } from "../interfaces/ISession";
+// import UserService from "../services/UserService";
 import { IAuthService } from "../interfaces/services/IAuthService";
-require("dotenv").config();
 
 class AuthController {
   private authService: IAuthService;
@@ -309,11 +310,11 @@ class AuthController {
   ): Promise<void> => {
     try {
       const { verificationToken } = req.body;
-  
+
       await this.authService.confirmEmailVerificationToken(verificationToken);
-  
-      res.status(StatusCodeEnum.OK_200).render("ConfirmEmailVerification", {
-        link: process.env.FRONTEND_URL,
+
+      res.status(StatusCodeEnum.OK_200).json({
+        message: "Success",
       });
     } catch (error) {
       next(error);

@@ -11,6 +11,7 @@ class PaymentHandler {
     const validationErrors: { field: string; error: string }[] = [];
     const { price, packageId, purchaseType } = req.body;
 
+    console.log(typeof price, price, packageId, purchaseType);
     if (!purchaseType) {
       validationErrors.push({
         field: "purchaseType",

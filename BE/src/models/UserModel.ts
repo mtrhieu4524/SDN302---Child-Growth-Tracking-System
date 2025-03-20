@@ -32,6 +32,10 @@ const userModelSchema = new Schema<IUser>(
     password: {
       type: String,
     },
+    isDeleted: {
+      type: Boolean,
+      default: false,
+    },
     resetPasswordPin: {
       value: { type: String, default: null },
       expiresAt: { type: Date, default: null },
@@ -56,7 +60,7 @@ const userModelSchema = new Schema<IUser>(
         ref: "MembershipPackage",
         default: null,
       },
-      viewChart: {
+      downloadChart: {
         counter: {
           type: Number,
           default: 0,

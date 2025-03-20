@@ -82,28 +82,28 @@ class GrowthDataRepository implements IGrowthDataRepository {
   async getGrowthDataByChildId(
     childId: string,
     query: IQuery,
-    isDeleted: boolean
+    ignoreDeleted: boolean
   ): Promise<GrowthData> {
     try {
       type SearchQuery = {
-        isDeleted: boolean;
         childId: mongoose.Types.ObjectId;
+        isDeleted?: boolean;
       };
-      const { page, size, order, sortBy } = query;
-      const searchQuery: SearchQuery = {
-        isDeleted,
-        childId: new mongoose.Types.ObjectId(childId),
-      };
+      const { page, size, order } = query;
+      const searchQuery: SearchQuery = ignoreDeleted
+        ? {
+            childId: new mongoose.Types.ObjectId(childId),
+          }
+        : { childId: new mongoose.Types.ObjectId(childId), isDeleted: false };
 
-      let sortField = "createdAt";
+      let sortField = "inputDate";
       const sortOrder: 1 | -1 = order === "ascending" ? 1 : -1;
-
-      if (sortBy === "date") sortField = "createdAt";
 
       const skip = (page - 1) * size;
 
       const growthData = await GrowthDataModel.aggregate([
         { $match: searchQuery },
+        { $sort: { [sortField]: sortOrder } },
         {
           $skip: skip,
         },
@@ -118,11 +118,11 @@ class GrowthDataRepository implements IGrowthDataRepository {
             weight: 1,
             headCircumference: 1,
             armCircumference: 1,
+            growthResult: 1,
             createdAt: 1,
             updatedAt: 1,
           },
         },
-        { $sort: { [sortField]: sortOrder } },
       ]);
 
       const totalGrowthData = await GrowthDataModel.countDocuments(searchQuery);
@@ -158,6 +158,9 @@ class GrowthDataRepository implements IGrowthDataRepository {
 
       return growthData;
     } catch (error) {
+      if (error as Error | CustomException) {
+        throw error;
+      }
       throw new CustomException(
         StatusCodeEnum.InternalServerError_500,
         "Internal Server Error"

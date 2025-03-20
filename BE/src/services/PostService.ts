@@ -1,6 +1,6 @@
 import { ObjectId } from "mongoose";
 import { ReturnDataPosts } from "../repositories/PostRepository";
-
+// import PostRepository from "../repositories/PostRepository";
 import CustomException from "../exceptions/CustomException";
 import StatusCodeEnum from "../enums/StatusCodeEnum";
 import Database from "../utils/database";
@@ -88,60 +88,44 @@ class PostService implements IPostService {
   ): Promise<IPost> => {
     try {
       let ignoreDeleted = false;
+      const checkPost = await this.postRepository.getPost(id, ignoreDeleted);
       let isOwner = false;
       let isAdmin = false;
-  
-      
       if (requesterId && requesterId !== "") {
         const checkRequester = await this.userRepository.getUserById(
           requesterId,
           ignoreDeleted
         );
-  
+
+        if (
+          [UserEnum.ADMIN].includes(checkRequester?.role || UserEnum.MEMBER)
+        ) {
+          ignoreDeleted = true;
+          isAdmin = true;
+        }
+
         if (!checkRequester) {
           throw new CustomException(
             StatusCodeEnum.NotFound_404,
             "Requester not found"
           );
         }
-  
-        
-        if (checkRequester.role === UserEnum.ADMIN) {
-          ignoreDeleted = true;
-          isAdmin = true;
-        }
-  
-        
-        const post = await this.postRepository.getPost(id, ignoreDeleted);
-        if (checkRequester._id === post.userId) {
+        if (checkRequester._id === checkPost.userId) {
           isOwner = true;
         }
-  
-        
-        if (!isAdmin && !isOwner && post.status !== PostStatus.PUBLISHED) {
-          throw new CustomException(
-            StatusCodeEnum.NotFound_404,
-            "Post not found"
-          );
-        }
-  
-        return post;
       }
-  
-      
+
       const post = await this.postRepository.getPost(id, ignoreDeleted);
-  
-      
-      if (post.status !== PostStatus.PUBLISHED) {
+
+      if ((!isAdmin || !isOwner) && post.status !== PostStatus.PUBLISHED) {
         throw new CustomException(
           StatusCodeEnum.NotFound_404,
           "Post not found"
         );
       }
-  
       return post;
     } catch (error) {
-      if (error instanceof CustomException || error instanceof Error) {
+      if (error as Error | CustomException) {
         throw error;
       }
       throw new CustomException(
@@ -305,6 +289,7 @@ class PostService implements IPostService {
 
       switch (status as PostStatus) {
         case PostStatus.REJECTED:
+          // console.log("REJECTED");
           if (![UserEnum.ADMIN].includes(user.role)) {
             throw new CustomException(
               StatusCodeEnum.Forbidden_403,
@@ -314,6 +299,7 @@ class PostService implements IPostService {
           break;
 
         case PostStatus.PUBLISHED:
+          // console.log("PUBLISHED");
           if (![UserEnum.ADMIN].includes(user.role)) {
             throw new CustomException(
               StatusCodeEnum.Forbidden_403,

@@ -13,7 +13,7 @@ class PostHandler {
 
     const { title, content } = req.body;
 
-    if (!title || !validator.isLength(title, { min: 6, max: 150 })) {
+    if (!title || !validator.isLength(title, { min: 0, max: 150 })) {
       validationErrors.push({
         field: "title",
         error: "Title is required and should be between 6 and 150 characters",
@@ -29,6 +29,8 @@ class PostHandler {
     const images = document.querySelectorAll("img");
 
     if (images.length > 0) {
+      // console.log(images.length);
+
       const files = req.files as
         | { [key: string]: Express.Multer.File[] }
         | undefined;
@@ -36,6 +38,7 @@ class PostHandler {
       const attachmentCount = files?.postAttachments
         ? files.postAttachments.length
         : 0;
+      // console.log(attachmentCount);
 
       if (images.length !== attachmentCount) {
         validationErrors.push({
@@ -46,7 +49,7 @@ class PostHandler {
     }
 
     try {
-      validateMongooseObjectId(req.userInfo.userId);
+      await validateMongooseObjectId(req.userInfo.userId);
     } catch {
       validationErrors.push({ field: "userId", error: "Invalid user id" });
     }
@@ -67,9 +70,9 @@ class PostHandler {
     const { id } = req.params;
 
     try {
-      validateMongooseObjectId(id);
+      await validateMongooseObjectId(id);
     } catch {
-      validationErrors.push({ field: "id", error: "Invalid post ID" });
+      validationErrors.push({ field: "id", error: "Invalid post id" });
     }
 
     if (validationErrors.length > 0) {
@@ -81,7 +84,6 @@ class PostHandler {
       next();
     }
   };
-
   getPosts = async (req: Request, res: Response, next: NextFunction) => {
     const validationErrors: { field: string; error: string }[] = [];
 
@@ -137,7 +139,7 @@ class PostHandler {
     const { title, content } = req.body;
 
     try {
-      validateMongooseObjectId(id);
+      await validateMongooseObjectId(id);
     } catch {
       validationErrors.push({ field: "id", error: "Invalid post Id" });
     }
@@ -188,7 +190,7 @@ class PostHandler {
     const { id } = req.params;
 
     try {
-      validateMongooseObjectId(id);
+      await validateMongooseObjectId(id);
     } catch {
       validationErrors.push({ field: "id", error: "Invalid post Id" });
     }
@@ -211,7 +213,7 @@ class PostHandler {
     const validationErrors: { field: string; error: string }[] = [];
 
     const { id } = req.params;
-    const { status } = req.body;
+    const { status } = req.query;
 
     try {
       validateMongooseObjectId(id);
@@ -253,7 +255,7 @@ class PostHandler {
     const validationErrors: { field: string; error: string }[] = [];
     const { page, size, order, sortBy, userId } = req.query;
     try {
-      validateMongooseObjectId(userId as string);
+      await validateMongooseObjectId(userId as string);
     } catch {
       validationErrors.push({ field: "userId", error: "Invalid user Id" });
     }

@@ -330,7 +330,7 @@
  *         schema:
  *           type: string
  *         description: The unique ID of the post to update
- *       - in: body
+ *       - in: query
  *         name: status
  *         required: true
  *         schema:

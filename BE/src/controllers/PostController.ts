@@ -132,6 +132,7 @@ class PostController {
       const { id } = req.params;
       const { page, size, search, order, sortBy } = req.query;
 
+      console.log(id);
       const posts = await this.postService.getPostsByUserId(
         requesterId,
         id as string,
@@ -236,7 +237,7 @@ class PostController {
   ) => {
     try {
       const { id } = req.params;
-      const { status } = req.body;
+      const { status } = req.query;
       const requesterId = req.userInfo.userId;
       const post = await this.postService.updatePostStatus(
         id,

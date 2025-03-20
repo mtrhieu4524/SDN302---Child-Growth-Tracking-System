@@ -2,7 +2,7 @@ import mongoose, { ObjectId } from "mongoose";
 import StatusCodeEnum from "../enums/StatusCodeEnum";
 import UserEnum from "../enums/UserEnum";
 import CustomException from "../exceptions/CustomException";
-import { IUser } from "../interfaces/IUser";
+import { ISubscription, IUser } from "../interfaces/IUser";
 import { IDoctor } from "../repositories/UserRepository";
 
 import Database from "../utils/database";
@@ -18,6 +18,7 @@ import { IConsultationRepository } from "../interfaces/repositories/IConsultatio
 import { IMembershipPackageRepository } from "../interfaces/repositories/IMembershipPackageRepository";
 import { ISessionService } from "../interfaces/services/ISessionService";
 import { IUserRepository } from "../interfaces/repositories/IUserRepository";
+import { cleanUpFile } from "../utils/fileUtils";
 
 class UserService implements IUserService {
   private userRepository: IUserRepository;
@@ -318,9 +319,11 @@ class UserService implements IUserService {
           users = await this.userRepository.getAllUsersRepository(
             Query,
             ignoreDeleted,
-            Query.role === "" ? undefined : Query.role ?? [UserEnum.MEMBER, UserEnum.DOCTOR]
+            Query.role === ""
+              ? undefined
+              : Query.role ?? [UserEnum.MEMBER, UserEnum.DOCTOR]
           );
-          break;          
+          break;
 
         default:
           throw new CustomException(
@@ -388,36 +391,71 @@ class UserService implements IUserService {
   ): Promise<IUser | null> => {
     const session = await this.database.startTransaction();
     try {
-      const [requester, user] = await Promise.all([
-        this.userRepository.getUserById(requesterId as string, false),
-        this.userRepository.getUserById(id as string, false),
-      ]);
-  
-      if (!requester) throw new CustomException(StatusCodeEnum.NotFound_404, "Requester not found");
-      if (!user) throw new CustomException(StatusCodeEnum.NotFound_404, "User not found");
-  
+      const requester = await this.userRepository.getUserById(
+        requesterId as string,
+        false
+      );
+      if (!requester)
+        throw new CustomException(
+          StatusCodeEnum.NotFound_404,
+          "Requester not found"
+        );
+
+      const user = await this.userRepository.getUserById(id as string, false);
+
+      if (!user)
+        throw new CustomException(
+          StatusCodeEnum.NotFound_404,
+          "User not found"
+        );
+
       const isAdmin = requester.role === UserEnum.ADMIN;
       const isSelf = id === requesterId;
+
       const updateData: Partial<IUser> = {};
-  
-      if (isAdmin && isSelf) {
-        Object.assign(updateData, { name, role, phoneNumber, avatar });
-      } else if (isAdmin && !isSelf) {
-        if (role !== undefined) updateData.role = role;
-      } else if (!isAdmin && isSelf) {
-        Object.assign(updateData, { name, phoneNumber, avatar });
-      } else {
-        throw new CustomException(StatusCodeEnum.Forbidden_403, "You do not have the authority to perform this action");
+
+      if (role !== undefined) {
+        if (!isAdmin) {
+          throw new CustomException(
+            StatusCodeEnum.Forbidden_403,
+            "You do not have the authority to perform this action"
+          );
+        } else {
+          updateData.role = role;
+        }
       }
-  
-      const updatedUser = await this.userRepository.updateUserById(id as string, updateData, session);
+
+      if (!isAdmin && !isSelf) {
+        throw new CustomException(
+          StatusCodeEnum.Forbidden_403,
+          "You do not have the authority to perform this action"
+        );
+      } else {
+        if (name) updateData.name = name;
+        if (phoneNumber) updateData.phoneNumber = phoneNumber;
+        if (avatar) updateData.avatar = avatar;
+      }
+
+      const updatedUser = await this.userRepository.updateUserById(
+        id as string,
+        updateData,
+        session
+      );
+      //Object assign did not work
+
       await this.database.commitTransaction(session);
+      await cleanUpFile(user.avatar, "update");
       return updatedUser;
     } catch (error) {
       await this.database.abortTransaction(session);
-      throw error instanceof CustomException ? error : new CustomException(StatusCodeEnum.InternalServerError_500, "Internal Server Error");
+      throw error instanceof CustomException
+        ? error
+        : new CustomException(
+            StatusCodeEnum.InternalServerError_500,
+            "Internal Server Error"
+          );
     }
-  };  
+  };
 
   deleteUser = async (
     id: string | ObjectId,
@@ -823,6 +861,68 @@ class UserService implements IUserService {
 
       await this.database.commitTransaction(session);
       return updatedConsultation;
+    } catch (error) {
+      await session.abortTransaction(session);
+      if (error as Error | CustomException) {
+        throw error;
+      }
+      throw new CustomException(
+        StatusCodeEnum.InternalServerError_500,
+        "Internal Server Error"
+      );
+    } finally {
+      await session.endSession();
+    }
+  };
+
+  downloadChart = async (userId: string): Promise<void> => {
+    const session = await this.database.startTransaction();
+    try {
+      const checkUser = await this.userRepository.getUserById(userId, false);
+      if (!checkUser) {
+        throw new CustomException(
+          StatusCodeEnum.NotFound_404,
+          "Requester not found"
+        );
+      }
+
+      if (
+        checkUser.subscription.currentPlan === null ||
+        checkUser.subscription.endDate === null
+      ) {
+        throw new CustomException(
+          StatusCodeEnum.Conflict_409,
+          "Invalid subscription info"
+        );
+      }
+
+      const subscription = checkUser.subscription;
+
+      let data: ISubscription;
+      if (new Date().getTime() < (subscription.endDate as Date)?.getTime()) {
+        data = {
+          ...subscription,
+          downloadChart: {
+            counter: subscription.downloadChart.counter + 1,
+            lastCalled: new Date(),
+          },
+        };
+      } else {
+        data = {
+          ...subscription,
+          downloadChart: {
+            counter: 1,
+            lastCalled: new Date(),
+          },
+        };
+      }
+
+      await this.userRepository.updateUserById(
+        userId,
+        { subscription: data },
+        session
+      );
+      await this.database.commitTransaction(session);
     } catch (error) {
       await session.abortTransaction(session);
       if (error as Error | CustomException) {
